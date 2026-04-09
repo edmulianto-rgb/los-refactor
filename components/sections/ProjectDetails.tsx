@@ -1,6 +1,6 @@
 import { ICProject } from "@/data/types";
 import { SectionCard } from "@/components/ui/SectionCard";
-import { DataRow, fmt, fmtPct } from "@/components/ui/DataRow";
+import { DataRow, fmt } from "@/components/ui/DataRow";
 import { Tag, assetClassVariant } from "@/components/ui/Tag";
 import { Warning } from "@/components/ui/Warning";
 
@@ -9,31 +9,77 @@ interface Props {
 }
 
 export function ProjectDetails({ project }: Props) {
-  const badge = project.brandIsNew ? (
-    <span className="text-xs text-amber-600 font-medium bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">1st project for this KP</span>
-  ) : (
-    <span className="text-xs text-gray-500">Project #{project.projectNumberForKP} for this KP</span>
-  );
+  // Sector display: "Main: Sub" or just "Main" if no sub-sector
+  const sectorLabel = project.subSector
+    ? `${project.mainSector}: ${project.subSector}`
+    : project.mainSector;
+
+  // Amount warning logic per CSV:
+  // Project type = "Project" → warn if > current plafond
+  // Project type includes Plafond → warn if > proposed plafond
+  const computedAmountWarning = (() => {
+    if (project.amountWarning) return project.amountWarning;
+    const isPlafondRequest = project.approvalType.includes("Plafond");
+    if (!isPlafondRequest && project.plafond.current) {
+      if (project.requestedAmount > project.plafond.current.totalLimit) {
+        return "Warning: Project Target Amount exceeds Current Plafond";
+      }
+    }
+    if (isPlafondRequest && project.plafond.proposed) {
+      if (project.requestedAmount > project.plafond.proposed.totalLimit) {
+        return "Warning: Project Target Amount exceeds Proposed Plafond";
+      }
+    }
+    return null;
+  })();
 
   return (
-    <SectionCard title="Project Details" badge={badge}>
+    <SectionCard title="Project Details">
       <div className="mt-2 space-y-0">
         {project.sectorWarning && (
           <Warning message={project.sectorWarning} level="warn" className="mb-3" />
         )}
-        {project.amountWarning && (
-          <Warning message={project.amountWarning} level="warn" className="mb-3" />
+        {computedAmountWarning && (
+          <Warning message={computedAmountWarning} level="warn" className="mb-3" />
         )}
 
-        <DataRow label="Asset Class" value={<Tag label={project.assetClass} variant={assetClassVariant(project.assetClass)} />} />
-        <DataRow label="Main Sector" value={<Tag label={project.mainSector} variant="blue" />} />
-        {project.subSector && (
-          <DataRow label="Sub-Sector" value={<Tag label={project.subSector} />} />
-        )}
+        {/* Project # + brand counts — text block per CSV */}
+        <DataRow
+          label="Project #"
+          value={
+            <div className="text-sm text-gray-800 space-y-0.5">
+              <div className="font-semibold">Project #{project.projectNumberForKP} for the KP</div>
+              <div className="text-gray-600 text-xs leading-relaxed">
+                {project.brandActiveProjects} active<br />
+                {project.brandCompletedProjects} completed<br />
+                {/* Deduct current project from before-IC count */}
+                {Math.max(0, project.brandBeforeICProjects - 1)} before IC<br />
+                {project.brandPendingDisbursementProjects} pending disbursement
+              </div>
+            </div>
+          }
+        />
+
+        <DataRow
+          label="Sector"
+          value={<Tag label={sectorLabel} variant="blue" />}
+        />
         {project.syariah && (
           <DataRow label="Syariah" value={<Tag label="Syariah" variant="syariah" />} />
         )}
-        <DataRow label="Financing Use" value={<Tag label={project.financingUse} variant="gray" />} />
+        <DataRow
+          label="Asset Class"
+          value={
+            <Tag
+              label={`Asset Class ${project.assetClass.replace("Asset ", "")}`}
+              variant={assetClassVariant(project.assetClass)}
+            />
+          }
+        />
+        <DataRow
+          label="Financing Use"
+          value={<Tag label={project.financingUse} variant="gray" />}
+        />
         <DataRow
           label="Requested Amount"
           value={
@@ -42,20 +88,6 @@ export function ProjectDetails({ project }: Props) {
             </span>
           }
         />
-
-        <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            { label: "Active", value: project.brandActiveProjects, color: "text-blue-700" },
-            { label: "Completed", value: project.brandCompletedProjects, color: "text-emerald-700" },
-            { label: "Before IC", value: project.brandBeforeICProjects, color: "text-amber-600" },
-            { label: "Pending Disb.", value: project.brandPendingDisbursementProjects, color: "text-purple-700" },
-          ].map(({ label, value, color }) => (
-            <div key={label} className="bg-gray-50 rounded-lg px-3 py-2 text-center">
-              <div className={`text-xl font-bold ${color}`}>{value}</div>
-              <div className="text-xs text-gray-500 mt-0.5">{label} Projects</div>
-            </div>
-          ))}
-        </div>
       </div>
     </SectionCard>
   );

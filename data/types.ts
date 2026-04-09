@@ -81,6 +81,12 @@ export interface KPContact {
   uboExposure: number; // IDR
 }
 
+export interface OverdueEvent {
+  dueDate: string; // ISO date
+  daysOverdue: number;
+  status: "Paid" | "Unpaid";
+}
+
 export interface PastProject {
   id: string;
   projectName: string;
@@ -89,6 +95,7 @@ export interface PastProject {
   amount: number;
   outstandingAmount: number;
   projectedTermMonths: number;
+  otfTermMonths: number | null; // actual term if completed
   otfIRR: number | null; // percentage, e.g. 18.5
   projectedIRR: number;
   otfMOIC: null; // not available
@@ -96,6 +103,7 @@ export interface PastProject {
   projectedBEPMonths: number;
   currentDPD: number;
   maxDPD: number;
+  overdueHistory?: OverdueEvent[];
 }
 
 export interface DisbursementRow {

@@ -1,8 +1,6 @@
 import { ICProject } from "@/data/types";
 import { SectionCard } from "@/components/ui/SectionCard";
-import { Warning } from "@/components/ui/Warning";
 import { fmt } from "@/components/ui/DataRow";
-import { slikWarnings } from "@/lib/warnings";
 import { ExternalLink } from "lucide-react";
 
 interface Props {
@@ -10,65 +8,100 @@ interface Props {
 }
 
 export function KPContacts({ project }: Props) {
-  const warnings = slikWarnings(project.kpContacts);
+  const hasSlikMissing = project.kpContacts.some((c) => c.isKeyPerson && !c.slikFileUrl);
+
+  const badge = hasSlikMissing ? (
+    <span className="text-xs font-medium text-red-600 bg-red-50 border border-red-200 px-1.5 py-0.5 rounded">
+      SLIK missing
+    </span>
+  ) : null;
 
   return (
-    <SectionCard title="Karmapreneur Contacts">
-      <div className="mt-2 space-y-4">
-        {warnings.map((w, i) => (
-          <Warning key={i} message={w.message} level={w.level} />
-        ))}
+    <SectionCard title="Karmapreneur Contacts" badge={badge}>
+      <div className="mt-2 overflow-x-auto -mx-1">
+        <table className="w-full text-xs min-w-[700px]">
+          <thead>
+            <tr className="border-b text-gray-400 text-left">
+              <th className="pb-2 pr-2 font-medium w-6">#</th>
+              <th className="pb-2 pr-3 font-medium">Name</th>
+              <th className="pb-2 pr-3 font-medium">Role</th>
+              <th className="pb-2 pr-3 font-medium">Notes</th>
+              <th className="pb-2 pr-3 font-medium">Connections</th>
+              <th className="pb-2 pr-3 font-medium">Key Person?</th>
+              <th className="pb-2 pr-3 font-medium">SLIK-Key Person File URL</th>
+              <th className="pb-2 pr-3 font-medium">SLIK-Key Person Exec Summary</th>
+              <th className="pb-2 font-medium">UBO Exposure</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-50">
+            {project.kpContacts.map((contact, i) => {
+              const connectionParts: string[] = [];
+              if (contact.referredProjects.length > 0) {
+                connectionParts.push(`Referror of ${contact.referredProjects.join(", ")}`);
+              }
+              if (contact.associatedKPs.length > 0) {
+                connectionParts.push(`Associated with other Karmapreneurs of ${contact.associatedKPs.join(", ")}`);
+              }
 
-        {project.kpContacts.map((contact) => (
-          <div key={contact.id} className="border border-gray-100 rounded-lg px-4 py-3 bg-gray-50 space-y-2">
-            <div className="flex items-start justify-between gap-2 flex-wrap">
-              <div>
-                <span className="font-semibold text-sm text-gray-900">{contact.name}</span>
-                <span className="ml-2 text-xs text-gray-500">{contact.role}</span>
-                {contact.isKeyPerson && (
-                  <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-medium">Key Person</span>
-                )}
-              </div>
-              {contact.uboExposure > 0 && (
-                <div className="text-right">
-                  <div className="text-xs text-gray-500">UBO Exposure</div>
-                  <div className="text-sm font-semibold text-gray-800">{fmt(contact.uboExposure)}</div>
-                </div>
-              )}
-            </div>
-
-            {contact.notesOnPerson && (
-              <p className="text-sm text-gray-700 leading-relaxed">{contact.notesOnPerson}</p>
-            )}
-
-            {contact.slikExecSummary ? (
-              <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
-                <div className="text-xs text-yellow-700 font-medium mb-0.5">SLIK Summary</div>
-                <p className="text-sm text-gray-800">{contact.slikExecSummary}</p>
-                {contact.slikFileUrl && (
-                  <a
-                    href={contact.slikFileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline mt-1"
-                  >
-                    View SLIK File <ExternalLink className="w-3 h-3" />
-                  </a>
-                )}
-              </div>
-            ) : (
-              <div className="bg-red-50 border border-red-200 rounded p-2 text-sm text-red-700">
-                ⚠️ SLIK not yet received
-              </div>
-            )}
-
-            {contact.referredProjects.length > 0 && (
-              <div className="text-xs text-gray-500">
-                Referred projects: {contact.referredProjects.join(", ")}
-              </div>
-            )}
-          </div>
-        ))}
+              return (
+                <tr key={contact.id} className="align-top">
+                  <td className="py-3 pr-2 text-gray-400 font-medium">{i + 1}</td>
+                  <td className="py-3 pr-3 font-semibold text-gray-900 whitespace-nowrap">
+                    {contact.name}
+                  </td>
+                  <td className="py-3 pr-3 text-gray-700">{contact.role}</td>
+                  <td className="py-3 pr-3 text-gray-700 max-w-[180px]">
+                    {contact.notesOnPerson || <span className="text-gray-300">—</span>}
+                  </td>
+                  <td className="py-3 pr-3 text-gray-700">
+                    {connectionParts.length > 0 ? (
+                      <div className="space-y-0.5">
+                        {connectionParts.map((c, j) => <div key={j}>{c}</div>)}
+                      </div>
+                    ) : (
+                      <span className="text-gray-300">—</span>
+                    )}
+                  </td>
+                  <td className="py-3 pr-3 text-gray-700">
+                    {contact.isKeyPerson ? "Yes" : "No"}
+                  </td>
+                  <td className="py-3 pr-3">
+                    {contact.slikFileUrl ? (
+                      <a
+                        href={contact.slikFileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-blue-600 hover:underline"
+                      >
+                        View <ExternalLink className="w-3 h-3" />
+                      </a>
+                    ) : contact.isKeyPerson ? (
+                      <span className="text-red-600 font-medium">Missing ⚠️</span>
+                    ) : (
+                      <span className="text-gray-300">—</span>
+                    )}
+                  </td>
+                  <td className="py-3 pr-3 max-w-[200px]">
+                    {contact.slikExecSummary ? (
+                      <div className="bg-yellow-50 border border-yellow-200 rounded px-2 py-1.5 text-gray-800 leading-relaxed">
+                        {contact.slikExecSummary}
+                      </div>
+                    ) : (
+                      <span className="text-gray-300">—</span>
+                    )}
+                  </td>
+                  <td className="py-3 text-gray-700">
+                    {contact.uboExposure > 0 ? (
+                      <span className="font-medium">{fmt(contact.uboExposure)}</span>
+                    ) : (
+                      <span className="text-gray-300">—</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </SectionCard>
   );

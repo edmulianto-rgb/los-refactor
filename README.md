@@ -23,17 +23,18 @@ Interactive IC Review card prototype for KarmaClub's Investment Committee.
   10. Credit Memo & Notes (memos, notes feed)
   11. PT Details (bank info, SLIK — pink highlight, mismatch warnings)
   12. Approval & Voting (vote buttons, notes textarea, conditions subsequent)
-
 - **Warnings engine:** plafond breach, stale financial review, SLIK missing, DPD flags, sector mismatch, amount mismatch
 - Collapsible sections, colour-coded tags
 
 ## Mock data scenarios
 
-| Project | KP | Asset | Scenario |
-|---|---|---|---|
-| Warung Sehat Nusantara | New KP | Asset A | First project, plafond requested |
-| Kopi Kencana | Repeat KP | Asset C | 4th project, DPD history on past project |
+
+| Project                | KP        | Asset   | Scenario                                            |
+| ---------------------- | --------- | ------- | --------------------------------------------------- |
+| Warung Sehat Nusantara | New KP    | Asset A | First project, plafond requested                    |
+| Kopi Kencana           | Repeat KP | Asset C | 4th project, DPD history on past project            |
 | Batik Pesona Nusantara | Repeat KP | Asset D | Limit nearly exhausted, SLIK missing for key person |
+
 
 ---
 
@@ -58,10 +59,10 @@ vercel --prod    # deploy; grab the URL
 ### Option B — GitHub + Vercel dashboard
 
 1. Create a new repo on GitHub (can be private):
-   ```bash
+  ```bash
    git remote add origin https://github.com/YOUR_USERNAME/ic-review-app.git
    git push -u origin main
-   ```
+  ```
 2. Go to [vercel.com](https://vercel.com) → **Add New Project** → import the GitHub repo
 3. Accept all defaults (Next.js is auto-detected)
 4. Deploy — Vercel gives you a public URL immediately
@@ -75,3 +76,4 @@ vercel --prod    # deploy; grab the URL
 - In production, "Submit Vote" would trigger Coda automation (status change + Slack notifications)
 - OTF MOIC and PvA show "N/A" — these are confirmed unavailable from the LMS Reporting Layer
 - All data is mocked and does not reflect real projects
+

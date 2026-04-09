@@ -24,9 +24,9 @@ export function DataRow({ label, value, highlight, className = "" }: DataRowProp
 
 export function fmt(n: number, ccy = "IDR"): string {
   if (ccy === "USD") {
-    return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
+    return `USD ${new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(n)}`;
   }
-  return `IDR ${new Intl.NumberFormat("id-ID").format(n)}`;
+  return `Rp ${new Intl.NumberFormat("id-ID").format(n)}`;
 }
 
 export function fmtPct(n: number): string {

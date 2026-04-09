@@ -6,7 +6,8 @@ export interface WarningItem {
   message: string;
 }
 
-// ─── Plafond breach ───────────────────────────────────────────────────────────
+// ─── Plafond ─────────────────────────────────────────────────────────────────
+// Per CSV: highlight red if negative. No 20% or 90-day rules specified.
 
 export function plafondWarnings(project: ICProject): WarningItem[] {
   const warnings: WarningItem[] = [];
@@ -16,102 +17,67 @@ export function plafondWarnings(project: ICProject): WarningItem[] {
     warnings.push({
       section: "Plafond",
       level: "error",
-      message: `Remaining total limit is negative (${fmtIDR(p.remainingTotal)}). Plafond increase required before disbursement.`,
+      message: `Total Limit Remaining is negative (${fmtRp(p.remainingTotal)}). Plafond increase required before disbursement.`,
     });
   }
   if (p.remainingWC < 0) {
     warnings.push({
       section: "Plafond",
       level: "error",
-      message: `Remaining WC sub-limit is negative (${fmtIDR(p.remainingWC)}).`,
+      message: `WC Sub-Limit Remaining is negative (${fmtRp(p.remainingWC)}).`,
     });
   }
   if (p.remainingPO < 0) {
     warnings.push({
       section: "Plafond",
       level: "error",
-      message: `Remaining PO sub-limit is negative (${fmtIDR(p.remainingPO)}).`,
+      message: `PO Sub-Limit Remaining is negative (${fmtRp(p.remainingPO)}).`,
     });
-  }
-
-  // Warn if remaining total is low (< 20% of current limit)
-  if (p.current && p.remainingTotal >= 0) {
-    const pct = p.remainingTotal / p.current.totalLimit;
-    if (pct < 0.2) {
-      warnings.push({
-        section: "Plafond",
-        level: "warn",
-        message: `Remaining limit is less than 20% of approved plafond (${fmtIDR(p.remainingTotal)} remaining of ${fmtIDR(p.current.totalLimit)}).`,
-      });
-    }
-  }
-
-  // Warn if limit is expiring within 90 days
-  if (p.current && p.current.limitStatus === "Active") {
-    const expiryMs = new Date(p.current.expiryDate).getTime() - Date.now();
-    const days = expiryMs / (1000 * 60 * 60 * 24);
-    if (days < 90) {
-      warnings.push({
-        section: "Plafond",
-        level: "warn",
-        message: `Current limit expires in ${Math.round(days)} days (${p.current.expiryDate}).`,
-      });
-    }
   }
 
   return warnings;
 }
 
 // ─── Stale financial review ───────────────────────────────────────────────────
+// Per CSV: "Warning: More than [X] months ago" if >2 months
 
 export function financialReviewWarnings(reviews: FinancialReview[]): WarningItem[] {
   if (reviews.length === 0) {
-    return [
-      {
-        section: "Financial Reviews",
-        level: "error",
-        message: "No financial review on record.",
-      },
-    ];
+    return [{ section: "Financial Reviews", level: "error", message: "No financial review on record." }];
   }
 
   const latest = reviews[0];
   const ageMs = Date.now() - new Date(latest.submissionDate).getTime();
-  const months = ageMs / (1000 * 60 * 60 * 24 * 30);
+  const months = Math.round(ageMs / (1000 * 60 * 60 * 24 * 30));
 
   if (months > 2) {
-    return [
-      {
-        section: "Financial Reviews",
-        level: "warn",
-        message: `Most recent financial review is ${Math.round(months)} months old (submitted ${latest.submissionDate}). Consider requesting updated financials.`,
-      },
-    ];
+    return [{
+      section: "Financial Reviews",
+      level: "warn",
+      message: `Warning: More than ${months} months ago (submitted ${latest.submissionDate}).`,
+    }];
   }
 
   return [];
 }
 
-// ─── SLIK missing ─────────────────────────────────────────────────────────────
+// ─── SLIK missing (key persons) ───────────────────────────────────────────────
 
 export function slikWarnings(contacts: KPContact[]): WarningItem[] {
-  const missing = contacts.filter((c) => c.isKeyPerson && !c.slikFileUrl);
-  return missing.map((c) => ({
-    section: "KP Contacts",
-    level: "error" as const,
-    message: `SLIK file missing for key person: ${c.name}. Must be received before approval.`,
-  }));
+  return contacts
+    .filter((c) => c.isKeyPerson && !c.slikFileUrl)
+    .map((c) => ({
+      section: "KP Contacts",
+      level: "error" as const,
+      message: `SLIK-Key Person file missing for key person: ${c.name}. Must be received before approval.`,
+    }));
 }
 
 // ─── Sector mismatch ─────────────────────────────────────────────────────────
 
 export function sectorWarning(project: ICProject): WarningItem | null {
   if (project.sectorWarning) {
-    return {
-      section: "Project Details",
-      level: "warn",
-      message: project.sectorWarning,
-    };
+    return { section: "Project Details", level: "warn", message: project.sectorWarning };
   }
   return null;
 }
@@ -120,11 +86,11 @@ export function sectorWarning(project: ICProject): WarningItem | null {
 
 export function dpdWarnings(project: ICProject): WarningItem[] {
   return project.pastProjects
-    .filter((p) => p.maxDPD > 30)
+    .filter((p) => p.maxDPD > 0)
     .map((p) => ({
       section: "Past Projects",
-      level: "warn" as const,
-      message: `${p.projectName} reached max DPD of ${p.maxDPD} days.`,
+      level: (p.maxDPD > 30 ? "warn" : "info") as "warn" | "info",
+      message: `${p.projectName}: max DPD ${p.maxDPD} days.`,
     }));
 }
 
@@ -132,16 +98,12 @@ export function dpdWarnings(project: ICProject): WarningItem[] {
 
 export function amountWarning(project: ICProject): WarningItem | null {
   if (project.amountWarning) {
-    return {
-      section: "Project Details",
-      level: "warn",
-      message: project.amountWarning,
-    };
+    return { section: "Project Details", level: "warn", message: project.amountWarning };
   }
   return null;
 }
 
-// ─── Aggregate all warnings ───────────────────────────────────────────────────
+// ─── Aggregate all ───────────────────────────────────────────────────────────
 
 export function computeWarnings(project: ICProject): WarningItem[] {
   const all: WarningItem[] = [
@@ -162,6 +124,7 @@ export function computeWarnings(project: ICProject): WarningItem[] {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function fmtIDR(n: number): string {
-  return `IDR ${new Intl.NumberFormat("id-ID").format(Math.abs(n))}${n < 0 ? " (negative)" : ""}`;
+function fmtRp(n: number): string {
+  const abs = Math.abs(n);
+  return `Rp ${new Intl.NumberFormat("id-ID").format(abs)}${n < 0 ? " (negative)" : ""}`;
 }
