@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# IC Review App — Prototype
 
-## Getting Started
+Interactive IC Review card prototype for KarmaClub's Investment Committee.
 
-First, run the development server:
+**Stack:** Next.js 16 · TypeScript · Tailwind CSS  
+**Status:** Prototype with mocked data — Phase 1 concept
+
+---
+
+## What's inside
+
+- **Pending reviews list** — Shows all 3 mock projects with warning counts at a glance
+- **Full IC Review card** — All 12 sections from the data contract:
+  1. Project Header (brand, asset class, approval type)
+  2. PIC (submitter, analysts)
+  3. Project Details (sector, amount, project counts)
+  4. Plafond (proposed/current limits, remaining headroom — red if negative)
+  5. Financial Reviews (last 2 reviews, staleness warning)
+  6. Karmapreneur Details (referral chain)
+  7. KP Contacts (SLIK summaries, UBO exposure — yellow highlight)
+  8. Past & Proposed Projects (table, DPD colour-coding, OTF IRR)
+  9. Project Terms (disbursement schedule, revenue share or fixed return, branches)
+  10. Credit Memo & Notes (memos, notes feed)
+  11. PT Details (bank info, SLIK — pink highlight, mismatch warnings)
+  12. Approval & Voting (vote buttons, notes textarea, conditions subsequent)
+
+- **Warnings engine:** plafond breach, stale financial review, SLIK missing, DPD flags, sector mismatch, amount mismatch
+- Collapsible sections, colour-coded tags
+
+## Mock data scenarios
+
+| Project | KP | Asset | Scenario |
+|---|---|---|---|
+| Warung Sehat Nusantara | New KP | Asset A | First project, plafond requested |
+| Kopi Kencana | Repeat KP | Asset C | 4th project, DPD history on past project |
+| Batik Pesona Nusantara | Repeat KP | Asset D | Limit nearly exhausted, SLIK missing for key person |
+
+---
+
+## Run locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# → http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deploy to Vercel
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Option A — Vercel CLI (fastest)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm i -g vercel
+vercel login     # follow the browser prompt
+vercel --prod    # deploy; grab the URL
+```
 
-## Learn More
+### Option B — GitHub + Vercel dashboard
 
-To learn more about Next.js, take a look at the following resources:
+1. Create a new repo on GitHub (can be private):
+   ```bash
+   git remote add origin https://github.com/YOUR_USERNAME/ic-review-app.git
+   git push -u origin main
+   ```
+2. Go to [vercel.com](https://vercel.com) → **Add New Project** → import the GitHub repo
+3. Accept all defaults (Next.js is auto-detected)
+4. Deploy — Vercel gives you a public URL immediately
+5. Share the URL; teammates can click-to-comment via the Vercel Toolbar
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Important prototype notes
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Voting and approval actions are **UI-only** — no Coda API calls in this prototype
+- In production, "Submit Vote" would trigger Coda automation (status change + Slack notifications)
+- OTF MOIC and PvA show "N/A" — these are confirmed unavailable from the LMS Reporting Layer
+- All data is mocked and does not reflect real projects
