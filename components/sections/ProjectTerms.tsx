@@ -15,7 +15,8 @@ export function ProjectTerms({ project }: Props) {
   const { revenueShareTerms: rst, fixedReturnTerms: frt, disbursements, branches, lateFee } = project;
 
   const totalDisbursed = disbursements.reduce((s, d) => s + d.plannedAmount, 0);
-  const disbursementMismatch = totalDisbursed !== project.requestedAmount;
+  const disbursementTarget = project.trancheTargetAmount ?? project.requestedAmount;
+  const disbursementMismatch = totalDisbursed !== disbursementTarget;
 
   // Revenue projection summary
   const revArray = rst?.revProjectionArray ?? [];
@@ -32,7 +33,7 @@ export function ProjectTerms({ project }: Props) {
           <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Disbursement Schedule</h4>
           {disbursementMismatch && (
             <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2 mb-2">
-              Warning: Not same as Project Target Amount (disbursements total {fmt(totalDisbursed)}, target {fmt(project.requestedAmount)})
+              Warning: Not same as Project Target Amount (disbursements total {fmt(totalDisbursed)}, target {fmt(disbursementTarget)})
             </div>
           )}
           <div className="overflow-x-auto">
@@ -130,39 +131,30 @@ export function ProjectTerms({ project }: Props) {
               )}
             </div>
 
-            {/* Revenue Projection Array */}
-            {revArray.length > 0 && (
-              <div className="mt-3">
-                <div className="text-xs text-gray-500 font-medium mb-1">Revenue Projection Array</div>
-                <div className="overflow-x-auto">
-                  <table className="text-xs w-full">
-                    <thead>
-                      <tr className="text-gray-400 border-b">
-                        <th className="text-left py-1 pr-3 font-medium">Month</th>
-                        <th className="text-right py-1 font-medium">Projected Revenue</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {revArray.map((row) => (
-                        <tr key={row.month} className="border-b border-gray-50">
-                          <td className="py-1 pr-3 text-gray-600">Month {row.month}</td>
-                          <td className="py-1 text-right text-gray-700">{fmt(row.revenue)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-
-            {/* Revenue Projection Summary */}
+            {/* Revenue projection summary (full monthly array lives in data; span = row count) */}
             {avgRevenue !== null && maxRevEntry && minRevEntry && (
-              <div className="mt-2 bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-xs text-gray-700 space-y-0.5">
-                <div className="font-medium text-gray-500 mb-1">Revenue Projection Summary</div>
-                <div>{fmt(Math.round(avgRevenue))} average revenue per month</div>
-                <div>{fmt(maxRevEntry.revenue)} max revenue per month at Month {maxRevEntry.month}</div>
-                <div>{fmt(minRevEntry.revenue)} min revenue per month at Month {minRevEntry.month}</div>
-                <div>{revArray.length} months projected</div>
+              <div className="mt-3 space-y-2">
+                <div className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                  Revenue projections (monthly model)
+                </div>
+                <div className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-xs text-gray-700">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+                    <span className="text-gray-400">Avg/month</span>
+                    <span className="text-right font-medium">{fmt(Math.round(avgRevenue))}</span>
+                    <span className="text-gray-400">Peak (Month {maxRevEntry.month})</span>
+                    <span className="text-right">{fmt(maxRevEntry.revenue)}</span>
+                    <span className="text-gray-400">Floor (Month {minRevEntry.month})</span>
+                    <span className="text-right">{fmt(minRevEntry.revenue)}</span>
+                    <span className="text-gray-400">Projection span</span>
+                    <span className="text-right">{revArray.length} months</span>
+                  </div>
+                </div>
+                {project.submissionProjectedBEPMonths != null && (
+                  <div className="text-xs text-gray-700">
+                    <span className="text-gray-500">Projected BEP (mos)</span>{" "}
+                    <span className="font-semibold text-gray-900">{project.submissionProjectedBEPMonths}</span>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -239,6 +231,29 @@ export function ProjectTerms({ project }: Props) {
                 <div>{fmt(frt.totalInterest)} Interest</div>
                 <div>{fmt(frt.carry)} Carry</div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Daily Interest (PO / invoice) */}
+        {project.dailyInterestTerms && (
+          <div>
+            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Daily Interest Terms</h4>
+            <div className="space-y-0">
+              <DataRow
+                label="Interest Rate (30-Day)"
+                value={fmtPct(project.dailyInterestTerms.interestRate30DayPct)}
+              />
+              <DataRow
+                label="Service Fee Rate (30-Day)"
+                value={fmtPct(project.dailyInterestTerms.serviceFee30DayPct)}
+              />
+              <DataRow label="Tenor (days)" value={`${project.dailyInterestTerms.tenorDays} days`} />
+              <DataRow
+                label="Minimum Interest Period (days)"
+                value={`${project.dailyInterestTerms.minInterestPeriodDays} days`}
+              />
+              <DataRow label="Service Fee Daily Interest Basis" value={project.dailyInterestTerms.serviceFeeDailyBasis} />
             </div>
           </div>
         )}

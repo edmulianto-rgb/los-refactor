@@ -2,6 +2,8 @@ import { ICProject, PastProject } from "@/data/types";
 import { SectionCard } from "@/components/ui/SectionCard";
 import { Tag, statusVariant } from "@/components/ui/Tag";
 import { fmt, fmtDate, fmtPct } from "@/components/ui/DataRow";
+import { getPastProjectsRecapRows } from "@/lib/pastProjectsRecap";
+import { sortPastProjectsRecapRows } from "@/lib/pastProjectsRecapSort";
 
 interface Props {
   project: ICProject;
@@ -21,14 +23,16 @@ function returnTypeLabel(rt: string): string {
     "Revenue Share (Time-Capped)": "Revenue Share (Time-Capped)",
     "Revenue Share (Return-Capped)": "Revenue Share (Return-Capped)",
     "Fixed Return": "Fixed Return",
+    "Daily Interest": "Daily Interest",
   };
   return map[rt] ?? rt;
 }
 
 export function PastProjectsRecap({ project }: Props) {
-  const projects = project.pastProjects;
+  const allRows = project.pastProjects;
+  const projects = sortPastProjectsRecapRows(getPastProjectsRecapRows(allRows));
 
-  // Footer aggregations
+  // Footer aggregations (visible rows only)
   const totalAmountInclProposed = projects.reduce((s, p) => s + p.amount, 0);
   const totalOutstandingExclProposed = projects
     .filter((p) => p.status !== "Proposed")
@@ -59,6 +63,14 @@ export function PastProjectsRecap({ project }: Props) {
   return (
     <SectionCard title="Proposed and Past Projects Recap Table">
       <div className="mt-2 space-y-3">
+        <p className="text-xs text-gray-500 leading-relaxed">
+          Includes the <strong>Proposed</strong> row for <em>this</em> submission alongside other projects for the KP.
+          Rows are sorted by status (Proposed, in-queue statuses, Active, then Completed), then by{" "}
+          <strong>IC approval date</strong> newest first.
+        </p>
+        {projects.length === 0 ? (
+          <p className="text-sm text-gray-400 italic px-1">No projects in this recap yet.</p>
+        ) : (
         <div className="overflow-x-auto -mx-1">
           <table className="w-full text-xs min-w-[900px]">
             <thead>
@@ -115,6 +127,7 @@ export function PastProjectsRecap({ project }: Props) {
             </tfoot>
           </table>
         </div>
+        )}
 
         <p className="text-xs text-gray-400 italic">
           ⚠️ OTF MOIC and PvA are not currently available from the LMS Reporting Layer.
@@ -143,8 +156,8 @@ function ProjectRow({ p, index }: { p: PastProject; index: number }) {
       <td className="py-2 pr-2 text-gray-400">{index}</td>
 
       {/* Project name */}
-      <td className="py-2 pr-3 text-gray-800 font-medium max-w-[160px]">
-        <div className="truncate" title={p.projectName}>{p.projectName}</div>
+      <td className="py-2 pr-3 text-gray-800 font-medium min-w-[160px]">
+        {p.projectName}
       </td>
 
       {/* Status */}

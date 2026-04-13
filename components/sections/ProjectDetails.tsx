@@ -14,6 +14,8 @@ export function ProjectDetails({ project }: Props) {
     ? `${project.mainSector}: ${project.subSector}`
     : project.mainSector;
 
+  const trancheOrProjectAmount = project.trancheTargetAmount ?? project.requestedAmount;
+
   // Amount warning logic per CSV:
   // Project type = "Project" → warn if > current plafond
   // Project type includes Plafond → warn if > proposed plafond
@@ -21,13 +23,13 @@ export function ProjectDetails({ project }: Props) {
     if (project.amountWarning) return project.amountWarning;
     const isPlafondRequest = project.approvalType.includes("Plafond");
     if (!isPlafondRequest && project.plafond.current) {
-      if (project.requestedAmount > project.plafond.current.totalLimit) {
-        return "Warning: Project Target Amount exceeds Current Plafond";
+      if (trancheOrProjectAmount > project.plafond.current.totalLimit) {
+        return "Warning: Requested Project Amount exceeds Current Plafond";
       }
     }
     if (isPlafondRequest && project.plafond.proposed) {
-      if (project.requestedAmount > project.plafond.proposed.totalLimit) {
-        return "Warning: Project Target Amount exceeds Proposed Plafond";
+      if (trancheOrProjectAmount > project.plafond.proposed.totalLimit) {
+        return "Warning: Requested Project Amount exceeds Proposed Plafond";
       }
     }
     return null;
@@ -43,30 +45,11 @@ export function ProjectDetails({ project }: Props) {
           <Warning message={computedAmountWarning} level="warn" className="mb-3" />
         )}
 
-        {/* Project # + brand counts — text block per CSV */}
-        <DataRow
-          label="Project #"
-          value={
-            <div className="text-sm text-gray-800 space-y-0.5">
-              <div className="font-semibold">Project #{project.projectNumberForKP} for the KP</div>
-              <div className="text-gray-600 text-xs leading-relaxed">
-                {project.brandActiveProjects} active<br />
-                {project.brandCompletedProjects} completed<br />
-                {/* Deduct current project from before-IC count */}
-                {Math.max(0, project.brandBeforeICProjects - 1)} before IC<br />
-                {project.brandPendingDisbursementProjects} pending disbursement
-              </div>
-            </div>
-          }
-        />
-
         <DataRow
           label="Sector"
           value={<Tag label={sectorLabel} variant="blue" />}
         />
-        {project.syariah && (
-          <DataRow label="Syariah" value={<Tag label="Syariah" variant="syariah" />} />
-        )}
+        <DataRow label="Financing Type" value={<span className="text-gray-800">{project.returnType}</span>} />
         <DataRow
           label="Asset Class"
           value={
@@ -81,10 +64,10 @@ export function ProjectDetails({ project }: Props) {
           value={<Tag label={project.financingUse} variant="gray" />}
         />
         <DataRow
-          label="Requested Amount"
+          label="Requested Project Amount"
           value={
             <span className="font-semibold text-gray-900">
-              {fmt(project.requestedAmount, project.requestedAmountCurrency)}
+              {fmt(project.trancheTargetAmount ?? project.requestedAmount, project.requestedAmountCurrency)}
             </span>
           }
         />

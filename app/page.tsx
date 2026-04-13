@@ -42,17 +42,22 @@ export default function HomePage() {
                     <Tag label={project.assetClass} variant={assetClassVariant(project.assetClass)} />
                     {project.syariah && <Tag label="Syariah" variant="syariah" />}
                   </div>
-                  <h2 className="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors truncate">
-                    {project.projectName}
-                  </h2>
+                  <div className="flex items-baseline gap-3 flex-wrap">
+                    <h2 className="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors">
+                      {project.projectName}
+                    </h2>
+                    <span className="text-sm font-semibold text-gray-700 shrink-0">
+                      {project.requestedAmountCurrency === "IDR"
+                        ? fmt(project.trancheTargetAmount ?? project.requestedAmount)
+                        : `USD ${(project.trancheTargetAmount ?? project.requestedAmount).toLocaleString()}`}
+                    </span>
+                  </div>
                   <div className="flex items-center gap-3 mt-2 flex-wrap text-xs text-gray-500">
-                    <span>{project.pic.primaryAnalyst}</span>
+                    <span><span className="text-gray-400">Analyst:</span> {project.pic.primaryAnalyst}</span>
+                    <span>·</span>
+                    <span><span className="text-gray-400">By:</span> {project.pic.submitter}</span>
                     <span>·</span>
                     <span>Submitted {fmtDate(project.submittedAt)}</span>
-                    <span>·</span>
-                    <span className="font-medium text-gray-700">
-                      {project.requestedAmountCurrency === "IDR" ? fmt(project.requestedAmount) : `USD ${project.requestedAmount.toLocaleString()}`}
-                    </span>
                   </div>
                 </div>
 

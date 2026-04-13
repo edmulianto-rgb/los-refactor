@@ -56,6 +56,8 @@ export function assetClassVariant(cls: string): TagVariant {
 export function statusVariant(status: string): TagVariant {
   const map: Record<string, TagVariant> = {
     Proposed: "blue",
+    "IC Review": "purple",
+    "Pending IC submission": "amber",
     Active: "green",
     Completed: "gray",
     Rescheduled: "amber",

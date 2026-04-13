@@ -19,7 +19,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <span className="font-semibold text-gray-900">IC Review</span>
               <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded font-medium">PROTOTYPE</span>
             </div>
-            <div className="text-xs text-gray-400">Mocked data · Phase 1 concept</div>
+            <div className="flex items-center gap-4 text-xs">
+              <a
+                href="/field-guide.html"
+                className="font-medium text-indigo-600 hover:text-indigo-800 underline-offset-2 hover:underline"
+              >
+                Interactive field guide
+              </a>
+              <span className="text-gray-400 hidden sm:inline">Mocked data · Phase 1 concept</span>
+            </div>
           </div>
         </header>
         <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">{children}</main>

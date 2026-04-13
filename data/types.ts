@@ -10,10 +10,13 @@ export type ApprovalType =
 export type ReturnType =
   | "Revenue Share (Time-Capped)"
   | "Revenue Share (Return-Capped)"
-  | "Fixed Return";
+  | "Fixed Return"
+  | "Daily Interest";
 
 export type ProjectStatus =
   | "Proposed"
+  | "IC Review"
+  | "Pending IC submission"
   | "Active"
   | "Completed"
   | "Rescheduled"
@@ -91,6 +94,12 @@ export interface PastProject {
   id: string;
   projectName: string;
   status: ProjectStatus;
+  /**
+   * IC approval date for this project (ISO). Used to sort recap rows newest-first within the same status.
+   */
+  icApprovalDate: string | null;
+  /** When true, this row is the Proposed project for the IC page being viewed (always shown in the recap table). */
+  isCurrentSubmission?: boolean;
   returnType: ReturnType;
   amount: number;
   outstandingAmount: number;
@@ -148,6 +157,15 @@ export interface FixedReturnTerms {
   carry: number;
 }
 
+/** PO / invoice-style daily interest (Coda: Daily Interest return type) */
+export interface DailyInterestTerms {
+  interestRate30DayPct: number;
+  serviceFee30DayPct: number;
+  tenorDays: number;
+  minInterestPeriodDays: number;
+  serviceFeeDailyBasis: string;
+}
+
 export interface PTInfo {
   id: string;
   name: string;
@@ -162,6 +180,7 @@ export interface PTInfo {
 export interface ICVoteRecord {
   memberId: string;
   memberName: string;
+  isPrincipal: boolean;
   vote: ICVote;
   votedAt: string | null;
 }
@@ -170,6 +189,8 @@ export interface ICVoteRecord {
 
 export interface ICProject {
   id: string;
+  /** Source Coda Project row id when seeded from production */
+  codaRowId?: string;
   // Header
   brandName: string;
   brandIsNew: boolean;
@@ -192,6 +213,13 @@ export interface ICProject {
   assetClass: string;
   requestedAmountCurrency: "IDR" | "USD";
   requestedAmount: number;
+  /**
+   * When set, this is the PO / tranche project target (e.g. Coda IDR/USD Project Target Amount).
+   * For PO/Invoice + Plafond, `requestedAmount` may instead represent the net plafond increase while this holds the tranche size.
+   */
+  trancheTargetAmount?: number;
+  /** When set (e.g. PO/Invoice + Plafond), IC vote-count rules use this IDR amount instead of `requestedAmount`. */
+  icVoteBasisAmount?: number;
   amountWarning: string | null;
   financingUse: string;
   sectorWarning: string | null;
@@ -206,7 +234,18 @@ export interface ICProject {
   referralSource: string;
   specificReferror: string | null;
   referrorBelongsToKP: string | null;
+  /**
+   * When `referralSource` is the sentinel "2nd+ project", show this snapshot (first project’s referral) instead.
+   */
+  firstProjectReferralOverride?: {
+    referralSource: string;
+    specificReferror: string | null;
+    referrorBelongsToKP: string | null;
+  } | null;
   otherReferees: string[];
+
+  /** Underwriting model: projected break-even in months (Coda Project). Shown with revenue share terms. */
+  submissionProjectedBEPMonths?: number | null;
 
   // KP contacts
   kpContacts: KPContact[];
@@ -220,6 +259,7 @@ export interface ICProject {
   branches: BranchInfo[];
   revenueShareTerms: RevenueShareTerms | null;
   fixedReturnTerms: FixedReturnTerms | null;
+  dailyInterestTerms?: DailyInterestTerms | null;
   lateFee: {
     basis: string;
     gracePeriodDays: number;

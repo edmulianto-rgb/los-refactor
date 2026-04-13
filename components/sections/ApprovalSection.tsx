@@ -39,8 +39,27 @@ export function ApprovalSection({ project }: Props) {
   const [approvalNotes, setApprovalNotes] = useState(project.approvalNotes);
   const [submitted, setSubmitted] = useState(false);
 
-  const myVoterId = "ic-1";
+  const myVoterId = "ic-1"; // Ben Elberger — Principal
   const myVote = votes[myVoterId];
+
+  // Voting rule: use explicit IC basis (e.g. proposed total limit) when provided — else project amount
+  const amount =
+    project.icVoteBasisAmount ??
+    (project.requestedAmountCurrency === "IDR" ? project.requestedAmount : project.requestedAmount * 16000);
+  const votingRule: 1 | 2 | 3 = amount <= 4_000_000_000 ? 1 : amount <= 6_000_000_000 ? 2 : 3;
+  const requiredVoteCount = votingRule === 1 ? 1 : votingRule === 2 ? 2 : 3;
+
+  function isRequired(v: { memberId: string; isPrincipal: boolean }): boolean {
+    if (votingRule === 1) return v.isPrincipal;
+    if (votingRule === 2) return v.isPrincipal || project.icVotes.indexOf(project.icVotes.find(x => x.memberId === v.memberId)!) < 2;
+    return true; // all 3 required
+  }
+
+  const RULE_LABELS: Record<1 | 2 | 3, string> = {
+    1: "≤ IDR 4B — Principal approval only required",
+    2: "IDR 4B–6B — 2 IC votes required, including Principal",
+    3: "> IDR 6B — All 3 IC votes required, including Principal",
+  };
 
   // Other section items per CSV (Funding Source, Tax Withholdings)
   const isMembersProject = project.fundingSource.includes("Members");
@@ -108,11 +127,21 @@ export function ApprovalSection({ project }: Props) {
           </div>
         )}
 
+        {/* Voting rule banner */}
+        <div className="flex items-center gap-2 text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-600">
+          <span className="font-semibold text-gray-700">Rule:</span>
+          <span>{RULE_LABELS[votingRule]}</span>
+          <span className="ml-auto text-gray-400">
+            {project.icVotes.filter(v => votes[v.memberId] === "Approve").length}/{requiredVoteCount} required vote{requiredVoteCount > 1 ? "s" : ""}
+          </span>
+        </div>
+
         {/* IC votes table */}
         <div className="space-y-1">
           {project.icVotes.map((v) => {
             const currentVote = votes[v.memberId];
             const isMe = v.memberId === myVoterId;
+            const required = isRequired(v);
             return (
               <div
                 key={v.memberId}
@@ -120,8 +149,14 @@ export function ApprovalSection({ project }: Props) {
               >
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-gray-800">{v.memberName}</span>
+                  {v.isPrincipal && (
+                    <span className="text-xs text-purple-600 bg-purple-50 border border-purple-200 px-1.5 py-0.5 rounded">Principal</span>
+                  )}
                   {isMe && (
                     <span className="text-xs text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded">You</span>
+                  )}
+                  {!required && (
+                    <span className="text-xs text-gray-400 italic">optional</span>
                   )}
                 </div>
                 <VoteBadge vote={currentVote} />

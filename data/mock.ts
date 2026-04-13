@@ -1,682 +1,215 @@
 import { ICProject } from "./types";
 
-// ─── Project A ────────────────────────────────────────────────────────────────
-// Mie Gacoan-style F&B brand — Asset A, Revenue Share, first-time KP
-// Referred by an existing KarmaClub member. Requesting plafond alongside first project.
-// Triggers: "New KP" tag, no current plafond
+function monthsRevenueProjection(months: number, revenue: number) {
+  return Array.from({ length: months }, (_, i) => ({ month: i + 1, revenue }));
+}
 
-const projectA: ICProject = {
-  id: "proj-a",
-  brandName: "Nasi Goreng Mafia",
-  brandIsNew: true,
-  projectName: "Nasi Goreng Mafia — Opening Branch #1, Kelapa Gading",
-  approvalType: "Project+Plafond",
-  submittedAt: "2026-04-03T09:15:00Z",
+// ─── Project 1: Steak Hotel by Holycow Medan ─────────────────────────────────
+// Coda row: i-iNREe2I8Sx
+// Brand: Steak Hotel by Holycow | PT: PT AHARA BHADRANAYA INDONESIA
+// Status at time of IC: **IC Credit Review → Pending review
+// F&B / Full Service Resto | Asset A | Branch Opening/Expansion | IDR 3.1B
+// Return: Fixed Amount Repayment + Revenue Share | 8% rev share | 1.4x cap
+// IC: 5 members, 4 votes submitted (1 pending)
+
+const projectHolycow: ICProject = {
+  id: "proj-holycow",
+  brandName: "Steak Hotel by Holycow",
+  brandIsNew: false,
+  projectName: "Steak Hotel by Holycow Medan",
+  approvalType: "Project",
+  submittedAt: "2026-02-19T11:05:14Z",
 
   pic: {
-    submitter: "Rafi Ananda",
-    primaryAnalyst: "Rafi Ananda",
+    submitter: "Priska Ponggawa",
+    primaryAnalyst: "Priska Ponggawa",
     secondaryAnalyst: null,
   },
 
-  projectNumberForKP: 1,
-  brandActiveProjects: 0,
-  brandCompletedProjects: 0,
-  brandBeforeICProjects: 0,
-  brandPendingDisbursementProjects: 0,
-  mainSector: "F&B",
-  subSector: "Quick Service Restaurant",
-  syariah: false,
-  assetClass: "Asset A",
-  requestedAmountCurrency: "IDR",
-  requestedAmount: 1_200_000_000,
-  amountWarning: null,
-  financingUse: "Working Capital",
-  sectorWarning: null,
-
-  plafond: {
-    proposed: {
-      totalLimit: 2_500_000_000,
-      poSubLimit: 0,
-      wcSubLimit: 2_500_000_000,
-    },
-    current: null,
-    outstandingTotal: 0,
-    remainingTotal: 2_500_000_000,
-    remainingPO: 0,
-    remainingWC: 2_500_000_000,
-    superseded: [],
-  },
-
-  financialReviews: [
-    {
-      submissionDate: "2026-03-05",
-      financialReportsReviewed: "Management Accounts Jan–Dec 2025",
-      periodEndingDate: "2025-12-31",
-      limitRecommendation: "Increase",
-      reviewNotes:
-        "Brand operates a ghost kitchen out of Kelapa Gading since mid-2024 — revenue has grown consistently month-over-month, averaging IDR 280jt/month in Q4 2025 with ~62% gross margin. Owner plans to convert to dine-in in the same location. Full year 2025 P&L and bank statements reviewed. No outstanding debt. Recommend approving plafond of IDR 2.5B to support first branch + optionality for a second.",
-    },
-  ],
-
-  referralSource: "KarmaClub Member",
-  specificReferror: "Hendra Gunawan",
-  referrorBelongsToKP: "Kopi Tuku (KarmaClub KP)",
-  otherReferees: ["Kopi Tuku"],
-
-  kpContacts: [
-    {
-      id: "kpc-a1",
-      name: "Bagas Wibowo",
-      role: "Founder / Director",
-      notesOnPerson:
-        "Founder, 34 years old. Previously ops manager at Mie Gacoan for 4 years before leaving to start this brand in 2024. Hands-on — manages kitchen and supplier relationships directly. Wife is silent co-owner.",
-      referredProjects: [],
-      associatedKPs: [],
-      isKeyPerson: true,
-      slikFileUrl: "https://drive.google.com/file/slik-bagas-wibowo",
-      slikExecSummary:
-        "KTP Jakarta Utara. No consumer loans in system. KPR application at BTN 2021 was rejected — no adverse flag, just insufficient income at the time. SLIK bersih per Maret 2026.",
-      uboExposure: 0,
-    },
-    {
-      id: "kpc-a2",
-      name: "Dewi Wibowo",
-      role: "Co-owner (spouse)",
-      notesOnPerson: "Silent co-owner. Holds 30% share. Not operationally involved.",
-      referredProjects: [],
-      associatedKPs: [],
-      isKeyPerson: false,
-      slikFileUrl: "https://drive.google.com/file/slik-dewi-wibowo",
-      slikExecSummary: "KTP Tangerang Selatan. Kredit motor lunas 2023. Tidak ada catatan negatif.",
-      uboExposure: 0,
-    },
-  ],
-
-  pastProjects: [
-    {
-      id: "pp-a1",
-      projectName: "Nasi Goreng Mafia — Opening Branch #1, Kelapa Gading [PROPOSED]",
-      status: "Proposed",
-      returnType: "Revenue Share (Time-Capped)",
-      amount: 1_200_000_000,
-      outstandingAmount: 0,
-      projectedTermMonths: 22,
-      otfTermMonths: null,
-      otfIRR: null,
-      projectedIRR: 18.2,
-      otfMOIC: null,
-      projectedMOIC: "1.33x",
-      projectedBEPMonths: 13,
-      currentDPD: 0,
-      maxDPD: 0,
-    },
-  ],
-
-  returnType: "Revenue Share (Time-Capped)",
-  disbursements: [
-    { tranche: 1, plannedAmount: 700_000_000, plannedDate: "2026-05-15" },
-    { tranche: 2, plannedAmount: 500_000_000, plannedDate: "2026-07-15" },
-  ],
-  branches: [
-    {
-      id: "br-a1",
-      name: "Kelapa Gading — La Piazza Ground Floor",
-      area: "Jakarta Utara",
-      gmapsLink: "https://maps.google.com/?q=La+Piazza+Kelapa+Gading",
-      notes:
-        "Konversi ghost kitchen ke dine-in. Space 90m², 55 covers. LOI sudah ditandatangani, lease dimulai 1 Juni 2026. Food court wing — traffic makan siang dan makan malam kuat.",
-      type: "Opening Branch",
-    },
-  ],
-  revenueShareTerms: {
-    sourceOfRevenueAccrued: "Gross Revenue",
-    frequency: "Monthly",
-    dueDate: "Tanggal 10 setiap bulan",
-    capType: "Time Cap",
-    capMultiple: null,
-    capTimePeriodMonths: 22,
-    revShareStartType: "Anchored to Branch Opening",
-    revShareStartDate: null,
-    preBEPRevSharePct: 7,
-    postBEPRevSharePct: 4.5,
-    carryType: "Fixed Platform Fee",
-    carryPct: 1.5,
-    minReturn: 15,
-    minReturnMultiple: null,
-    minReturnPayableMonths: 18,
-    revProjectionArray: [
-      { month: 1, revenue: 180_000_000 },
-      { month: 2, revenue: 220_000_000 },
-      { month: 3, revenue: 260_000_000 },
-      { month: 6, revenue: 295_000_000 },
-      { month: 12, revenue: 315_000_000 },
-      { month: 18, revenue: 325_000_000 },
-      { month: 22, revenue: 330_000_000 },
-    ],
-  },
-  fixedReturnTerms: null,
-  lateFee: {
-    basis: "Overdue Amount",
-    gracePeriodDays: 5,
-    dailyPctInvestors: 0.1,
-    dailyPctASN: 0.05,
-  },
-  termSheetLink: "https://drive.google.com/file/termsheet-ngm-branch1",
-
-  kpCreditMemo:
-    "**KP Credit Memo — Nasi Goreng Mafia**\n\nNew KP. Brand berdiri Juni 2024 dari ghost kitchen di Kelapa Gading. Revenue tumbuh konsisten — Q4 2025 rata-rata IDR 280jt/bulan gross revenue, GM ~62%. Tidak ada hutang. Referral dari Hendra Gunawan (Kopi Tuku, KP existing dengan track record baik).\n\nOwner Bagas Wibowo memiliki background operasional F&B yang kuat (4 tahun di Mie Gacoan). SLIK bersih. Risiko utama: brand baru, belum ada track record dine-in, ketergantungan tinggi pada founder.",
-  projectCreditMemo:
-    "**Project Credit Memo — Branch #1 Kelapa Gading**\n\nProyek pertama untuk KP ini. Revenue Share time-capped 22 bulan. Satu branch dine-in di La Piazza Kelapa Gading — konversi dari lokasi ghost kitchen yang existing. LOI sudah signed. Proyeksi revenue konservatif vs track record ghost kitchen karena ada biaya ops tambahan untuk dine-in (staff, utilities). BEP bulan ke-13.",
-  financialsLink: "https://drive.google.com/folder/ngm-financials-2025",
-  projectNotes: [
-    {
-      author: "Rafi Ananda",
-      date: "2026-04-03",
-      content:
-        "Submitted. Semua dokumen lengkap. Financial review selesai 5 Maret. LOI sudah ada, lease agreement final sedang di-review lawyer. Ditargetkan signed sebelum Mei.",
-    },
-    {
-      author: "Rafi Ananda",
-      date: "2026-03-28",
-      content:
-        "Site visit ke ghost kitchen — operasi rapi, stok terkelola baik. Sudah coba makanannya, konsisten. Founder sangat hands-on.",
-    },
-  ],
-
-  ptDetails: [
-    {
-      id: "pt-a1",
-      name: "PT Mafia Kuliner Nusantara",
-      bank: "BCA",
-      accountNumber: "8820174531",
-      accountholderName: "PT Mafia Kuliner Nusantara",
-      slikFileUrl: "https://drive.google.com/file/slik-pt-mkn",
-      slikExecSummary:
-        "PT baru berdiri Oktober 2024. Rekening BCA dibuka November 2024. Tidak ada pinjaman korporat. SLIK bersih.",
-      warnings: [],
-    },
-  ],
-
-  fundingSource: "KF & KCF",
-  bankDetailsReviewed: false,
-  taxWithholdings: "Yes",
-  icVotes: [
-    { memberId: "ic-1", memberName: "Edwin M.", vote: null, votedAt: null },
-    { memberId: "ic-2", memberName: "Santi R.", vote: null, votedAt: null },
-    { memberId: "ic-3", memberName: "Hendra K.", vote: null, votedAt: null },
-  ],
-  approvalNotes: "",
-  specialNotesForIC:
-    "New KP, first project. Ghost kitchen sudah profit — ini adalah ekspansi ke dine-in. Perhatikan bahwa lease agreement belum final signed — CS: submit lease agreement sebelum disbursement tranche pertama.",
-  conditionsSubsequent: [
-    "Submit executed lease agreement sebelum disbursement tranche 1",
-    "Submit updated management accounts Q1 2026 sebelum disbursement tranche 2",
-    "Confirm kitchen equipment supplier invoice sebelum disbursement tranche 2",
-  ],
-};
-
-// ─── Project C ────────────────────────────────────────────────────────────────
-// Laundry franchise (B2C + B2B) — Asset C, Fixed Return
-// KP has 2 completed projects (1 with DPD history), now requesting 4th outlet
-// Triggers: stale financial review, DPD warning on past project
-
-const projectC: ICProject = {
-  id: "proj-c",
-  brandName: "Laundrynow",
-  brandIsNew: false,
-  projectName: "Laundrynow — Outlet #4, BSD City (Sektor 7)",
-  approvalType: "Project",
-  submittedAt: "2026-03-31T11:00:00Z",
-
-  pic: {
-    submitter: "Laras Setiawati",
-    primaryAnalyst: "Laras Setiawati",
-    secondaryAnalyst: "Wahyu Nugroho",
-  },
-
-  projectNumberForKP: 4,
+  projectNumberForKP: 3,
   brandActiveProjects: 1,
   brandCompletedProjects: 2,
-  brandBeforeICProjects: 0,
+  brandBeforeICProjects: 1,
   brandPendingDisbursementProjects: 0,
-  mainSector: "Services",
-  subSector: "Laundry",
+  mainSector: "F&B",
+  subSector: "Full Service Resto",
   syariah: false,
-  assetClass: "Asset C",
+  assetClass: "A",
   requestedAmountCurrency: "IDR",
-  requestedAmount: 950_000_000,
+  requestedAmount: 3_100_000_000,
   amountWarning: null,
-  financingUse: "Working Capital",
+  financingUse: "Branch Opening/Expansion",
   sectorWarning: null,
 
   plafond: {
     proposed: null,
     current: {
-      totalLimit: 3_000_000_000,
+      totalLimit: 5_000_000_000,
       poSubLimit: 0,
-      wcSubLimit: 3_000_000_000,
-      effectiveDate: "2025-03-01",
-      expiryDate: "2027-03-01",
+      wcSubLimit: 5_000_000_000,
+      effectiveDate: "2024-06-01",
+      expiryDate: "2026-06-01",
       limitStatus: "Active",
     },
-    outstandingTotal: 1_100_000_000,
-    remainingTotal: 1_900_000_000,
+    outstandingTotal: 3_200_000_000,
+    remainingTotal: 1_775_704_151,
     remainingPO: 0,
-    remainingWC: 1_900_000_000,
+    remainingWC: 1_775_704_151,
     superseded: [
       {
-        totalLimit: 1_800_000_000,
+        totalLimit: 2_000_000_000,
         poSubLimit: 0,
-        wcSubLimit: 1_800_000_000,
-        effectiveDate: "2023-07-01",
-        expiryDate: "2025-02-28",
+        wcSubLimit: 2_000_000_000,
+        effectiveDate: "2022-09-01",
+        expiryDate: "2024-05-31",
       },
     ],
   },
 
   financialReviews: [
     {
-      submissionDate: "2026-01-12",
-      financialReportsReviewed: "Management Accounts Jan–Sep 2025",
-      periodEndingDate: "2025-09-30",
+      submissionDate: "2026-02-24",
+      financialReportsReviewed: "Management Accounts Jan–Dec 2025",
+      periodEndingDate: "2025-12-31",
       limitRecommendation: "Keep",
       reviewNotes:
-        "Revenue 9 bulan 2025: IDR 3.8B (3 outlet). GM stabil 54%. Outlet #3 (Bintaro) baru buka Agustus 2025, masih ramp-up. Cash flow positif dari outlet #1 (Tangerang Kota) dan #2 (Alam Sutera). Tidak ada perubahan hutang material. Limit dipertahankan IDR 3B — akan di-review kembali setelah ada full-year 2025 dan outlet #3 mature.",
+        "Revenue 2025 dari outlet existing Holycow Jakarta: IDR 28B total (3 outlet). Outlet Medan (baru dibuka Okt 2024) masih ramp-up — revenue per bulan IDR 580-620jt, gross margin ~68%. Tidak ada perubahan hutang. Plafond dipertahankan IDR 5B. Proyek #3 (Medan expansion) dalam proses IC review.",
     },
     {
-      submissionDate: "2025-02-20",
-      financialReportsReviewed: "Audited 2023",
-      periodEndingDate: "2023-12-31",
+      submissionDate: "2025-03-10",
+      financialReportsReviewed: "Audited 2024",
+      periodEndingDate: "2024-12-31",
       limitRecommendation: "Increase",
       reviewNotes:
-        "Revenue 2023: IDR 2.1B (2 outlet). Laporan audit bersih. Diminta kenaikan limit dari IDR 1.8B ke IDR 3B untuk mendukung rencana ekspansi outlet #3 dan #4.",
+        "Revenue 2024: IDR 24B (+20% YoY) dari 2 outlet Jakarta. Laporan audit bersih. Outlet Medan dibuka Q4 2024 dengan investasi sendiri — performa awal kuat. Direkomendasikan kenaikan plafond dari IDR 2B ke IDR 5B untuk mendukung rencana full renovation Medan dan potensi outlet berikutnya.",
     },
   ],
 
   referralSource: "2nd+ project",
   specificReferror: null,
   referrorBelongsToKP: null,
+  firstProjectReferralOverride: {
+    referralSource: "Karmapreneur",
+    specificReferror: "Melisa Anggraini",
+    referrorBelongsToKP: null,
+  },
   otherReferees: [],
+
+  submissionProjectedBEPMonths: 13,
 
   kpContacts: [
     {
-      id: "kpc-c1",
-      name: "Rizky Pratama",
-      role: "Founder / Direktur Utama",
+      id: "kpc-hc1",
+      name: "Regina Tiffani",
+      role: "Direktur Utama / Co-Founder",
       notesOnPerson:
-        "Founder, 38 tahun. Mantan karyawan Elnusa (oil & gas). Mulai Laundrynow 2020 dari 1 outlet di kontrakan, sekarang 3 outlet operasional. Sangat detail soal unit economics, paham P&L per outlet.",
+        "Co-founder Holycow sejak 2010. Background marketing — bertanggung jawab atas ekspansi brand dan hubungan investor. Sangat komunikatif dan responsif dalam proses due diligence. Menanggani operasional seluruh outlet.",
       referredProjects: [],
       associatedKPs: [],
       isKeyPerson: true,
-      slikFileUrl: "https://drive.google.com/file/slik-rizky-pratama",
+      slikFileUrl: "https://drive.google.com/file/slik-regina-tiffani",
       slikExecSummary:
-        "KPR di BNI (aktif, performing). Kartu kredit BCA limit 50jt, utilisasi <30%. Tidak ada catatan negatif. SLIK per Februari 2026.",
-      uboExposure: 1_100_000_000,
+        "KTP Jakarta Selatan. KPR di BCA (aktif, performing). Tidak ada kredit konsumer lain. SLIK bersih per Februari 2026.",
+      uboExposure: 3_200_000_000,
     },
     {
-      id: "kpc-c2",
-      name: "Nurul Pratama",
-      role: "Direktur Keuangan (istri)",
+      id: "kpc-hc2",
+      name: "Syifa Sarini",
+      role: "CFO / Direktur Keuangan",
       notesOnPerson:
-        "Istri founder. Handles bookkeeping dan hubungan dengan perbankan. Background akuntansi (S1 Trisakti).",
+        "Bergabung 2018. Ex-Deloitte (4 tahun), sebelumnya konsultan F&B di Jakarta. Penanggung jawab laporan keuangan, rekening koran, dan hubungan dengan perbankan. Sangat transparan dalam disclosure.",
+      referredProjects: [],
+      associatedKPs: [],
+      isKeyPerson: true,
+      slikFileUrl: "https://drive.google.com/file/slik-syifa-sarini",
+      slikExecSummary:
+        "KTP Jakarta Pusat. Kredit motor lunas 2022. Tidak ada catatan negatif. SLIK bersih per Februari 2026.",
+      uboExposure: 0,
+    },
+    {
+      id: "kpc-hc3",
+      name: "Iswanda Mardio",
+      role: "General Manager",
+      notesOnPerson:
+        "GM operasional untuk outlet luar Jakarta. Penanggung jawab ekspansi Medan. Menandatangani perjanjian sebagai kuasa direksi.",
       referredProjects: [],
       associatedKPs: [],
       isKeyPerson: false,
-      slikFileUrl: "https://drive.google.com/file/slik-nurul-pratama",
-      slikExecSummary: "KPR bersama suami di BNI. Tidak ada kredit lain. Bersih.",
+      slikFileUrl: null,
+      slikExecSummary: null,
+      uboExposure: 0,
+    },
+    {
+      id: "kpc-hc4",
+      name: "Erwynda Semiartie",
+      role: "Finance & Admin Manager",
+      notesOnPerson:
+        "Bertanggung jawab atas rekening koran dan koordinasi pembayaran di outlet luar Jakarta.",
+      referredProjects: [],
+      associatedKPs: [],
+      isKeyPerson: false,
+      slikFileUrl: null,
+      slikExecSummary: null,
       uboExposure: 0,
     },
   ],
 
   pastProjects: [
     {
-      id: "pp-c1",
-      projectName: "Laundrynow — Outlet #1, Tangerang Kota",
+      id: "pp-hc1",
+      projectName: "Steak Hotel by Holycow (#1) — Renovasi & Capex, Wolter Monginsidi",
       status: "Completed",
-      returnType: "Revenue Share (Time-Capped)",
-      amount: 650_000_000,
+      icApprovalDate: "2021-03-15",
+      returnType: "Revenue Share (Return-Capped)",
+      amount: 1_500_000_000,
       outstandingAmount: 0,
       projectedTermMonths: 20,
-      otfTermMonths: 19,
-      otfIRR: 20.1,
-      projectedIRR: 17.5,
+      otfTermMonths: 18,
+      otfIRR: 22.1,
+      projectedIRR: 19.5,
       otfMOIC: null,
-      projectedMOIC: "1.29x",
+      projectedMOIC: "1.38x",
       projectedBEPMonths: 12,
       currentDPD: 0,
       maxDPD: 0,
     },
     {
-      id: "pp-c2",
-      projectName: "Laundrynow — Outlet #2, Alam Sutera",
-      status: "Completed",
-      returnType: "Revenue Share (Time-Capped)",
-      amount: 750_000_000,
-      outstandingAmount: 0,
-      projectedTermMonths: 20,
-      otfTermMonths: 20,
-      otfIRR: 15.3,
-      projectedIRR: 17.5,
+      id: "pp-hc2",
+      projectName: "Steak Hotel by Holycow (#2) — Working Capital, Fatmawati",
+      status: "Active",
+      icApprovalDate: "2022-11-20",
+      returnType: "Revenue Share (Return-Capped)",
+      amount: 2_000_000_000,
+      outstandingAmount: 1_340_000_000,
+      projectedTermMonths: 24,
+      otfTermMonths: null,
+      otfIRR: null,
+      projectedIRR: 19.5,
       otfMOIC: null,
-      projectedMOIC: "1.29x",
-      projectedBEPMonths: 13,
+      projectedMOIC: "1.40x",
+      projectedBEPMonths: 14,
       currentDPD: 0,
-      maxDPD: 52,
+      maxDPD: 14,
       overdueHistory: [
-        { dueDate: "2024-09-10", daysOverdue: 52, status: "Paid" },
-        { dueDate: "2024-08-10", daysOverdue: 18, status: "Paid" },
-        { dueDate: "2024-07-10", daysOverdue: 7, status: "Paid" },
+        { dueDate: "2024-04-15", daysOverdue: 14, status: "Paid" },
       ],
     },
     {
-      id: "pp-c3",
-      projectName: "Laundrynow — Outlet #3, Bintaro Sektor 9",
-      status: "Active",
-      returnType: "Fixed Return",
-      amount: 1_100_000_000,
-      outstandingAmount: 1_100_000_000,
-      projectedTermMonths: 24,
-      otfTermMonths: null,
-      otfIRR: 16.8,
-      projectedIRR: 16.5,
-      otfMOIC: null,
-      projectedMOIC: "1.33x",
-      projectedBEPMonths: 14,
-      currentDPD: 0,
-      maxDPD: 0,
-    },
-    {
-      id: "pp-c4",
-      projectName: "Laundrynow — Outlet #4, BSD City Sektor 7 [PROPOSED]",
+      id: "pp-hc3",
+      projectName: "Steak Hotel by Holycow (#3) — Branch Opening/Expansion: Medan [PROPOSED]",
       status: "Proposed",
-      returnType: "Fixed Return",
-      amount: 950_000_000,
+      icApprovalDate: "2026-02-19",
+      isCurrentSubmission: true,
+      returnType: "Revenue Share (Return-Capped)",
+      amount: 3_100_000_000,
       outstandingAmount: 0,
       projectedTermMonths: 24,
       otfTermMonths: null,
       otfIRR: null,
-      projectedIRR: 16.5,
+      projectedIRR: 25.6,
       otfMOIC: null,
-      projectedMOIC: "1.33x",
-      projectedBEPMonths: 14,
-      currentDPD: 0,
-      maxDPD: 0,
-    },
-  ],
-
-  returnType: "Fixed Return",
-  disbursements: [
-    { tranche: 1, plannedAmount: 550_000_000, plannedDate: "2026-05-01" },
-    { tranche: 2, plannedAmount: 400_000_000, plannedDate: "2026-07-01" },
-  ],
-  branches: [
-    {
-      id: "br-c1",
-      name: "BSD City — Sektor 7",
-      area: "Tangerang Selatan",
-      gmapsLink: "https://maps.google.com/?q=BSD+City+Sektor+7+Tangerang+Selatan",
-      notes:
-        "Ruko 2 lantai — lantai 1 untuk outlet laundry express, lantai 2 untuk pickup/delivery sorting. 120m² total. BSD merupakan high-income suburban market — mix B2C walk-in dan B2B (kos-kosan, hotel bintang 3). Lease 3 tahun, opsi perpanjang. Rent IDR 120jt/tahun.",
-      type: "Opening Branch",
-    },
-  ],
-  revenueShareTerms: null,
-  fixedReturnTerms: {
-    repaymentSchedule: [
-      { month: 6, amount: 237_500_000 },
-      { month: 12, amount: 237_500_000 },
-      { month: 18, amount: 237_500_000 },
-      { month: 24, amount: 315_875_000 },
-    ],
-    totalRepayment: 1_028_375_000,
-    totalPrincipal: 950_000_000,
-    totalInterest: 78_375_000,
-    carry: 19_000_000,
-  },
-  lateFee: {
-    basis: "Overdue Amount",
-    gracePeriodDays: 5,
-    dailyPctInvestors: 0.1,
-    dailyPctASN: 0.05,
-  },
-  termSheetLink: "https://drive.google.com/file/termsheet-laundrynow-outlet4",
-
-  kpCreditMemo:
-    "**KP Credit Memo — Laundrynow**\n\nKP existing dengan 3 proyek sebelumnya. Outlet #1 (Tangerang Kota) selesai ahead of schedule dengan OTF IRR 20.1%. Outlet #2 (Alam Sutera) selesai dengan OTF IRR lebih rendah dari proyeksi (15.3%) — ada DPD s/d 52 hari di bulan ke-15, diselesaikan di bulan ke-18 sebelum jatuh tempo. KP kooperatif dalam komunikasi waktu itu. Outlet #3 (Bintaro) active, baru 8 bulan berjalan, on track.\n\nFounder Rizky Pratama sangat paham unit economics, disiplin dalam pelaporan. Risiko utama: ekspansi terlalu cepat (4 outlet dalam 5 tahun) — perlu dipastikan kapasitas operasional.",
-  projectCreditMemo:
-    "**Project Credit Memo — Outlet #4 BSD City**\n\nProyek ke-4. Fixed Return, 2 tranche. Lokasi BSD — pasar mature dengan demand laundry tinggi dari kalangan suburban. Analisis kompetitor: ada 2 laundry kiloan di radius 500m, tapi belum ada yang melayani segmen premium/express. Proyeksi revenue IDR 120-140jt/bulan dari bulan ke-6. BEP bulan ke-14.",
-  financialsLink: "https://drive.google.com/folder/laundrynow-financials",
-  projectNotes: [
-    {
-      author: "Laras Setiawati",
-      date: "2026-03-31",
-      content:
-        "Submitted. Note: financial review terakhir per September 2025 — sudah >3 bulan. Full year 2025 belum ada karena masih dalam proses pembukuan (KP pakai jasa akuntan eksternal). Diharapkan siap Mei 2026.",
-    },
-    {
-      author: "Wahyu Nugroho",
-      date: "2026-03-29",
-      content:
-        "Site visit BSD Sektor 7 — lokasi bagus, sudah ada counter laundry kecil tapi tidak terkesan bersih. Ruko yang ditarget Rizky lebih premium. B2B prospect: sudah ada MoU informal dengan 2 kos-kosan besar di sekitar lokasi.",
-    },
-    {
-      author: "Laras Setiawati",
-      date: "2026-03-20",
-      content:
-        "Follow-up re: DPD outlet #2 — KP confirm bahwa masalah pada bulan ke-15 disebabkan oleh renovasi mendadak yang menekan cash flow. Tidak ada kejadian serupa di outlet #3. Diakseptasi sebagai one-off.",
-    },
-  ],
-
-  ptDetails: [
-    {
-      id: "pt-c1",
-      name: "PT Laundrynow Indonesia",
-      bank: "BCA",
-      accountNumber: "3312987654",
-      accountholderName: "PT Laundrynow Indonesia",
-      slikFileUrl: "https://drive.google.com/file/slik-pt-laundrynow",
-      slikExecSummary:
-        "Rekening BCA aktif sejak 2021. Tidak ada pinjaman korporat. Cashflow masuk-keluar konsisten dengan revenue yang dilaporkan. SLIK bersih.",
-      warnings: [],
-    },
-  ],
-
-  fundingSource: "KF & KCF",
-  bankDetailsReviewed: false,
-  taxWithholdings: "Yes",
-  icVotes: [
-    { memberId: "ic-1", memberName: "Edwin M.", vote: null, votedAt: null },
-    { memberId: "ic-2", memberName: "Santi R.", vote: null, votedAt: null },
-    { memberId: "ic-3", memberName: "Hendra K.", vote: null, votedAt: null },
-  ],
-  approvalNotes: "",
-  specialNotesForIC: null,
-  conditionsSubsequent: [
-    "Submit executed lease agreement untuk BSD Sektor 7 sebelum disbursement tranche 1",
-    "Submit full-year 2025 management accounts (atau audited financials) sebelum disbursement tranche 2",
-  ],
-};
-
-// ─── Project D ────────────────────────────────────────────────────────────────
-// Frozen food / FMCG manufacturer — Asset D, Revenue Share (Return-Capped)
-// Requesting plafond increase + new project. Outstanding is nearly at limit.
-// Triggers: negative remaining WC sub-limit, SLIK missing for key person (ops director)
-
-const projectD: ICProject = {
-  id: "proj-d",
-  brandName: "Dapur Lezat Frozen",
-  brandIsNew: false,
-  projectName: "Dapur Lezat Frozen — Production Line Expansion & Modern Trade Entry",
-  approvalType: "Project+Plafond",
-  submittedAt: "2026-04-04T13:30:00Z",
-
-  pic: {
-    submitter: "Raka Firmansyah",
-    primaryAnalyst: "Raka Firmansyah",
-    secondaryAnalyst: "Laras Setiawati",
-  },
-
-  projectNumberForKP: 3,
-  brandActiveProjects: 1,
-  brandCompletedProjects: 1,
-  brandBeforeICProjects: 0,
-  brandPendingDisbursementProjects: 0,
-  mainSector: "FMCG",
-  subSector: "Frozen Food",
-  syariah: true,
-  assetClass: "Asset D",
-  requestedAmountCurrency: "IDR",
-  requestedAmount: 5_500_000_000,
-  amountWarning:
-    "Jumlah yang diminta melebihi sisa plafond WC saat ini sebesar IDR 1.3B. Kenaikan plafond diperlukan sebelum disbursement.",
-  financingUse: "Capital Expenditure + Working Capital",
-  sectorWarning: null,
-
-  plafond: {
-    proposed: {
-      totalLimit: 9_000_000_000,
-      poSubLimit: 3_000_000_000,
-      wcSubLimit: 6_000_000_000,
-    },
-    current: {
-      totalLimit: 7_000_000_000,
-      poSubLimit: 2_500_000_000,
-      wcSubLimit: 4_500_000_000,
-      effectiveDate: "2024-08-01",
-      expiryDate: "2026-08-01",
-      limitStatus: "Active",
-    },
-    outstandingTotal: 5_850_000_000,
-    remainingTotal: 1_150_000_000,
-    remainingPO: 2_500_000_000,
-    remainingWC: -1_350_000_000, // ← negative! triggers warning
-    superseded: [
-      {
-        totalLimit: 4_000_000_000,
-        poSubLimit: 1_500_000_000,
-        wcSubLimit: 2_500_000_000,
-        effectiveDate: "2023-02-01",
-        expiryDate: "2024-07-31",
-      },
-    ],
-  },
-
-  financialReviews: [
-    {
-      submissionDate: "2025-10-08",
-      financialReportsReviewed: "Audited 2024",
-      periodEndingDate: "2024-12-31",
-      limitRecommendation: "Increase",
-      reviewNotes:
-        "Revenue 2024: IDR 42B (+38% YoY). EBITDA margin 16%. Produk Dapur Lezat kini tersedia di >800 outlet Indomaret dan 200 outlet Alfamart — distribusi modern trade naik signifikan di H2 2024. KP sudah dalam pembicaraan dengan Hero Group dan Ranch Market untuk listing 2026. Hutang ke bank nihil. Rekening koran menunjukkan cashflow seasonal — puncak di bulan Ramadan dan Lebaran. Direkomendasikan kenaikan plafond ke IDR 9B untuk mendukung ekspansi produksi dan modal kerja musiman.",
-    },
-    {
-      submissionDate: "2024-07-15",
-      financialReportsReviewed: "Audited 2023",
-      periodEndingDate: "2023-12-31",
-      limitRecommendation: "Increase",
-      reviewNotes:
-        "Revenue 2023: IDR 30.4B. Pertumbuhan kuat. Direkomendasikan kenaikan plafond dari IDR 4B ke IDR 7B.",
-    },
-  ],
-
-  referralSource: "Karmapreneur",
-  specificReferror: "Yoseph Tanujaya",
-  referrorBelongsToKP: "PT Sumber Makmur Food (KP existing)",
-  otherReferees: ["PT Sumber Makmur Food"],
-
-  kpContacts: [
-    {
-      id: "kpc-d1",
-      name: "Hartono Widjaja",
-      role: "Founder / Direktur Utama",
-      notesOnPerson:
-        "Founder, 52 tahun. Background 15 tahun di industri FMCG (Indofood, Wings Food) sebelum keluar dan bangun brand sendiri 2018. Sangat paham supply chain dan distribusi. Tinggal di Surabaya, pabrik di Sidoarjo.",
-      referredProjects: [],
-      associatedKPs: [],
-      isKeyPerson: true,
-      slikFileUrl: "https://drive.google.com/file/slik-hartono-widjaja",
-      slikExecSummary:
-        "KPR di BNI (aktif, lunas 2028). Kredit investasi korporat nihil. SLIK bersih per Maret 2026.",
-      uboExposure: 5_850_000_000,
-    },
-    {
-      id: "kpc-d2",
-      name: "Dedi Kurniawan",
-      role: "Direktur Operasional",
-      notesOnPerson:
-        "Bergabung 2021. Ex-Bogasari, head of production. Memegang 15% saham via ESOP. Penanggung jawab operasional pabrik sehari-hari.",
-      referredProjects: [],
-      associatedKPs: [],
-      isKeyPerson: true,
-      slikFileUrl: null, // ← SLIK MISSING — triggers warning
-      slikExecSummary: null,
-      uboExposure: 0,
-    },
-    {
-      id: "kpc-d3",
-      name: "Lina Widjaja",
-      role: "Komisaris (istri founder)",
-      notesOnPerson: "Komisaris, tidak operasional. Pemegang 25% saham.",
-      referredProjects: [],
-      associatedKPs: [],
-      isKeyPerson: false,
-      slikFileUrl: "https://drive.google.com/file/slik-lina-widjaja",
-      slikExecSummary: "KPR bersama suami di BNI. Tidak ada kredit lain. Bersih.",
-      uboExposure: 0,
-    },
-  ],
-
-  pastProjects: [
-    {
-      id: "pp-d1",
-      projectName: "Dapur Lezat — Initial Working Capital (Indomaret Onboarding)",
-      status: "Completed",
-      returnType: "Revenue Share (Return-Capped)",
-      amount: 3_200_000_000,
-      outstandingAmount: 0,
-      projectedTermMonths: 24,
-      otfTermMonths: 21,
-      otfIRR: 22.4,
-      projectedIRR: 19.0,
-      otfMOIC: null,
-      projectedMOIC: "1.38x",
-      projectedBEPMonths: 16,
-      currentDPD: 0,
-      maxDPD: 0,
-    },
-    {
-      id: "pp-d2",
-      projectName: "Dapur Lezat — Alfamart Expansion & Seasonal Stock Pre-Lebaran 2025",
-      status: "Active",
-      returnType: "Revenue Share (Return-Capped)",
-      amount: 5_850_000_000,
-      outstandingAmount: 5_850_000_000,
-      projectedTermMonths: 28,
-      otfTermMonths: null,
-      otfIRR: 20.1,
-      projectedIRR: 19.5,
-      otfMOIC: null,
-      projectedMOIC: "1.46x",
-      projectedBEPMonths: 18,
-      currentDPD: 0,
-      maxDPD: 0,
-    },
-    {
-      id: "pp-d3",
-      projectName: "Dapur Lezat — Production Line Expansion & Modern Trade Entry [PROPOSED]",
-      status: "Proposed",
-      returnType: "Revenue Share (Return-Capped)",
-      amount: 5_500_000_000,
-      outstandingAmount: 0,
-      projectedTermMonths: 30,
-      otfTermMonths: null,
-      otfIRR: null,
-      projectedIRR: 20.0,
-      otfMOIC: null,
-      projectedMOIC: "1.50x",
-      projectedBEPMonths: 18,
+      projectedMOIC: "1.55x",
+      projectedBEPMonths: 13,
       currentDPD: 0,
       maxDPD: 0,
     },
@@ -684,83 +217,282 @@ const projectD: ICProject = {
 
   returnType: "Revenue Share (Return-Capped)",
   disbursements: [
-    { tranche: 1, plannedAmount: 2_000_000_000, plannedDate: "2026-05-15" },
-    { tranche: 2, plannedAmount: 2_000_000_000, plannedDate: "2026-07-15" },
-    { tranche: 3, plannedAmount: 1_500_000_000, plannedDate: "2026-10-01" },
+    { tranche: 1, plannedAmount: 3_100_000_000, plannedDate: "2026-04-14" },
   ],
-  branches: [],
+  branches: [
+    {
+      id: "br-hc1",
+      name: "Medan — Sun Plaza Level 3",
+      area: "Medan, Sumatera Utara",
+      gmapsLink: "https://maps.google.com/?q=Sun+Plaza+Medan",
+      notes:
+        "Outlet Medan pertama Holycow. Lokasi premium di Sun Plaza — anchor tenant di Medan. Total area 350m², kapasitas 120 covers. Pembukaan awal Okt 2024, sekarang sedang dalam tahap full renovation untuk upgrade layout dan kitchen. Kontrak sewa 5 tahun + opsi perpanjang 3 tahun.",
+      type: "Opening Branch",
+    },
+  ],
   revenueShareTerms: {
-    sourceOfRevenueAccrued: "Net Revenue from Modern Trade Channels",
+    sourceOfRevenueAccrued:
+      "Sales setelah dikurangi diskon, sebelum PB1/PPN, sebelum Service Charge, sebelum komisi online dan biaya EDC/QRIS",
     frequency: "Monthly",
     dueDate: "Tanggal 15 setiap bulan",
     capType: "Return Cap",
-    capMultiple: 1.5,
+    capMultiple: 1.4,
     capTimePeriodMonths: null,
-    revShareStartType: "Fixed",
-    revShareStartDate: "2026-06-01",
-    preBEPRevSharePct: 9,
-    postBEPRevSharePct: 5.5,
+    revShareStartType: "Anchored to Branch Opening",
+    revShareStartDate: null,
+    preBEPRevSharePct: 8.0,
+    postBEPRevSharePct: 8.0,
     carryType: "Fixed Platform Fee",
-    carryPct: 2.0,
-    minReturn: 18,
-    minReturnMultiple: 1.18,
-    minReturnPayableMonths: 24,
-    revProjectionArray: [
-      { month: 1, revenue: 2_800_000_000 },
-      { month: 3, revenue: 4_200_000_000 },
-      { month: 6, revenue: 5_500_000_000 },
-      { month: 12, revenue: 7_000_000_000 },
-      { month: 18, revenue: 8_200_000_000 },
-      { month: 24, revenue: 9_000_000_000 },
-      { month: 30, revenue: 9_500_000_000 },
-    ],
+    carryPct: 2.16,
+    minReturn: null,
+    minReturnMultiple: null,
+    minReturnPayableMonths: null,
+    revProjectionArray: monthsRevenueProjection(123, 600_740_842),
   },
   fixedReturnTerms: null,
   lateFee: {
     basis: "Overdue Amount",
     gracePeriodDays: 5,
-    dailyPctInvestors: 0.1,
-    dailyPctASN: 0.05,
+    dailyPctInvestors: 0.02,
+    dailyPctASN: 0.08,
   },
-  termSheetLink: "https://drive.google.com/file/termsheet-dapur-lezat-proj3",
+  termSheetLink: null,
 
   kpCreditMemo:
-    "**KP Credit Memo — Dapur Lezat Frozen**\n\nKP existing. Proyek #1 selesai dengan excellent OTF IRR 22.4% — ahead of schedule. Proyek #2 (active) berjalan baik di bulan ke-10, OTF IRR 20.1% on track. Distribusi modern trade (Indomaret + Alfamart) sudah established. Pembicaraan dengan Hero Group dan Ranch Market sedang berlangsung.\n\nRisiko utama: (1) konsentrasi di pasar frozen food yang kompetitif — diferensiasi produk perlu terus dijaga; (2) SLIK Dedi Kurniawan (Direktur Operasional, Key Person) belum diterima; (3) cashflow seasonal yang tinggi — monitor disbursement timing terhadap siklus Ramadan.",
+    "**KP Credit Memo — Steak Hotel by Holycow**\n\nKP existing dengan 2 proyek sebelumnya, keduanya completed dengan OTF IRR di atas proyeksi (22.1% dan 20.4%). Proyek #2 ada DPD 14 hari di bulan ke-18 — satu kali, diselesaikan cepat, tidak ada pola berulang.\n\nBrand sudah berdiri sejak 2010, kini memiliki 3 outlet Jakarta. Outlet Medan baru dibuka Okt 2024 dengan modal sendiri — performa awal kuat. Revenue Medan IDR 580-620jt/bulan, GM ~68%. Management profesional, laporan keuangan transparan. Tidak ada hutang bank.\n\nRisiko utama: ekspansi ke kota baru (Medan), sensitif terhadap daya beli konsumen lokal dan persaingan restoran premium.",
   projectCreditMemo:
-    "**Project Credit Memo — Production Line Expansion**\n\nProyek ke-3. Revenue Share return-capped 1.5x. Dana digunakan untuk: (1) mesin produksi line baru kapasitas 2x (IDR 3B) — untuk memenuhi order confirmed dari Hero & Ranch Market; (2) modal kerja musiman Lebaran 2027 (IDR 2.5B). Kenaikan plafond dari IDR 7B ke IDR 9B diperlukan karena outstanding proyek #2 masih IDR 5.85B.\n\n⚠️ SLIK Dedi Kurniawan belum diterima. Harus ada sebelum persetujuan final.",
-  financialsLink: "https://drive.google.com/folder/dapur-lezat-financials",
+    "**Project Credit Memo — Branch Opening/Expansion: Medan**\n\nProyek ke-3. Revenue Share return-capped 1.4x. Dana digunakan untuk full renovation Sun Plaza Medan (IDR 3.1B) — upgrade layout, kitchen equipment, dan AC. Proyeksi revenue flat IDR 600jt/bulan setelah renovasi selesai (bulan 3). IRR proyeksi 25.6% dengan MOIC 1.55x.\n\nSatu tranche disbursement 14 Apr 2026. Disbursement status: Planned — KF:KCF split belum valid, perlu diverifikasi sebelum disbursement.",
+  financialsLink:
+    "https://docs.google.com/spreadsheets/d/1sh7vI1nmolAwz-_jZ39tGKNU1NtZdfyv7aMwq42y_Q8",
   projectNotes: [
     {
-      author: "Raka Firmansyah",
-      date: "2026-04-04",
+      author: "Priska Ponggawa",
+      date: "2026-04-07",
       content:
-        "Submitted. ⚠️ SLIK Dedi Kurniawan belum ada — sudah follow-up ke KP, estimasi diterima 10 April. IC mungkin perlu defer final approval sampai SLIK diterima.",
+        "Rev. 7 Apr 2026: Update dari KP — kontraktor renovasi sudah mulai. Estimasi selesai akhir Mei 2026. KCF split masih belum resolved, sedang di-follow up oleh tim Finance.",
     },
     {
-      author: "Laras Setiawati",
-      date: "2026-04-02",
+      author: "Priska Ponggawa",
+      date: "2026-03-12",
       content:
-        "Review model keuangan selesai. Revenue projections konservatif vs actual track record proyek #1 dan #2. Order confirmed dari Hero Group ada LOI-nya — sudah dicek, genuine.",
+        "Rev. 12 Mar 2026: Site visit Sun Plaza Medan — lokasi strategis di lantai 3 dekat bioskop. Traffic makan siang dan malam kuat. Kompetitor terdekat: Abuba Steak (lantai 1) tapi segmen berbeda. KP sangat yakin dengan performa Medan.",
     },
     {
-      author: "Raka Firmansyah",
-      date: "2026-03-25",
+      author: "Priska Ponggawa",
+      date: "2026-02-24",
       content:
-        "Factory visit Sidoarjo — fasilitas bersih, proses produksi terstandarisasi, sudah punya ISO 22000. Kapasitas existing hampir penuh (85% utilisasi). Mesin baru memang diperlukan.",
+        "24 Feb 2026: Submission pertama. Semua dokumen lengkap. Financial review selesai hari ini. Calculator file sudah diekstrak — data valid. KCF split belum diisi, perlu konfirmasi ke tim Finance.",
     },
   ],
 
   ptDetails: [
     {
-      id: "pt-d1",
-      name: "PT Dapur Lezat Nusantara",
-      bank: "Mandiri",
-      accountNumber: "1400099887766",
-      accountholderName: "PT Dapur Lezat Nusantara",
-      slikFileUrl: "https://drive.google.com/file/slik-pt-dln",
+      id: "pt-hc1",
+      name: "PT AHARA BHADRANAYA INDONESIA",
+      bank: "Bank Maybank",
+      accountNumber: "2534000051",
+      accountholderName: "AHARA BHADRANAYA INDONESIA",
+      slikFileUrl: "https://drive.google.com/file/slik-pt-ahara",
       slikExecSummary:
-        "Rekening Mandiri aktif sejak 2018. Tidak ada pinjaman korporat di perbankan. SLIK bersih per Maret 2026. Cashflow rekening konsisten dengan laporan keuangan.",
+        "PT aktif sejak 2018. Rekening Maybank digunakan untuk semua transaksi proyek Holycow bersama Karma. Tidak ada pinjaman korporat. Cashflow konsisten dengan revenue yang dilaporkan. SLIK bersih per Maret 2026.",
       warnings: [],
+    },
+  ],
+
+  fundingSource: "KF & KCF",
+  bankDetailsReviewed: true,
+  taxWithholdings: "Yes",
+  icVotes: [
+    { memberId: "ic-1", memberName: "Ben Elberger", isPrincipal: true, vote: "Approve", votedAt: "2026-04-07T09:15:00Z" },
+    { memberId: "ic-2", memberName: "Aldi Haryopratomo", isPrincipal: false, vote: null, votedAt: null },
+    { memberId: "ic-3", memberName: "Junaidi", isPrincipal: false, vote: null, votedAt: null },
+  ],
+  approvalNotes: "",
+  specialNotesForIC:
+    "⚠️ KF:KCF Disbursement Split belum valid — harus diselesaikan sebelum disbursement. IC dapat approve dengan CS ini.\n\nProyek ini melebihi sisa plafond saat ini (IDR 1.78B remaining vs IDR 3.1B requested) — namun ini adalah proyek tunggal tanpa request kenaikan plafond. Perlu konfirmasi dari tim Finance apakah plafond perlu di-update.",
+  conditionsSubsequent: [
+    "Selesaikan KF:KCF Disbursement Split sebelum disbursement",
+    "Submit executed renovation contract sebelum disbursement",
+    "Submit updated bank statements Q1 2026 untuk PT Ahara Bhadranaya",
+  ],
+};
+
+// ─── Project 2: Shushu ────────────────────────────────────────────────────────
+// Coda row: i-V5VX_zQKpP
+// Brand: Shushu | PT: PT. Mitra Mulia Manunggal
+// Status: APPROVED (4.2 Legal Preparing Contract for 1st Disbursement)
+// F&B / Snacks, Drinks & Desserts | Asset A | Branch Renovation | IDR 250jt
+// Return: Fixed Amount Repayment | 12 installments | MOIC 1.2x | IRR 24.3%
+
+const projectShushu: ICProject = {
+  id: "proj-shushu",
+  brandName: "Shushu",
+  brandIsNew: true,
+  projectName: "Shushu (#1) — Branch Renovation",
+  approvalType: "Project",
+  submittedAt: "2025-09-01T14:10:45Z",
+
+  pic: {
+    submitter: "Juang Angger Pamungkas",
+    primaryAnalyst: "Sharfina Nindita",
+    secondaryAnalyst: null,
+  },
+
+  projectNumberForKP: 1,
+  brandActiveProjects: 1,
+  brandCompletedProjects: 0,
+  brandBeforeICProjects: 0,
+  brandPendingDisbursementProjects: 0,
+  mainSector: "F&B",
+  subSector: "Snacks, Drinks, & Desserts",
+  syariah: false,
+  assetClass: "A",
+  requestedAmountCurrency: "IDR",
+  requestedAmount: 250_000_000,
+  amountWarning: null,
+  financingUse: "Branch Renovation",
+  sectorWarning: null,
+
+  plafond: {
+    proposed: null,
+    current: null,
+    outstandingTotal: 0,
+    remainingTotal: 0,
+    remainingPO: 0,
+    remainingWC: 0,
+    superseded: [],
+  },
+
+  financialReviews: [
+    {
+      submissionDate: "2026-04-02",
+      financialReportsReviewed: "Management Accounts Jan–Dec 2025 + Bank Statements",
+      periodEndingDate: "2025-12-31",
+      limitRecommendation: "Keep",
+      reviewNotes:
+        "Brand Shushu beroperasi sejak 2023 di PIK2 dengan konsep minuman premium dan dessert. Revenue 2025: IDR 2.4B dari 1 outlet (rata-rata IDR 200jt/bulan). Gross margin 61%. Tidak ada hutang. Owner mengajukan dana untuk renovasi gerai agar lebih sesuai dengan konsep terbaru brand.\n\nCatatan: ini adalah proyek pertama bersama Karma. Plafond tidak diminta saat ini — akan di-review setelah proyek pertama selesai.",
+    },
+  ],
+
+  referralSource: "Cold calling",
+  specificReferror: null,
+  referrorBelongsToKP: null,
+  otherReferees: [],
+
+  kpContacts: [
+    {
+      id: "kpc-ss1",
+      name: "Sandy Wiguna",
+      role: "Founder / Direktur Utama",
+      notesOnPerson:
+        "Founder Shushu, 31 tahun. Background barista dan F&B ops — pernah bekerja di Kopi Kenangan sebagai area manager sebelum keluar dan build brand sendiri 2023. Sangat detail soal produk dan operasional. Handles semua aspek bisnis sendiri dengan 1 manajer operasional.",
+      referredProjects: [],
+      associatedKPs: [],
+      isKeyPerson: true,
+      slikFileUrl: "https://drive.google.com/file/slik-sandy-wiguna",
+      slikExecSummary:
+        "KTP Tangerang Utara. Kredit motor lunas 2022. Tidak ada KPR. SLIK bersih per April 2026.",
+      uboExposure: 0,
+    },
+  ],
+
+  pastProjects: [
+    {
+      id: "pp-ss1",
+      projectName: "Shushu (#1) — Branch Renovation [PROPOSED]",
+      status: "Proposed",
+      icApprovalDate: "2026-04-02",
+      isCurrentSubmission: true,
+      returnType: "Fixed Return",
+      amount: 250_000_000,
+      outstandingAmount: 0,
+      projectedTermMonths: 12,
+      otfTermMonths: null,
+      otfIRR: null,
+      projectedIRR: 24.3,
+      otfMOIC: null,
+      projectedMOIC: "1.20x",
+      projectedBEPMonths: 6,
+      currentDPD: 0,
+      maxDPD: 0,
+    },
+  ],
+
+  returnType: "Fixed Return",
+  disbursements: [
+    { tranche: 1, plannedAmount: 250_000_000, plannedDate: "2026-04-09" },
+  ],
+  branches: [
+    {
+      id: "br-ss1",
+      name: "PIK2 — Sedayu City Mall",
+      area: "Jakarta Utara",
+      gmapsLink: "https://maps.google.com/?q=Sedayu+City+PIK2",
+      notes:
+        "Outlet pertama Shushu di PIK2 Sedayu City. Total area 45m² — konsep kiosk premium. Renovasi mencakup upgrade display case, LED signage, dan kitchen equipment. Kontrak sewa 2 tahun, opsi perpanjang.",
+      type: "Opening Branch",
+    },
+  ],
+  revenueShareTerms: null,
+  fixedReturnTerms: {
+    repaymentSchedule: [
+      { month: 1, amount: 24_987_500 },
+      { month: 2, amount: 24_987_500 },
+      { month: 3, amount: 24_987_500 },
+      { month: 4, amount: 24_987_500 },
+      { month: 5, amount: 24_987_500 },
+      { month: 6, amount: 24_987_500 },
+      { month: 7, amount: 24_987_500 },
+      { month: 8, amount: 24_987_500 },
+      { month: 9, amount: 24_987_500 },
+      { month: 10, amount: 24_987_500 },
+      { month: 11, amount: 24_987_500 },
+      { month: 12, amount: 24_987_500 },
+    ],
+    totalRepayment: 299_850_000,
+    totalPrincipal: 250_000_000,
+    totalInterest: 37_350_000,
+    carry: 12_500_000,
+  },
+  lateFee: {
+    basis: "Overdue Amount",
+    gracePeriodDays: 5,
+    dailyPctInvestors: 0.02,
+    dailyPctASN: 0.08,
+  },
+  termSheetLink: null,
+
+  kpCreditMemo:
+    "**KP Credit Memo — Shushu**\n\nKP baru. Brand Shushu berdiri 2023 di PIK2 dengan konsep minuman dan dessert premium. Revenue 2025: IDR 2.4B (1 outlet), GM 61%. Tidak ada hutang.\n\nOwner Sandy Wiguna memiliki background F&B yang kuat (ex-Kopi Kenangan Area Manager). Brand positioning kuat di segmen premium PIK2. Risiko utama: KP baru, single outlet, ketergantungan penuh pada founder.\n\nSumber: Cold calling (Karma outreach ke tenant PIK2).",
+  projectCreditMemo:
+    "**Project Credit Memo — Branch Renovation**\n\nProyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. Dana digunakan untuk renovasi outlet PIK2 — upgrade display case, LED signage, dan kitchen equipment. MOIC proyeksi 1.20x, IRR 24.3%. Disbursement planned 9 Apr 2026.",
+  financialsLink:
+    "https://docs.google.com/spreadsheets/d/1BFsWNVlrKsCkrYL52Vn8EZDpV6ixcewkNzLMmyQ8QoQ",
+  projectNotes: [
+    {
+      author: "Juang Angger Pamungkas",
+      date: "2026-04-02",
+      content:
+        "2 Apr 2026: Submission. Semua dokumen lengkap. Financial review selesai hari ini. KP mereview agreement — sedang dalam proses Legal. Target disbursement 9 Apr.",
+    },
+    {
+      author: "Sharfina Nindita",
+      date: "2026-01-28",
+      content:
+        "28 Jan 2026: First meeting dengan Sandy Wiguna di PIK2. Outlet bersih dan terkelola dengan baik. Traffic peak di weekend dan sore hari. Sandy sangat paham P&L dan sangat antusias untuk ekspansi.",
+    },
+  ],
+
+  ptDetails: [
+    {
+      id: "pt-ss1",
+      name: "PT. Mitra Mulia Manunggal",
+      bank: "BCA",
+      accountNumber: "1625599999",
+      accountholderName: "PT. Mitra Mulia Manunggal",
+      slikFileUrl: null,
+      slikExecSummary: null,
+      warnings: ["This is the 1st project from the PT — no prior bank history with Karma"],
     },
   ],
 
@@ -768,24 +500,528 @@ const projectD: ICProject = {
   bankDetailsReviewed: false,
   taxWithholdings: "Yes",
   icVotes: [
-    { memberId: "ic-1", memberName: "Edwin M.", vote: null, votedAt: null },
-    { memberId: "ic-2", memberName: "Santi R.", vote: null, votedAt: null },
-    { memberId: "ic-3", memberName: "Hendra K.", vote: null, votedAt: null },
+    { memberId: "ic-1", memberName: "Ben Elberger", isPrincipal: true, vote: "Approve", votedAt: "2026-04-02T15:30:00Z" },
+    { memberId: "ic-2", memberName: "Aldi Haryopratomo", isPrincipal: false, vote: null, votedAt: null },
+    { memberId: "ic-3", memberName: "Junaidi", isPrincipal: false, vote: null, votedAt: null },
+  ],
+  approvalNotes:
+    "Approved unanimously. KP pertama dengan fixed return — amount kecil, risiko terkendali. Perlu dipantau progress renovasi dan performa revenue post-renovation.",
+  specialNotesForIC: null,
+  conditionsSubsequent: [
+    "Submit executed renovation invoice / work order sebelum disbursement",
+    "Submit financial statements Q1 2026 sebelum disbursement",
+    "Update performa revenue 3 bulan post-renovation (Juli 2026)",
+  ],
+};
+
+// ─── Project 3: Cipta Usaha Media — PO Financing (Orang Tua) ─────────────────
+// Coda row: i-MWtJ6auN3O
+// Brand: Cipta Usaha Media | PT: PT Cipta Usaha Media
+// Status: APPROVED (4.2 Legal Preparing Contract for 1st Disbursement)
+// Agencies / Workforce Outsourcing | Asset B-PO | Domestic PO Financing | IDR 249jt
+// Return: Daily Interest | 2-month tenor | MOIC 1.032x | IRR 21.1%
+// Payor: Orang Tua (whitelisted)
+// Note: accounting team changed May 2025, cannot produce recent balance sheet
+
+const projectCUM: ICProject = {
+  id: "proj-cum",
+  brandName: "Cipta Usaha Media",
+  brandIsNew: false,
+  projectName: "Cipta Usaha Media (#26) — PO Financing: Orang Tua",
+  approvalType: "PO/Invoice",
+  submittedAt: "2026-03-31T14:53:44Z",
+
+  pic: {
+    submitter: "Nila Layla Melinda",
+    primaryAnalyst: "Nila Layla Melinda",
+    secondaryAnalyst: null,
+  },
+
+  projectNumberForKP: 26,
+  brandActiveProjects: 3,
+  brandCompletedProjects: 22,
+  brandBeforeICProjects: 0,
+  brandPendingDisbursementProjects: 1,
+  mainSector: "Agencies",
+  subSector: "Workforce Outsourcing",
+  syariah: false,
+  assetClass: "B - PO",
+  requestedAmountCurrency: "IDR",
+  requestedAmount: 249_000_000,
+  amountWarning: null,
+  financingUse: "Domestic PO Financing",
+  sectorWarning: null,
+
+  plafond: {
+    proposed: null,
+    current: {
+      totalLimit: 4_000_000_000,
+      poSubLimit: 2_000_000_000,
+      wcSubLimit: 2_000_000_000,
+      effectiveDate: "2025-01-01",
+      expiryDate: "2027-01-01",
+      limitStatus: "Active",
+    },
+    outstandingTotal: 323_172_379,
+    remainingTotal: 3_676_827_621,
+    remainingPO: 1_676_827_621,
+    remainingWC: 2_000_000_000,
+    superseded: [
+      {
+        totalLimit: 2_500_000_000,
+        poSubLimit: 1_500_000_000,
+        wcSubLimit: 1_000_000_000,
+        effectiveDate: "2023-06-01",
+        expiryDate: "2024-12-31",
+      },
+    ],
+  },
+
+  financialReviews: [
+    {
+      submissionDate: "2026-04-09",
+      financialReportsReviewed: "Bank Statements Jan–Mar 2026 (Proxy)",
+      periodEndingDate: "2026-03-31",
+      limitRecommendation: "Keep",
+      reviewNotes:
+        "CUM mengganti tim akuntan internal pada Mei 2025 — tidak dapat memproduksi neraca terbaru karena proses transisi. Rekening koran Jan–Mar 2026 digunakan sebagai proxy: cashflow masuk/keluar konsisten dengan volume PO historis (IDR 1.5-2B/bulan). Limit dipertahankan IDR 4B sambil menunggu laporan keuangan formal selesai dipersiapkan.\n\n⚠️ Catatan: Balance sheet formal belum tersedia. KP diminta submit balance sheet terbaru sebelum disbursement berikutnya.",
+    },
+    {
+      submissionDate: "2025-03-03",
+      financialReportsReviewed: "Management Accounts Jan–Dec 2024",
+      periodEndingDate: "2024-12-31",
+      limitRecommendation: "Increase",
+      reviewNotes:
+        "Revenue 2024: IDR 18B (workforce outsourcing + logistik). Pertumbuhan 35% YoY. Kontrak dengan Orang Tua Group diperbarui — volume PO meningkat signifikan. Direkomendasikan kenaikan plafond dari IDR 2.5B ke IDR 4B untuk mendukung volume PO yang lebih besar.",
+    },
+  ],
+
+  referralSource: "2nd+ project",
+  specificReferror: null,
+  referrorBelongsToKP: null,
+  firstProjectReferralOverride: {
+    referralSource: "Cold calling",
+    specificReferror: "Dian Kusuma",
+    referrorBelongsToKP: null,
+  },
+  otherReferees: [],
+
+  kpContacts: [
+    {
+      id: "kpc-cum1",
+      name: "Dwi Wicaksono Wibowo",
+      role: "Direktur Utama",
+      notesOnPerson:
+        "Founder dan Direktur Utama CUM. Background di bidang HR outsourcing dan logistik sejak 2010. Sangat berpengalaman dalam mengelola kontrak korporat besar — klien utama termasuk Orang Tua Group, Indofood, dan Wings. Responsif dan profesional dalam semua komunikasi.",
+      referredProjects: [],
+      associatedKPs: [],
+      isKeyPerson: true,
+      slikFileUrl: "https://drive.google.com/file/slik-dwi-wicaksono",
+      slikExecSummary:
+        "KTP Jakarta Timur. KPR di BNI (aktif, performing). Kredit kendaraan lunas 2021. Tidak ada catatan negatif. SLIK bersih per Maret 2026.",
+      uboExposure: 323_172_379,
+    },
+    {
+      id: "kpc-cum2",
+      name: "Nofriwan",
+      role: "Direktur Operasional",
+      notesOnPerson:
+        "Co-founder. Penanggung jawab operasional lapangan — koordinasi tim workforce dan delivery. Memegang 35% saham.",
+      referredProjects: [],
+      associatedKPs: [],
+      isKeyPerson: true,
+      slikFileUrl: "https://drive.google.com/file/slik-nofriwan",
+      slikExecSummary:
+        "KTP Bekasi. Tidak ada kredit aktif. SLIK bersih per Maret 2026.",
+      uboExposure: 0,
+    },
+  ],
+
+  pastProjects: [
+    {
+      id: "pp-cum-22",
+      projectName: "Cipta Usaha Media (#22) — PO - Orang Tua (Apr 2025)",
+      status: "Completed",
+      icApprovalDate: "2025-04-18",
+      returnType: "Fixed Return",
+      amount: 375_000_000,
+      outstandingAmount: 0,
+      projectedTermMonths: 2,
+      otfTermMonths: 2,
+      otfIRR: 21.8,
+      projectedIRR: 21.0,
+      otfMOIC: null,
+      projectedMOIC: "1.03x",
+      projectedBEPMonths: 1,
+      currentDPD: 0,
+      maxDPD: 0,
+    },
+    {
+      id: "pp-cum-23",
+      projectName: "Cipta Usaha Media (#23) — PO - Orang Tua (Jun 2025)",
+      status: "Completed",
+      icApprovalDate: "2025-06-22",
+      returnType: "Fixed Return",
+      amount: 300_000_000,
+      outstandingAmount: 0,
+      projectedTermMonths: 2,
+      otfTermMonths: 2,
+      otfIRR: 21.2,
+      projectedIRR: 21.0,
+      otfMOIC: null,
+      projectedMOIC: "1.03x",
+      projectedBEPMonths: 1,
+      currentDPD: 0,
+      maxDPD: 0,
+    },
+    {
+      id: "pp-cum-24",
+      projectName: "Cipta Usaha Media (#24) — PO - Orang Tua (Sep 2025)",
+      status: "Completed",
+      icApprovalDate: "2025-09-30",
+      returnType: "Fixed Return",
+      amount: 249_000_000,
+      outstandingAmount: 0,
+      projectedTermMonths: 2,
+      otfTermMonths: 2,
+      otfIRR: 21.1,
+      projectedIRR: 21.0,
+      otfMOIC: null,
+      projectedMOIC: "1.03x",
+      projectedBEPMonths: 1,
+      currentDPD: 0,
+      maxDPD: 0,
+    },
+    {
+      id: "pp-cum-25",
+      projectName: "Cipta Usaha Media (#25) — PO - Orang Tua (Jan 2026)",
+      status: "Active",
+      icApprovalDate: "2026-01-12",
+      returnType: "Fixed Return",
+      amount: 323_172_379,
+      outstandingAmount: 323_172_379,
+      projectedTermMonths: 2,
+      otfTermMonths: null,
+      otfIRR: 21.1,
+      projectedIRR: 21.0,
+      otfMOIC: null,
+      projectedMOIC: "1.03x",
+      projectedBEPMonths: 1,
+      currentDPD: 3,
+      maxDPD: 3,
+      overdueHistory: [
+        { dueDate: "2026-03-15", daysOverdue: 3, status: "Paid" },
+      ],
+    },
+    {
+      id: "pp-cum-queue-27",
+      projectName: "Cipta Usaha Media (#27) — PO: Orang Tua (draft, pending submission)",
+      status: "Pending IC submission",
+      icApprovalDate: null,
+      returnType: "Fixed Return",
+      amount: 180_000_000,
+      outstandingAmount: 0,
+      projectedTermMonths: 2,
+      otfTermMonths: null,
+      otfIRR: null,
+      projectedIRR: 21.0,
+      otfMOIC: null,
+      projectedMOIC: "1.03x",
+      projectedBEPMonths: 1,
+      currentDPD: 0,
+      maxDPD: 0,
+    },
+    {
+      id: "pp-cum-26",
+      projectName: "Cipta Usaha Media (#26) — PO Financing: Orang Tua [PROPOSED]",
+      status: "Proposed",
+      icApprovalDate: "2026-03-31",
+      isCurrentSubmission: true,
+      returnType: "Fixed Return",
+      amount: 249_000_000,
+      outstandingAmount: 0,
+      projectedTermMonths: 2,
+      otfTermMonths: null,
+      otfIRR: null,
+      projectedIRR: 21.1,
+      otfMOIC: null,
+      projectedMOIC: "1.03x",
+      projectedBEPMonths: 1,
+      currentDPD: 0,
+      maxDPD: 0,
+    },
+  ],
+
+  returnType: "Fixed Return",
+  disbursements: [
+    { tranche: 1, plannedAmount: 249_000_000, plannedDate: "2026-04-09" },
+  ],
+  branches: [],
+  revenueShareTerms: null,
+  fixedReturnTerms: {
+    repaymentSchedule: [
+      { month: 1, amount: 124_925_000 },
+      { month: 2, amount: 124_925_000 },
+    ],
+    totalRepayment: 257_268_000,
+    totalPrincipal: 249_000_000,
+    totalInterest: 6_468_000,
+    carry: 1_800_000,
+  },
+  lateFee: {
+    basis: "Outstanding Principal",
+    gracePeriodDays: 5,
+    dailyPctInvestors: 0.02,
+    dailyPctASN: 0.053,
+  },
+  termSheetLink: null,
+
+  kpCreditMemo:
+    "**KP Credit Memo — Cipta Usaha Media**\n\nKP existing dengan 25 proyek sebelumnya (sejak 2021), semua PO financing dari Orang Tua Group. Track record sangat konsisten — dari 25 proyek, hanya 1 kali DPD (project #25, 3 hari, sudah diselesaikan).\n\nBrand bergerak di workforce outsourcing dan logistik. Klien utama: Orang Tua Group (kontrak terbarukan tahunan). Revenue 2024: IDR 18B.\n\n⚠️ Catatan: CUM mengganti tim akuntan internal Mei 2025 — belum bisa produksi balance sheet terbaru. Bank statements Jan–Mar 2026 digunakan sebagai proxy sementara. Perlu laporan keuangan formal sebelum disbursement berikutnya.",
+  projectCreditMemo:
+    "**Project Credit Memo — PO Financing: Orang Tua**\n\nProyek ke-26 dengan struktur PO Financing yang sama seperti sebelumnya. Payor: Orang Tua Group (whitelisted). Daily interest 1.6%/bulan (KF), 0.6%/bulan (KCF). Tenor 2 bulan. MOIC 1.032x, IRR 21.1%.\n\nDisbursement planned 9 Apr 2026. KF:KCF Disbursement Letter masih missing — perlu dilengkapi sebelum disbursement.",
+  financialsLink:
+    "https://docs.google.com/spreadsheets/d/1_duQQLPRU005JSsDGXUcaCs991JKjYi_2YveeROkucA",
+  projectNotes: [
+    {
+      author: "Nila Layla Melinda",
+      date: "2026-04-09",
+      content:
+        "[DRAFT] Project Note: 9 Apr 2026. Proyek #26 disetujui IC. KF:KCF Disbursement Letter dalam proses. Target disbursement akhir pekan ini.",
+    },
+    {
+      author: "Nila Layla Melinda",
+      date: "2026-03-31",
+      content:
+        "Submission proyek #26 — PO Orang Tua April cycle. CUM masih belum bisa produce balance sheet terbaru (accounting team baru belum fully onboarded). Bank statements Jan–Mar 2026 sudah ada dan cashflow konsisten. Koordinasi dengan Legal untuk persiapan contract.",
+    },
+  ],
+
+  ptDetails: [
+    {
+      id: "pt-cum1",
+      name: "PT Cipta Usaha Media",
+      bank: "BCA",
+      accountNumber: "0700441679",
+      accountholderName: "PT Cipta Usaha Media",
+      slikFileUrl: "https://drive.google.com/file/slik-pt-cum",
+      slikExecSummary:
+        "Rekening BCA aktif sejak 2019. Tidak ada pinjaman korporat di perbankan. SLIK bersih per Maret 2026. Cashflow rekening konsisten dengan volume PO yang dilaporkan (IDR 1.5-2B/bulan). Bank details match those for the last project by the same PT as of IC Review.",
+      warnings: [],
+    },
+  ],
+
+  fundingSource: "KF & KCF",
+  bankDetailsReviewed: true,
+  taxWithholdings: "Yes",
+  icVotes: [
+    { memberId: "ic-1", memberName: "Ben Elberger", isPrincipal: true, vote: "Approve", votedAt: "2026-04-07T09:30:00Z" },
+    { memberId: "ic-2", memberName: "Aldi Haryopratomo", isPrincipal: false, vote: null, votedAt: null },
+    { memberId: "ic-3", memberName: "Junaidi", isPrincipal: false, vote: null, votedAt: null },
+  ],
+  approvalNotes:
+    "Approved unanimously. PO financing rutin dari KP yang track record-nya sangat baik. Catatan: balance sheet terbaru belum tersedia — perlu disubmit sebagai CS sebelum disbursement cycle berikutnya.",
+  specialNotesForIC:
+    "⚠️ KF:KCF Disbursement Letter masih missing — perlu dilengkapi sebelum disbursement.\n\n⚠️ Balance sheet formal belum dapat diproduksi oleh KP (tim akuntan baru). Bank statements digunakan sebagai proxy. Perlu laporan keuangan formal sebelum disbursement proyek berikutnya.",
+  conditionsSubsequent: [
+    "KF:KCF Disbursement Letter harus dilengkapi sebelum disbursement",
+    "Submit balance sheet formal (per Des 2025 atau Mar 2026) sebelum proyek #27",
+    "Submit PO / Invoice dari Orang Tua sebelum disbursement",
+  ],
+};
+
+// ─── Project 4: Cahaya Energi Asia — Aztech #1 (PO/Invoice + Plafond) ─────────
+// Coda row: i-vd0F644zu0 | Approval: PO/Invoice + Plafond | Daily Interest | Domestic PO
+// Target tranche IDR 6B; proposed KP-wide ceiling IDR 15B (PO sub-limit 15B, WC 0)
+// Seeded from Coda Oct 2025 — IC card shows platform (plafond) vs tranche fields
+
+const projectCEA: ICProject = {
+  id: "proj-cea-aztech",
+  codaRowId: "i-vd0F644zu0",
+  brandName: "Cahaya Energi Asia",
+  brandIsNew: false,
+  projectName: "Cahaya Energi Asia - Aztech #1",
+  approvalType: "PO/Invoice+Plafond",
+  submittedAt: "2025-10-23T08:56:15Z",
+
+  pic: {
+    submitter: "Junaidi",
+    primaryAnalyst: "Junaidi",
+    secondaryAnalyst: "Armeno Devan",
+  },
+
+  projectNumberForKP: 1,
+  brandActiveProjects: 1,
+  brandCompletedProjects: 0,
+  brandBeforeICProjects: 0,
+  brandPendingDisbursementProjects: 0,
+  mainSector: "Assorted B2B Services and Manufacturing",
+  subSector: "Oil and Gas Services",
+  syariah: false,
+  assetClass: "B - PO",
+  requestedAmountCurrency: "IDR",
+  requestedAmount: 6_000_000_000,
+  icVoteBasisAmount: 15_000_000_000,
+  amountWarning: null,
+  financingUse: "Domestic PO Financing",
+  sectorWarning: null,
+
+  plafond: {
+    proposed: {
+      totalLimit: 15_000_000_000,
+      poSubLimit: 15_000_000_000,
+      wcSubLimit: 0,
+    },
+    current: {
+      totalLimit: 12_000_000_000,
+      poSubLimit: 12_000_000_000,
+      wcSubLimit: 0,
+      effectiveDate: "2024-04-01",
+      expiryDate: "2027-04-01",
+      limitStatus: "Active",
+    },
+    outstandingTotal: 6_000_000_000,
+    remainingTotal: 9_000_000_000,
+    remainingPO: 9_000_000_000,
+    remainingWC: 0,
+    superseded: [
+      {
+        totalLimit: 10_000_000_000,
+        poSubLimit: 10_000_000_000,
+        wcSubLimit: 0,
+        effectiveDate: "2022-01-01",
+        expiryDate: "2024-03-31",
+      },
+    ],
+  },
+
+  financialReviews: [
+    {
+      submissionDate: "2025-10-20",
+      financialReportsReviewed: "Management accounts + rekening koran Q3 2025",
+      periodEndingDate: "2025-09-30",
+      limitRecommendation: "Increase",
+      reviewNotes:
+        "Oil & gas services vendor to Aztech. Volume PO naik — rekomendasi menyesuaikan plafond PO agar sesai dengan pipeline kontrak 12 bulan ke depan. Tranche pertama Aztech #1 sebesar IDR 6B dengan tenor 90 hari.",
+    },
+  ],
+
+  referralSource: "Karmapreneur",
+  specificReferror: null,
+  referrorBelongsToKP: null,
+  otherReferees: [],
+
+  kpContacts: [
+    {
+      id: "kpc-cea1",
+      name: "KP signatory (from diligence)",
+      role: "Direktur Utama",
+      notesOnPerson:
+        "Prototype placeholder — sync full KP contact grid from Coda in production. Oil & gas services; primary relationship with Aztech Group POs.",
+      referredProjects: [],
+      associatedKPs: [],
+      isKeyPerson: true,
+      slikFileUrl: null,
+      slikExecSummary: "SLIK on file per diligence folder (prototype).",
+      uboExposure: 6_000_000_000,
+    },
+  ],
+
+  pastProjects: [
+    {
+      id: "pp-cea-az1",
+      projectName: "Cahaya Energi Asia - Aztech #1",
+      status: "Proposed",
+      icApprovalDate: "2025-10-23",
+      isCurrentSubmission: true,
+      returnType: "Daily Interest",
+      amount: 6_000_000_000,
+      outstandingAmount: 0,
+      projectedTermMonths: 3,
+      otfTermMonths: null,
+      otfIRR: null,
+      projectedIRR: 18.5,
+      otfMOIC: null,
+      projectedMOIC: "1.05x",
+      projectedBEPMonths: 2,
+      currentDPD: 0,
+      maxDPD: 0,
+    },
+  ],
+
+  returnType: "Daily Interest",
+  disbursements: [{ tranche: 1, plannedAmount: 6_000_000_000, plannedDate: "2025-11-15" }],
+  branches: [],
+  revenueShareTerms: null,
+  fixedReturnTerms: null,
+  dailyInterestTerms: {
+    interestRate30DayPct: 1.6,
+    serviceFee30DayPct: 0.6,
+    tenorDays: 90,
+    minInterestPeriodDays: 45,
+    serviceFeeDailyBasis: "Disbursed Amount",
+  },
+  lateFee: {
+    basis: "Disbursed Amount",
+    gracePeriodDays: 5,
+    dailyPctInvestors: 0.08,
+    dailyPctASN: 0.02,
+  },
+  termSheetLink: null,
+
+  kpCreditMemo:
+    "KP Credit Memo — Cahaya Energi Asia: diversified oil & gas services revenue, anchor PO dari Aztech Group. Plafond PO dinaikkan ke IDR 15B untuk menampung beberapa tranche serupa.",
+  projectCreditMemo:
+    "Project Credit Memo — Aztech #1: IDR 6B domestic PO financing, daily interest structure, 90-day tenor. Payor diligence completed; underlying PO documentation in GDrive.",
+  financialsLink: "https://docs.google.com/spreadsheets/d/example-cea-aztech-calc",
+  projectNotes: [
+    {
+      author: "Junaidi",
+      date: "2025-10-22",
+      content:
+        "Submission PO/Invoice + Plafond. Calculator extracted — rates match term sheet. Plafond headroom perlu IC tinjau bersamaan dengan tranche.",
+    },
+  ],
+
+  ptDetails: [
+    {
+      id: "pt-cea1",
+      name: "PT Cahaya Energi Asia",
+      bank: "Mandiri",
+      accountNumber: "1260011422085",
+      accountholderName: "PT Cahaya Energi Asia",
+      slikFileUrl: null,
+      slikExecSummary: "SLIK PT — performing (prototype summary).",
+      warnings: [],
+    },
+  ],
+
+  fundingSource: "KF & KCF",
+  bankDetailsReviewed: true,
+  taxWithholdings: "Yes",
+
+  icVotes: [
+    { memberId: "ic-1", memberName: "Ben Elberger", isPrincipal: true, vote: "Approve", votedAt: "2025-10-23T10:00:00Z" },
+    { memberId: "ic-2", memberName: "Aldi Haryopratomo", isPrincipal: false, vote: null, votedAt: null },
+    { memberId: "ic-3", memberName: "Junaidi", isPrincipal: false, vote: null, votedAt: null },
   ],
   approvalNotes: "",
   specialNotesForIC:
-    "⚠️ SLIK Dedi Kurniawan (Key Person, Direktur Operasional) BELUM DITERIMA. IC disarankan untuk defer final approval sampai SLIK diterima dan direview.\n\nPlafond WC saat ini negatif — kenaikan ke IDR 9B harus diformalkan sebelum disbursement tranche pertama.\n\nProyek ini besar (IDR 5.5B) dan membutuhkan quorum IC penuh sesuai policy ≥ Rp 4B.",
+    "⚠️ Combined IC: tranche IDR 6B (Daily Interest) + plafond line (naik ke IDR 15B PO sub-limit dari IDR 12B aktif). Outstanding KP IDR 6B — sisa headroom setelah approval tercermin di baris Proposed.",
   conditionsSubsequent: [
-    "Submit SLIK Dedi Kurniawan sebelum persetujuan final IC",
-    "Kenaikan plafond ke IDR 9B diformalkan dalam Financial Review sebelum disbursement tranche 1",
-    "Submit LOI / PO confirmed dari Hero Group dan Ranch Market sebelum disbursement tranche 2",
-    "Submit laporan keuangan Q1 2026 sebelum disbursement tranche 3",
+    "Execute PO / underlying invoice documentation before first disbursement",
+    "Confirm plafond registry update in Coda after IC approval",
   ],
 };
 
 // ─── Export ───────────────────────────────────────────────────────────────────
 
-export const mockProjects: ICProject[] = [projectA, projectC, projectD];
+export const mockProjects: ICProject[] = [
+  projectHolycow,
+  projectShushu,
+  projectCUM,
+  projectCEA,
+];
 
 export function getProjectById(id: string): ICProject | undefined {
   return mockProjects.find((p) => p.id === id);

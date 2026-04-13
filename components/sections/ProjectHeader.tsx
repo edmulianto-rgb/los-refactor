@@ -18,12 +18,26 @@ export function ProjectHeader({ project }: Props) {
           <h1 className="text-2xl font-bold text-gray-900 leading-tight">
             {project.projectName}
           </h1>
+          {project.codaRowId && (
+            <p className="text-xs text-gray-400 mt-1.5 font-mono">Coda row: {project.codaRowId}</p>
+          )}
         </div>
-        <Tag
-          label={project.approvalType}
-          variant={approvalTypeVariant(project.approvalType)}
-          className="text-sm px-3 py-1 shrink-0"
-        />
+        <div className="flex flex-col items-end gap-2 shrink-0">
+          <Tag
+            label={project.approvalType}
+            variant={approvalTypeVariant(project.approvalType)}
+            className="text-sm px-3 py-1"
+          />
+          <div
+            className={`text-xs font-medium px-2.5 py-1 rounded-md border ${
+              project.syariah
+                ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                : "border-gray-200 bg-gray-50 text-gray-600"
+            }`}
+          >
+            Syariah · {project.syariah ? "Yes" : "No"}
+          </div>
+        </div>
       </div>
     </div>
   );
