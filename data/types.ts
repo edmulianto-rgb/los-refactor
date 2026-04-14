@@ -68,6 +68,15 @@ export interface FinancialReview {
   financialReportsReviewed: string;
   periodEndingDate: string; // ISO date
   limitRecommendation: "Keep" | "Increase" | "Decrease";
+  /**
+   * Brand **total** limit (IDR) in effect when this review was written — the “current” side of the recommendation.
+   * Null when no formal total limit applied at review time (e.g. first project with no plafond yet).
+   */
+  limitCurrentIdr: number | null;
+  /**
+   * For **Increase** / **Decrease**: recommended new total limit (IDR). Omit or null for **Keep**.
+   */
+  limitRecommendedIdr?: number | null;
   reviewNotes: string; // markdown / plain text proxy for canvas
 }
 
@@ -88,6 +97,18 @@ export interface OverdueEvent {
   dueDate: string; // ISO date
   daysOverdue: number;
   status: "Paid" | "Unpaid";
+}
+
+/** Economics slice stored on past recap rows for Asset A/D cross-project comparison. */
+export interface RevShareTermsSnapshot {
+  capType: "Return Cap" | "Time Cap";
+  capMultiple: number | null;
+  capTimePeriodMonths: number | null;
+  preBEPRevSharePct: number;
+  postBEPRevSharePct: number;
+  minReturn: number | null;
+  minReturnMultiple: number | null;
+  minReturnPayableMonths: number | null;
 }
 
 export interface PastProject {
@@ -113,6 +134,8 @@ export interface PastProject {
   currentDPD: number;
   maxDPD: number;
   overdueHistory?: OverdueEvent[];
+  /** At IC time: terms as executed (or as modeled) for this row — used in Asset A/D revenue-share recap comparison. */
+  revShareTermsSnapshot?: RevShareTermsSnapshot;
 }
 
 export interface DisbursementRow {
@@ -149,11 +172,20 @@ export interface RevenueShareTerms {
   revProjectionArray: Array<{ month: number; revenue: number }>;
 }
 
+/** One row of the fixed-return amortization (principal / interest / carry per month). */
+export interface FixedReturnScheduleRow {
+  month: number;
+  principal: number;
+  interest: number;
+  carry: number;
+}
+
 export interface FixedReturnTerms {
-  repaymentSchedule: Array<{ month: number; amount: number }>;
+  repaymentSchedule: FixedReturnScheduleRow[];
   totalRepayment: number;
   totalPrincipal: number;
   totalInterest: number;
+  /** Total carry across the schedule (should equal sum of monthly `carry`). */
   carry: number;
 }
 

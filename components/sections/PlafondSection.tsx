@@ -39,18 +39,21 @@ function AbsoluteLimitCell({
   );
 }
 
-/** Requested = proposed − current. */
+/** Change vs current, then proposed ceiling as **(to Rp …)**. */
 function RequestedDeltaCell({ proposed, current }: { proposed: number; current: number }) {
   const delta = proposed - current;
+  const signed =
+    delta > 0
+      ? `+${fmt(delta)}`
+      : delta < 0
+      ? `-${fmt(Math.abs(delta))}`
+      : fmt(proposed);
+  const deltaColor =
+    delta > 0 ? "text-emerald-700" : delta < 0 ? "text-red-600" : "text-gray-800";
   return (
     <div className="text-xs space-y-0.5">
-      <div className={`font-semibold ${delta !== 0 ? "text-emerald-700" : "text-gray-800"}`}>
-        {delta > 0 ? "+" : ""}
-        {fmt(delta)}
-      </div>
-      <div className="text-gray-400 text-[10px] leading-snug">
-        {fmt(proposed)} − {fmt(current)}
-      </div>
+      <div className={`font-semibold ${deltaColor}`}>{signed}</div>
+      <div className="text-gray-400 text-[10px] leading-snug">(to {fmt(proposed)})</div>
     </div>
   );
 }
@@ -77,9 +80,10 @@ export function PlafondSection({ project }: Props) {
     <SectionCard title="Plafond" badge={badge}>
       <div className="mt-2 space-y-3">
         <p className="text-xs text-gray-500 leading-relaxed">
-          On the <strong className="text-gray-600">Proposed</strong> row,{" "}
-          <strong>Total Limit</strong> / <strong>PO Sub Limit</strong> / <strong>Working Capital Sub Limit</strong> are{" "}
-          <em>proposed − current</em>. <strong className="text-gray-600">Current</strong> and{" "}
+          On the <strong className="text-gray-600">Proposed</strong> row, each limit shows the{" "}
+          <strong>change</strong> versus current (with <strong className="text-gray-600">+</strong> /{" "}
+          <strong className="text-gray-600">−</strong>) and the <strong>proposed ceiling</strong> on the line below as{" "}
+          <em>(to Rp …)</em>. <strong className="text-gray-600">Current</strong> and{" "}
           <strong className="text-gray-600">Superseded</strong> rows show absolute limits. Red banners only if a stored
           remaining sub-limit is negative.
         </p>

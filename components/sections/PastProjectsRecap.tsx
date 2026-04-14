@@ -4,9 +4,92 @@ import { Tag, statusVariant } from "@/components/ui/Tag";
 import { fmt, fmtDate, fmtPct } from "@/components/ui/DataRow";
 import { getPastProjectsRecapRows } from "@/lib/pastProjectsRecap";
 import { sortPastProjectsRecapRows } from "@/lib/pastProjectsRecapSort";
+import { isAssetAOrD } from "@/lib/assetClass";
+import {
+  getRecapRowRevShareSnapshot,
+  REV_SHARE_RECAP_COMPARE_METRICS,
+} from "@/lib/revShareTermsComparison";
 
 interface Props {
   project: ICProject;
+}
+
+function RevShareRecapComparisonTable({ project, projects }: { project: ICProject; projects: PastProject[] }) {
+  const submissionIdx = projects.findIndex((p) => p.isCurrentSubmission);
+  const baselineIdx =
+    submissionIdx >= 0 ? submissionIdx : projects.findIndex((p) => p.status === "Proposed");
+  const baselineRow = baselineIdx >= 0 ? projects[baselineIdx] : null;
+  const baselineSnap = baselineRow ? getRecapRowRevShareSnapshot(project, baselineRow) : null;
+
+  return (
+    <div className="mt-4 border border-gray-100 rounded-lg overflow-hidden">
+      <div className="bg-gray-50 px-3 py-2 border-b border-gray-100">
+        <h4 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+          Revenue share terms — cross-project comparison
+        </h4>
+        <p className="text-[10px] text-gray-500 mt-0.5 leading-relaxed">
+          Same row order as above. The <strong>Proposed</strong> column uses this submission&apos;s revenue-share terms;
+          other columns use each row&apos;s stored snapshot when available. Highlighted cells differ from the Proposed
+          baseline.
+        </p>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs min-w-[720px]">
+          <thead>
+            <tr className="border-b border-gray-200 text-left text-gray-500">
+              <th className="sticky left-0 z-10 bg-gray-50 py-2 pl-3 pr-2 font-medium w-48 border-r border-gray-100">
+                Metric
+              </th>
+              {projects.map((p, j) => (
+                <th
+                  key={p.id}
+                  className={`py-2 pr-3 font-medium align-top min-w-[150px] max-w-[220px] ${
+                    j === baselineIdx ? "bg-violet-50/70" : "bg-gray-50"
+                  }`}
+                >
+                  <div className="text-gray-800 line-clamp-2 leading-snug" title={p.projectName}>
+                    {p.projectName}
+                  </div>
+                  <div className="mt-1">
+                    <Tag label={p.status} variant={statusVariant(p.status)} />
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {REV_SHARE_RECAP_COMPARE_METRICS.map((metric) => (
+              <tr key={metric.label + (metric.sublabel ?? "")} className="border-b border-gray-50">
+                <td className="sticky left-0 z-10 bg-white py-2 pl-3 pr-2 text-gray-600 border-r border-gray-100 align-top">
+                  <div className="font-medium text-gray-700 leading-snug">{metric.label}</div>
+                  {metric.sublabel ? (
+                    <div className="text-[10px] text-gray-400 mt-0.5">{metric.sublabel}</div>
+                  ) : null}
+                </td>
+                {projects.map((p, colIdx) => {
+                  const snap = getRecapRowRevShareSnapshot(project, p);
+                  const cell = snap ? metric.format(snap) : "—";
+                  const baseStr = baselineSnap ? metric.format(baselineSnap) : null;
+                  const differs =
+                    Boolean(baselineSnap && snap && baseStr !== null && cell !== baseStr && colIdx !== baselineIdx);
+                  return (
+                    <td
+                      key={p.id}
+                      className={`py-2 pr-3 align-top text-gray-800 leading-snug ${
+                        differs ? "bg-amber-50 text-amber-950" : colIdx === baselineIdx ? "bg-violet-50/25" : ""
+                      }`}
+                    >
+                      {cell}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 }
 
 // Absolute IRR colour thresholds per CSV spec
@@ -31,6 +114,8 @@ function returnTypeLabel(rt: string): string {
 export function PastProjectsRecap({ project }: Props) {
   const allRows = project.pastProjects;
   const projects = sortPastProjectsRecapRows(getPastProjectsRecapRows(allRows));
+  const showRevShareCrossCompare =
+    isAssetAOrD(project.assetClass) && project.revenueShareTerms != null;
 
   // Footer aggregations (visible rows only)
   const totalAmountInclProposed = projects.reduce((s, p) => s + p.amount, 0);
@@ -127,6 +212,10 @@ export function PastProjectsRecap({ project }: Props) {
             </tfoot>
           </table>
         </div>
+        )}
+
+        {showRevShareCrossCompare && projects.length > 0 && (
+          <RevShareRecapComparisonTable project={project} projects={projects} />
         )}
 
         <p className="text-xs text-gray-400 italic">

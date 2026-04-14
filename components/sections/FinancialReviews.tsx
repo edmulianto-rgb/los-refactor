@@ -1,16 +1,36 @@
-import { ICProject } from "@/data/types";
+import { FinancialReview, ICProject } from "@/data/types";
 import { SectionCard } from "@/components/ui/SectionCard";
-import { fmtDate } from "@/components/ui/DataRow";
+import { fmt, fmtDate } from "@/components/ui/DataRow";
 
 interface Props {
   project: ICProject;
 }
 
-const recoBadge: Record<string, string> = {
-  Keep: "bg-gray-100 text-gray-700",
-  Increase: "bg-emerald-100 text-emerald-700",
-  Decrease: "bg-red-100 text-red-700",
+const recoStyle: Record<FinancialReview["limitRecommendation"], string> = {
+  Keep: "text-gray-800",
+  Increase: "text-emerald-800",
+  Decrease: "text-red-800",
 };
+
+/** Human-readable limit recommendation with amounts (IDR). */
+function formatLimitRecommendationLine(review: FinancialReview): string {
+  const cur = review.limitCurrentIdr;
+  const next = review.limitRecommendedIdr ?? null;
+
+  if (review.limitRecommendation === "Keep") {
+    if (cur == null) return "Keep — no total brand limit on file at this review";
+    return `Keep ${fmt(cur)}`;
+  }
+  if (review.limitRecommendation === "Increase") {
+    if (cur != null && next != null) return `Increase ${fmt(cur)} to ${fmt(next)}`;
+    return "Increase — limit amounts not specified";
+  }
+  if (review.limitRecommendation === "Decrease") {
+    if (cur != null && next != null) return `Decrease from ${fmt(cur)} to ${fmt(next)}`;
+    return "Decrease — limit amounts not specified";
+  }
+  return review.limitRecommendation;
+}
 
 function monthsAgo(isoDate: string): number {
   return (Date.now() - new Date(isoDate).getTime()) / (1000 * 60 * 60 * 24 * 30);
@@ -31,7 +51,7 @@ export function FinancialReviews({ project }: Props) {
                 <th className="pb-2 pr-3 font-medium w-20"></th>
                 <th className="pb-2 pr-3 font-medium">Submitted</th>
                 <th className="pb-2 pr-3 font-medium">Financial Reports Reviewed</th>
-                <th className="pb-2 pr-3 font-medium">Reports' Period Ending Date</th>
+                <th className="pb-2 pr-3 font-medium">Reports&apos; Period Ending Date</th>
                 <th className="pb-2 pr-3 font-medium">Limit Recommendation</th>
                 <th className="pb-2 pr-3 font-medium">Notes</th>
                 <th className="pb-2 font-medium">Warnings</th>
@@ -52,8 +72,8 @@ export function FinancialReviews({ project }: Props) {
                       {fmtDate(review.periodEndingDate)}
                     </td>
                     <td className="py-3 pr-3">
-                      <span className={`px-2 py-0.5 rounded font-medium text-xs ${recoBadge[review.limitRecommendation]}`}>
-                        {review.limitRecommendation}
+                      <span className={`text-xs font-medium leading-snug ${recoStyle[review.limitRecommendation]}`}>
+                        {formatLimitRecommendationLine(review)}
                       </span>
                     </td>
                     <td className="py-3 pr-3 text-gray-700 max-w-[220px]">

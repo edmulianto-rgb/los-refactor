@@ -37,6 +37,9 @@ export function ApprovalSection({ project }: Props) {
     Object.fromEntries(project.icVotes.map((v) => [v.memberId, v.vote]))
   );
   const [approvalNotes, setApprovalNotes] = useState(project.approvalNotes);
+  const [conditionsSubsequent, setConditionsSubsequent] = useState<string[]>(() => [
+    ...project.conditionsSubsequent,
+  ]);
   const [submitted, setSubmitted] = useState(false);
 
   const myVoterId = "ic-1"; // Ben Elberger — Principal
@@ -202,15 +205,62 @@ export function ApprovalSection({ project }: Props) {
           )}
         </div>
 
-        {/* Conditions Subsequent */}
-        {project.conditionsSubsequent.length > 0 && (
+        {/* Conditions Subsequent — analyst draft; IC revises before vote (prototype) */}
+        {(conditionsSubsequent.length > 0 || !submitted) && (
           <div>
             <div className="text-xs text-gray-500 mb-1">Conditions Subsequent</div>
-            <ul className="list-disc pl-5 space-y-1">
-              {project.conditionsSubsequent.map((c, i) => (
-                <li key={i} className="text-sm text-gray-700">{c}</li>
-              ))}
-            </ul>
+            <p className="text-xs text-gray-500 mb-2 leading-relaxed">
+              Drafted by the <strong className="text-gray-600">analyst</strong> (e.g. from diligence).{" "}
+              <strong className="text-gray-600">IC</strong> may edit or add items here before submitting a vote; in production
+              this would write back to the Project row.
+            </p>
+            {submitted ? (
+              conditionsSubsequent.length > 0 ? (
+                <ul className="list-disc pl-5 space-y-1">
+                  {conditionsSubsequent.map((c, i) => (
+                    <li key={i} className="text-sm text-gray-700 whitespace-pre-wrap">
+                      {c}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-gray-400 italic">No conditions subsequent.</p>
+              )
+            ) : (
+              <div className="space-y-2">
+                {conditionsSubsequent.length === 0 && (
+                  <p className="text-xs text-gray-400 italic">No conditions yet — add if needed.</p>
+                )}
+                {conditionsSubsequent.map((c, i) => (
+                  <div key={i} className="flex gap-2 items-start">
+                    <textarea
+                      value={c}
+                      onChange={(e) =>
+                        setConditionsSubsequent((prev) =>
+                          prev.map((line, j) => (j === i ? e.target.value : line))
+                        )
+                      }
+                      rows={2}
+                      className="flex-1 min-w-0 border border-gray-200 rounded-lg p-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300 resize-y"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setConditionsSubsequent((prev) => prev.filter((_, j) => j !== i))}
+                      className="text-xs text-red-600 hover:text-red-800 shrink-0 pt-2"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setConditionsSubsequent((prev) => [...prev, ""])}
+                  className="text-xs font-medium text-blue-600 hover:text-blue-800"
+                >
+                  + Add condition
+                </button>
+              </div>
+            )}
           </div>
         )}
 

@@ -830,8 +830,8 @@ body {
           <span class="field-label">Daily Late Fee % <b class="b c-tm" onclick="select('T16')">T16</b></span>
           <span class="field-value" style="line-height:1.45">
             <div>0.0% per day (0.0% to Investors, 0.1% to ASN)</div>
-            <div style="font-size:10px;color:#d97706;margin-top:4px">Warning: different from default value 0.1% per day to Investors for this project type</div>
-            <div style="font-size:10px;color:#d97706">Warning: different from default value 0.0% per day to ASN for this project type</div>
+            <div style="font-size:10px;color:#d97706;margin-top:4px">Warning: different from default value 0.08% per day to Investors for this project type</div>
+            <div style="font-size:10px;color:#d97706">Warning: different from default value 0.02% per day to ASN for this project type</div>
           </span>
         </div>
       </div>
@@ -1477,9 +1477,9 @@ Proyek ke-26 dengan struktur PO Financing yang sama seperti sebelumnya. Payor: O
           <tbody>
             <tr style="background:#faf5ff">
               <td class="row-label"><strong style="color:#5b21b6">Proposed</strong></td>
-              <td><div style="font-weight:600;color:#059669">+ Rp 3.000.000.000</div><div style="font-size:9px;color:#94a3b8">Rp 15.000.000.000 − Rp 12.000.000.000</div></td>
-              <td><div style="font-weight:600;color:#059669">+ Rp 3.000.000.000</div><div style="font-size:9px;color:#94a3b8">Rp 15.000.000.000 − Rp 12.000.000.000</div></td>
-              <td><div style="font-weight:600">Rp 0</div><div style="font-size:9px;color:#94a3b8">Rp 0 − Rp 0</div></td>
+              <td><div style="font-weight:600;color:#059669">+Rp 3.000.000.000</div><div style="font-size:9px;color:#94a3b8">(to Rp 15.000.000.000)</div></td>
+              <td><div style="font-weight:600;color:#059669">+Rp 3.000.000.000</div><div style="font-size:9px;color:#94a3b8">(to Rp 15.000.000.000)</div></td>
+              <td><div style="font-weight:600;color:#64748b">Rp 0</div><div style="font-size:9px;color:#94a3b8">(to Rp 0)</div></td>
             </tr>
             <tr>
               <td class="row-label" id="f-L1">
@@ -1772,7 +1772,7 @@ const FIELDS = {
   D7: { label: "Financing Use",      desc: "Use-of-funds tag from the project.", logic: [] },
 
   L1: { label: "Limit Status (row label)", desc: "Proposed / Current / Superseded row label in the plafond table, plus Active/Expired badge and effective–expiry dates in the first column for Current.", logic: [], skip: "Entire Plafond card omitted when the project is not a plafond-type approval and there is no current limit on file." },
-  L2: { label: "Requested Limit (Current cell)", desc: "On Current and Superseded rows: absolute total limit with optional outstanding/remaining lines. On Proposed row (when proposed and current both exist): delta proposed − current.", logic: [{type:"error", text:"Red issue badge on section when any stored remaining (total / PO / WC) is negative"}] },
+  L2: { label: "Requested Limit (Current cell)", desc: "On Current and Superseded rows: absolute total limit with optional outstanding/remaining lines. On Proposed row (when proposed and current both exist): signed change vs current, then proposed ceiling as (to Rp …).", logic: [{type:"error", text:"Red issue badge on section when any stored remaining (total / PO / WC) is negative"}] },
   L3: { label: "PO Sub Limit",       desc: "PO sub-limit column — same delta rules as L2 when Proposed row is shown.", logic: [] },
   L4: { label: "Working Capital Sub Limit", desc: "WC sub-limit column — same delta rules as L2 when Proposed row is shown.", logic: [] },
   L6: { label: "Outstanding (in Current total cell)", desc: "Outstanding line under total limit on Current row when shown.", logic: [], skip: "Outstanding/remaining lines hidden on Current row when Proposed deltas row is visible (remaining shown in footnote instead)." },
@@ -1828,7 +1828,7 @@ const FIELDS = {
   T13:{ label: "Revenue projection summary", desc: "Summary grid: average monthly revenue, peak month, floor month, and projection span.", logic: [], skip: "Omitted when there is no revenue projection data." },
   T14:{ label: "Late Fee Basis",     desc: "Basis label for late fee.", logic: [{type:"warn", text:"Inline warning when basis differs from default Overdue Amount"}] },
   T15:{ label: "Late Fee Grace Period (days)", desc: "Grace days before late fees accrue.", logic: [{type:"warn", text:"Inline warning when ≠ 5 days"}] },
-  T16:{ label: "Daily Late Fee %",   desc: "fmtPct lines for investors + ASN plus default drift warnings.", logic: [{type:"warn", text:"Amber lines when daily rates differ from policy defaults (0.08% investors, 0.02% ASN in app constants)"}] },
+  T16:{ label: "Daily Late Fee %",   desc: "fmtPct lines for investors + ASN. For Asset A / Asset D only: amber warnings when rates differ from 0.08% (Investors) or 0.02% (ASN) per day.", logic: [{type:"warn", text:"Shown only when asset class is A or D and the stored rate ≠ default"}] },
 
   E1: { label: "PT Record",            desc: "Legal PT name column.", logic: [] },
   E2: { label: "Bank",               desc: "Disbursement bank name.", logic: [] },

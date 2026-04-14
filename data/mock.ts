@@ -4,6 +4,30 @@ function monthsRevenueProjection(months: number, revenue: number) {
   return Array.from({ length: months }, (_, i) => ({ month: i + 1, revenue }));
 }
 
+/** Split `total` into `months` whole-rupiah parts (largest shares absorb remainder). */
+function equalMonthlyParts(total: number, months: number): number[] {
+  const base = Math.floor(total / months);
+  const rem = total - base * months;
+  return Array.from({ length: months }, (_, i) => base + (i < rem ? 1 : 0));
+}
+
+function fixedReturnScheduleFromTotals(
+  months: number,
+  principalTotal: number,
+  interestTotal: number,
+  carryTotal: number
+) {
+  const principals = equalMonthlyParts(principalTotal, months);
+  const interests = equalMonthlyParts(interestTotal, months);
+  const carries = equalMonthlyParts(carryTotal, months);
+  return principals.map((principal, i) => ({
+    month: i + 1,
+    principal,
+    interest: interests[i],
+    carry: carries[i],
+  }));
+}
+
 // ─── Project 1: Steak Hotel by Holycow Medan ─────────────────────────────────
 // Coda row: i-iNREe2I8Sx
 // Brand: Steak Hotel by Holycow | PT: PT AHARA BHADRANAYA INDONESIA
@@ -72,6 +96,7 @@ const projectHolycow: ICProject = {
       financialReportsReviewed: "Management Accounts Jan–Dec 2025",
       periodEndingDate: "2025-12-31",
       limitRecommendation: "Keep",
+      limitCurrentIdr: 5_000_000_000,
       reviewNotes:
         "Revenue 2025 dari outlet existing Holycow Jakarta: IDR 28B total (3 outlet). Outlet Medan (baru dibuka Okt 2024) masih ramp-up — revenue per bulan IDR 580-620jt, gross margin ~68%. Tidak ada perubahan hutang. Plafond dipertahankan IDR 5B. Proyek #3 (Medan expansion) dalam proses IC review.",
     },
@@ -80,6 +105,8 @@ const projectHolycow: ICProject = {
       financialReportsReviewed: "Audited 2024",
       periodEndingDate: "2024-12-31",
       limitRecommendation: "Increase",
+      limitCurrentIdr: 2_000_000_000,
+      limitRecommendedIdr: 5_000_000_000,
       reviewNotes:
         "Revenue 2024: IDR 24B (+20% YoY) dari 2 outlet Jakarta. Laporan audit bersih. Outlet Medan dibuka Q4 2024 dengan investasi sendiri — performa awal kuat. Direkomendasikan kenaikan plafond dari IDR 2B ke IDR 5B untuk mendukung rencana full renovation Medan dan potensi outlet berikutnya.",
     },
@@ -172,6 +199,16 @@ const projectHolycow: ICProject = {
       projectedBEPMonths: 12,
       currentDPD: 0,
       maxDPD: 0,
+      revShareTermsSnapshot: {
+        capType: "Return Cap",
+        capMultiple: 1.35,
+        capTimePeriodMonths: null,
+        preBEPRevSharePct: 7.5,
+        postBEPRevSharePct: 8.0,
+        minReturn: null,
+        minReturnMultiple: null,
+        minReturnPayableMonths: null,
+      },
     },
     {
       id: "pp-hc2",
@@ -193,6 +230,16 @@ const projectHolycow: ICProject = {
       overdueHistory: [
         { dueDate: "2024-04-15", daysOverdue: 14, status: "Paid" },
       ],
+      revShareTermsSnapshot: {
+        capType: "Return Cap",
+        capMultiple: 1.4,
+        capTimePeriodMonths: null,
+        preBEPRevSharePct: 8.0,
+        postBEPRevSharePct: 8.0,
+        minReturn: 1.25,
+        minReturnMultiple: null,
+        minReturnPayableMonths: 20,
+      },
     },
     {
       id: "pp-hc3",
@@ -326,11 +373,13 @@ const projectHolycow: ICProject = {
 
 const projectShushu: ICProject = {
   id: "proj-shushu",
+  codaRowId: "i-V5VX_zQKpP",
   brandName: "Shushu",
   brandIsNew: true,
   projectName: "Shushu (#1) — Branch Renovation",
   approvalType: "Project",
-  submittedAt: "2025-09-01T14:10:45Z",
+  /** Aligned with IC / Legal timeline (Apr 2026 disbursement prep). */
+  submittedAt: "2026-03-28T14:10:45Z",
 
   pic: {
     submitter: "Juang Angger Pamungkas",
@@ -369,15 +418,18 @@ const projectShushu: ICProject = {
       financialReportsReviewed: "Management Accounts Jan–Dec 2025 + Bank Statements",
       periodEndingDate: "2025-12-31",
       limitRecommendation: "Keep",
+      limitCurrentIdr: null,
       reviewNotes:
         "Brand Shushu beroperasi sejak 2023 di PIK2 dengan konsep minuman premium dan dessert. Revenue 2025: IDR 2.4B dari 1 outlet (rata-rata IDR 200jt/bulan). Gross margin 61%. Tidak ada hutang. Owner mengajukan dana untuk renovasi gerai agar lebih sesuai dengan konsep terbaru brand.\n\nCatatan: ini adalah proyek pertama bersama Karma. Plafond tidak diminta saat ini — akan di-review setelah proyek pertama selesai.",
     },
   ],
 
   referralSource: "Cold calling",
-  specificReferror: null,
+  specificReferror: "Karma BD — PIK2 tenant outreach",
   referrorBelongsToKP: null,
   otherReferees: [],
+
+  submissionProjectedBEPMonths: 6,
 
   kpContacts: [
     {
@@ -435,20 +487,7 @@ const projectShushu: ICProject = {
   ],
   revenueShareTerms: null,
   fixedReturnTerms: {
-    repaymentSchedule: [
-      { month: 1, amount: 24_987_500 },
-      { month: 2, amount: 24_987_500 },
-      { month: 3, amount: 24_987_500 },
-      { month: 4, amount: 24_987_500 },
-      { month: 5, amount: 24_987_500 },
-      { month: 6, amount: 24_987_500 },
-      { month: 7, amount: 24_987_500 },
-      { month: 8, amount: 24_987_500 },
-      { month: 9, amount: 24_987_500 },
-      { month: 10, amount: 24_987_500 },
-      { month: 11, amount: 24_987_500 },
-      { month: 12, amount: 24_987_500 },
-    ],
+    repaymentSchedule: fixedReturnScheduleFromTotals(12, 250_000_000, 37_350_000, 12_500_000),
     totalRepayment: 299_850_000,
     totalPrincipal: 250_000_000,
     totalInterest: 37_350_000,
@@ -583,6 +622,7 @@ const projectCUM: ICProject = {
       financialReportsReviewed: "Bank Statements Jan–Mar 2026 (Proxy)",
       periodEndingDate: "2026-03-31",
       limitRecommendation: "Keep",
+      limitCurrentIdr: 4_000_000_000,
       reviewNotes:
         "CUM mengganti tim akuntan internal pada Mei 2025 — tidak dapat memproduksi neraca terbaru karena proses transisi. Rekening koran Jan–Mar 2026 digunakan sebagai proxy: cashflow masuk/keluar konsisten dengan volume PO historis (IDR 1.5-2B/bulan). Limit dipertahankan IDR 4B sambil menunggu laporan keuangan formal selesai dipersiapkan.\n\n⚠️ Catatan: Balance sheet formal belum tersedia. KP diminta submit balance sheet terbaru sebelum disbursement berikutnya.",
     },
@@ -591,6 +631,8 @@ const projectCUM: ICProject = {
       financialReportsReviewed: "Management Accounts Jan–Dec 2024",
       periodEndingDate: "2024-12-31",
       limitRecommendation: "Increase",
+      limitCurrentIdr: 2_500_000_000,
+      limitRecommendedIdr: 4_000_000_000,
       reviewNotes:
         "Revenue 2024: IDR 18B (workforce outsourcing + logistik). Pertumbuhan 35% YoY. Kontrak dengan Orang Tua Group diperbarui — volume PO meningkat signifikan. Direkomendasikan kenaikan plafond dari IDR 2.5B ke IDR 4B untuk mendukung volume PO yang lebih besar.",
     },
@@ -759,10 +801,7 @@ const projectCUM: ICProject = {
   branches: [],
   revenueShareTerms: null,
   fixedReturnTerms: {
-    repaymentSchedule: [
-      { month: 1, amount: 124_925_000 },
-      { month: 2, amount: 124_925_000 },
-    ],
+    repaymentSchedule: fixedReturnScheduleFromTotals(2, 249_000_000, 6_468_000, 1_800_000),
     totalRepayment: 257_268_000,
     totalPrincipal: 249_000_000,
     totalInterest: 6_468_000,
@@ -901,6 +940,8 @@ const projectCEA: ICProject = {
       financialReportsReviewed: "Management accounts + rekening koran Q3 2025",
       periodEndingDate: "2025-09-30",
       limitRecommendation: "Increase",
+      limitCurrentIdr: 12_000_000_000,
+      limitRecommendedIdr: 15_000_000_000,
       reviewNotes:
         "Oil & gas services vendor to Aztech. Volume PO naik — rekomendasi menyesuaikan plafond PO agar sesai dengan pipeline kontrak 12 bulan ke depan. Tranche pertama Aztech #1 sebesar IDR 6B dengan tenor 90 hari.",
     },

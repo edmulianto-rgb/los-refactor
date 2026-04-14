@@ -2,17 +2,19 @@ import { ICProject } from "@/data/types";
 import { SectionCard } from "@/components/ui/SectionCard";
 import { DataRow, fmt, fmtPct, fmtDate } from "@/components/ui/DataRow";
 import { ExternalLink, MapPin } from "lucide-react";
+import { isAssetAOrD } from "@/lib/assetClass";
 
 interface Props {
   project: ICProject;
 }
 
-// Late fee defaults per CSV spec
+// Late fee defaults for Asset A / Asset D (policy)
 const DEFAULT_INVESTOR_DAILY_PCT = 0.08;
 const DEFAULT_ASN_DAILY_PCT = 0.02;
 
 export function ProjectTerms({ project }: Props) {
   const { revenueShareTerms: rst, fixedReturnTerms: frt, disbursements, branches, lateFee } = project;
+  const showLateFeeDefaultWarnings = isAssetAOrD(project.assetClass);
 
   const totalDisbursed = disbursements.reduce((s, d) => s + d.plannedAmount, 0);
   const disbursementTarget = project.trancheTargetAmount ?? project.requestedAmount;
@@ -203,21 +205,39 @@ export function ProjectTerms({ project }: Props) {
           <div>
             <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Fixed Repayment Schedule</h4>
             <div className="overflow-x-auto mb-3">
-              <table className="text-xs w-full">
+              <table className="text-xs w-full min-w-[420px]">
                 <thead>
                   <tr className="text-gray-400 border-b">
                     <th className="text-left py-1 pr-3 font-medium">Month</th>
-                    <th className="text-right py-1 font-medium">Amount</th>
+                    <th className="text-right py-1 pr-3 font-medium">Principal</th>
+                    <th className="text-right py-1 pr-3 font-medium">Interest</th>
+                    <th className="text-right py-1 pr-3 font-medium">Carry</th>
+                    <th className="text-right py-1 font-medium">Installment</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {frt.repaymentSchedule.map((row) => (
-                    <tr key={row.month} className="border-b border-gray-50">
-                      <td className="py-1 pr-3 text-gray-600">Month {row.month}</td>
-                      <td className="py-1 text-right text-gray-700">{fmt(row.amount)}</td>
-                    </tr>
-                  ))}
+                  {frt.repaymentSchedule.map((row) => {
+                    const inst = row.principal + row.interest + row.carry;
+                    return (
+                      <tr key={row.month} className="border-b border-gray-50">
+                        <td className="py-1 pr-3 text-gray-600">Month {row.month}</td>
+                        <td className="py-1 pr-3 text-right text-gray-700">{fmt(row.principal)}</td>
+                        <td className="py-1 pr-3 text-right text-gray-700">{fmt(row.interest)}</td>
+                        <td className="py-1 pr-3 text-right text-gray-700">{fmt(row.carry)}</td>
+                        <td className="py-1 text-right font-medium text-gray-800">{fmt(inst)}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
+                <tfoot>
+                  <tr className="border-t border-gray-200 bg-gray-50 font-semibold text-gray-800">
+                    <td className="py-1.5 pr-3">Total</td>
+                    <td className="py-1.5 pr-3 text-right">{fmt(frt.totalPrincipal)}</td>
+                    <td className="py-1.5 pr-3 text-right">{fmt(frt.totalInterest)}</td>
+                    <td className="py-1.5 pr-3 text-right">{fmt(frt.carry)}</td>
+                    <td className="py-1.5 text-right">{fmt(frt.totalRepayment)}</td>
+                  </tr>
+                </tfoot>
               </table>
             </div>
             <div className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-xs text-gray-700 space-y-0.5">
@@ -231,6 +251,12 @@ export function ProjectTerms({ project }: Props) {
                 <div>{fmt(frt.totalInterest)} Interest</div>
                 <div>{fmt(frt.carry)} Carry</div>
               </div>
+              {project.submissionProjectedBEPMonths != null && (
+                <div className="mt-2 pt-2 border-t border-gray-200">
+                  <span className="text-gray-500">Projected BEP (mos)</span>{" "}
+                  <span className="font-semibold text-gray-900">{project.submissionProjectedBEPMonths}</span>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -289,14 +315,14 @@ export function ProjectTerms({ project }: Props) {
               value={
                 <div className="space-y-0.5">
                   <div>{fmtPct(lateFee.dailyPctInvestors)} per day ({fmtPct(lateFee.dailyPctInvestors)} to Investors, {fmtPct(lateFee.dailyPctASN)} to ASN)</div>
-                  {lateFee.dailyPctInvestors !== DEFAULT_INVESTOR_DAILY_PCT && (
+                  {showLateFeeDefaultWarnings && lateFee.dailyPctInvestors !== DEFAULT_INVESTOR_DAILY_PCT && (
                     <div className="text-xs text-amber-600">
-                      Warning: different from default value {fmtPct(DEFAULT_INVESTOR_DAILY_PCT)} per day to Investors for this project type
+                      Warning: different from default value 0.08% per day to Investors for this project type
                     </div>
                   )}
-                  {lateFee.dailyPctASN !== DEFAULT_ASN_DAILY_PCT && (
+                  {showLateFeeDefaultWarnings && lateFee.dailyPctASN !== DEFAULT_ASN_DAILY_PCT && (
                     <div className="text-xs text-amber-600">
-                      Warning: different from default value {fmtPct(DEFAULT_ASN_DAILY_PCT)} per day to ASN for this project type
+                      Warning: different from default value 0.02% per day to ASN for this project type
                     </div>
                   )}
                 </div>
