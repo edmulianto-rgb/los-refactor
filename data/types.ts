@@ -38,6 +38,8 @@ export interface PlafondInfo {
     totalLimit: number;
     poSubLimit: number;
     wcSubLimit: number;
+    /** B_MOD: optional next plafond / covenant review date shown on Proposed row. */
+    maxReviewDate?: string | null;
   } | null;
   // Current
   current: {
@@ -47,9 +49,12 @@ export interface PlafondInfo {
     effectiveDate: string; // ISO date
     expiryDate: string; // ISO date
     limitStatus: "Active" | "Expired" | "None";
+    maxReviewDate?: string | null;
   } | null;
   // Outstanding & remaining (from Brand / Reporting Layer)
   outstandingTotal: number;
+  /** WC bucket outstanding when split from total (B_MOD plafond table). Defaults to 0 in UI if omitted. */
+  outstandingWC?: number;
   remainingTotal: number;
   remainingPO: number;
   remainingWC: number;
@@ -100,6 +105,19 @@ export interface OverdueEvent {
 }
 
 /** Economics slice stored on past recap rows for Asset A/D cross-project comparison. */
+/** Snapshot of daily-interest + late-fee economics for one recap row (B_MOD). */
+export interface DailyInterestRecapSnapshot {
+  interestRate30DayPct: number;
+  serviceFee30DayPct: number;
+  tenorDays: number;
+  minInterestPeriodDays: number;
+  serviceFeeDailyBasis: string;
+  lateFeeBasis: string;
+  gracePeriodDays: number;
+  dailyPctInvestors: number;
+  dailyPctASN: number;
+}
+
 export interface RevShareTermsSnapshot {
   capType: "Return Cap" | "Time Cap";
   capMultiple: number | null;
@@ -128,7 +146,7 @@ export interface PastProject {
   otfTermMonths: number | null; // actual term if completed
   otfIRR: number | null; // percentage, e.g. 18.5
   projectedIRR: number;
-  otfMOIC: null; // not available
+  otfMOIC: number | null;
   projectedMOIC: string; // e.g. "1.3x"
   projectedBEPMonths: number;
   currentDPD: number;
@@ -136,6 +154,23 @@ export interface PastProject {
   overdueHistory?: OverdueEvent[];
   /** At IC time: terms as executed (or as modeled) for this row — used in Asset A/D revenue-share recap comparison. */
   revShareTermsSnapshot?: RevShareTermsSnapshot;
+  /**
+   * B_MOD recap: row classification. When omitted on an Asset B brand card, UI infers from the viewed project’s asset class.
+   */
+  bRecapKind?: "B-I" | "B-PO" | "A/D";
+  /** Counterparty / payor labels for this historical or proposed tranche. */
+  payors?: string[];
+  /** For Daily Interest rows at IC time — drives B_MOD recap warnings. */
+  dailyInterestRecap?: DailyInterestRecapSnapshot | null;
+  /** A/D rows only: PvA % when available from reporting layer. */
+  pvaPct?: number | null;
+  /** Non–Daily Interest rows: late fee terms at IC time for recap display / A/D checks. */
+  lateFeeRecap?: {
+    basis: string;
+    gracePeriodDays: number;
+    dailyPctInvestors: number;
+    dailyPctASN: number;
+  } | null;
 }
 
 export interface DisbursementRow {
@@ -196,6 +231,20 @@ export interface DailyInterestTerms {
   tenorDays: number;
   minInterestPeriodDays: number;
   serviceFeeDailyBasis: string;
+}
+
+/** B_MOD: proposed tranche payor / PO / invoice grid (Coda-sourced in production). */
+export interface PayorInvoiceRow {
+  id: string;
+  payorLabel: string;
+  poOrInvoiceNumber: string;
+  dueDate: string;
+  amount: number;
+  currency: "IDR" | "USD";
+  payorType: string;
+  payeeProjects: string;
+  notes: string;
+  riskLevel: string;
 }
 
 export interface PTInfo {
@@ -308,6 +357,9 @@ export interface ICProject {
 
   // PT
   ptDetails: PTInfo[];
+
+  /** B_MOD: Payor / PO / invoice lines for the proposed submission. */
+  payorInvoices?: PayorInvoiceRow[];
 
   // Approval
   fundingSource: string;

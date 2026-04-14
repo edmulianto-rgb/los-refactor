@@ -2,6 +2,7 @@ import Link from "next/link";
 import { mockProjects } from "@/data/mock";
 import { computeWarnings } from "@/lib/warnings";
 import { Tag, approvalTypeVariant, assetClassVariant } from "@/components/ui/Tag";
+import { fieldGuideHtmlPath, fieldGuideSlugForProjectId } from "@/lib/fieldGuideSlug";
 
 function fmt(n: number): string {
   return `IDR ${new Intl.NumberFormat("id-ID").format(n)}`;
@@ -11,12 +12,20 @@ function fmtDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
 
-export default function HomePage() {
+export default function FieldGuideIndexPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Pending Reviews</h1>
-        <p className="text-sm text-gray-500 mt-1">{mockProjects.length} project{mockProjects.length !== 1 ? "s" : ""} awaiting your review</p>
+        <Link href="/" className="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+          ← Back to pending reviews
+        </Link>
+        <h1 className="text-2xl font-bold text-gray-900 mt-4">Interactive field guide</h1>
+        <p className="text-sm text-gray-500 mt-1 max-w-2xl">
+          Pick a project to open the static field guide (same markup as{" "}
+          <code className="text-xs bg-gray-100 px-1 rounded">public/field-guide.html</code>
+          ). The list below is built from the same <code className="text-xs bg-gray-100 px-1 rounded">mockProjects</code>{" "}
+          array as the home page, so new mock rows appear here automatically.
+        </p>
       </div>
 
       <div className="space-y-3">
@@ -25,12 +34,14 @@ export default function HomePage() {
           const errorCount = warnings.filter((w) => w.level === "error").length;
           const warnCount = warnings.filter((w) => w.level === "warn").length;
           const hasIssues = errorCount > 0 || warnCount > 0;
+          const slug = fieldGuideSlugForProjectId(project.id);
+          const href = fieldGuideHtmlPath(slug);
 
           return (
-            <Link
+            <a
               key={project.id}
-              href={`/project/${project.id}`}
-              className="block bg-white border border-gray-200 rounded-xl px-6 py-5 shadow-sm hover:shadow-md hover:border-blue-200 transition-all group"
+              href={href}
+              className="block bg-white border border-gray-200 rounded-xl px-6 py-5 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all group"
             >
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="flex-1 min-w-0">
@@ -43,7 +54,7 @@ export default function HomePage() {
                     {project.syariah && <Tag label="Syariah" variant="syariah" />}
                   </div>
                   <div className="flex items-baseline gap-3 flex-wrap">
-                    <h2 className="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors">
+                    <h2 className="text-base font-semibold text-gray-900 group-hover:text-indigo-700 transition-colors">
                       {project.projectName}
                     </h2>
                     <span className="text-sm font-semibold text-gray-700 shrink-0">
@@ -53,9 +64,13 @@ export default function HomePage() {
                     </span>
                   </div>
                   <div className="flex items-center gap-3 mt-2 flex-wrap text-xs text-gray-500">
-                    <span><span className="text-gray-400">Analyst:</span> {project.pic.primaryAnalyst}</span>
+                    <span>
+                      <span className="text-gray-400">Analyst:</span> {project.pic.primaryAnalyst}
+                    </span>
                     <span>·</span>
-                    <span><span className="text-gray-400">By:</span> {project.pic.submitter}</span>
+                    <span>
+                      <span className="text-gray-400">By:</span> {project.pic.submitter}
+                    </span>
                     <span>·</span>
                     <span>Submitted {fmtDate(project.submittedAt)}</span>
                   </div>
@@ -80,30 +95,26 @@ export default function HomePage() {
                   <span className="text-xs text-gray-400">
                     {project.icVotes.filter((v) => v.vote !== null).length}/{project.icVotes.length} voted
                   </span>
+                  <span className="text-[10px] text-indigo-500 font-medium">Open field guide →</span>
                 </div>
               </div>
 
-              {/* Warning summary inline */}
               {hasIssues && (
                 <div className="mt-3 border-t border-gray-50 pt-3 space-y-1">
                   {warnings.slice(0, 2).map((w, i) => (
-                    <div key={i} className={`text-xs flex items-start gap-1.5 ${w.level === "error" ? "text-red-600" : "text-amber-600"}`}>
+                    <div
+                      key={i}
+                      className={`text-xs flex items-start gap-1.5 ${w.level === "error" ? "text-red-600" : "text-amber-600"}`}
+                    >
                       <span className="shrink-0">{w.level === "error" ? "✖" : "▲"}</span>
-                      <span className="line-clamp-1">{w.message}</span>
+                      <span className="line-clamp-2">{w.message}</span>
                     </div>
                   ))}
-                  {warnings.length > 2 && (
-                    <div className="text-xs text-gray-400">+ {warnings.length - 2} more issue{warnings.length - 2 > 1 ? "s" : ""}</div>
-                  )}
                 </div>
               )}
-            </Link>
+            </a>
           );
         })}
-      </div>
-
-      <div className="mt-8 p-4 bg-blue-50 border border-blue-100 rounded-lg text-sm text-blue-700">
-        <strong>Prototype note:</strong> This uses mocked data modelled on the verified IC Review data contract. Voting and approval actions are UI-only and do not connect to Coda in this prototype.
       </div>
     </div>
   );

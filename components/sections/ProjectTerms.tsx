@@ -2,7 +2,14 @@ import { ICProject } from "@/data/types";
 import { SectionCard } from "@/components/ui/SectionCard";
 import { DataRow, fmt, fmtPct, fmtDate } from "@/components/ui/DataRow";
 import { ExternalLink, MapPin } from "lucide-react";
-import { isAssetAOrD } from "@/lib/assetClass";
+import { isAssetAOrD, isAssetB, isAssetBI } from "@/lib/assetClass";
+import {
+  dailyRecapFromProject,
+  lateFeeBasisWarningB,
+  lateFeeDailyAsnWarningB,
+  lateFeeDailyInvestorWarningB,
+  lateFeeGraceWarningB,
+} from "@/lib/bRecapRules";
 
 interface Props {
   project: ICProject;
@@ -15,6 +22,9 @@ const DEFAULT_ASN_DAILY_PCT = 0.02;
 export function ProjectTerms({ project }: Props) {
   const { revenueShareTerms: rst, fixedReturnTerms: frt, disbursements, branches, lateFee } = project;
   const showLateFeeDefaultWarnings = isAssetAOrD(project.assetClass);
+  const assetB = isAssetB(project.assetClass);
+  const bDailyRecap = assetB && project.dailyInterestTerms ? dailyRecapFromProject(project) : null;
+  const bKindForTerms = isAssetBI(project.assetClass) ? "B-I" : "B-PO";
 
   const totalDisbursed = disbursements.reduce((s, d) => s + d.plannedAmount, 0);
   const disbursementTarget = project.trancheTargetAmount ?? project.requestedAmount;
@@ -33,9 +43,23 @@ export function ProjectTerms({ project }: Props) {
         {/* Disbursement schedule */}
         <div>
           <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Disbursement Schedule</h4>
-          {disbursementMismatch && (
+          {assetB && (
+            <div className="text-xs text-gray-700 mb-2">
+              <span className="font-semibold text-gray-500 uppercase tracking-wide text-[10px]">Project target amount</span>
+              <div className={`mt-0.5 font-medium ${disbursementMismatch ? "text-red-600" : "text-gray-900"}`}>
+                {fmt(disbursementTarget)}
+                {disbursementMismatch && (
+                  <span className="block text-[11px] font-normal mt-1 text-red-600">
+                    Warning: Not same as Project Target Amount (schedule total {fmt(totalDisbursed)})
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+          {!assetB && disbursementMismatch && (
             <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2 mb-2">
-              Warning: Not same as Project Target Amount (disbursements total {fmt(totalDisbursed)}, target {fmt(disbursementTarget)})
+              Warning: Not same as Project Target Amount (disbursements total {fmt(totalDisbursed)}, target{" "}
+              {fmt(disbursementTarget)})
             </div>
           )}
           <div className="overflow-x-auto">
@@ -291,30 +315,65 @@ export function ProjectTerms({ project }: Props) {
             <DataRow
               label="Late Fee Basis"
               value={
-                lateFee.basis !== "Overdue Amount" ? (
+                assetB && bDailyRecap ? (
+                  lateFeeBasisWarningB(bKindForTerms, lateFee.basis) ? (
+                    <span>
+                      {lateFee.basis}{" "}
+                      <span className="text-xs text-amber-600">{lateFeeBasisWarningB(bKindForTerms, lateFee.basis)}</span>
+                    </span>
+                  ) : (
+                    lateFee.basis
+                  )
+                ) : showLateFeeDefaultWarnings && lateFee.basis !== "Overdue Amount" ? (
                   <span>
                     {lateFee.basis}{" "}
-                    <span className="text-xs text-amber-600">Warning: different from default value of Overdue Amount for this project type</span>
+                    <span className="text-xs text-amber-600">
+                      Warning: different from default value of Overdue Amount for this project type
+                    </span>
                   </span>
-                ) : lateFee.basis
+                ) : (
+                  lateFee.basis
+                )
               }
             />
             <DataRow
               label="Late Fee Grace Period (days)"
               value={
-                lateFee.gracePeriodDays !== 5 ? (
+                assetB && bDailyRecap ? (
+                  lateFeeGraceWarningB(bKindForTerms, lateFee.gracePeriodDays) ? (
+                    <span>
+                      {lateFee.gracePeriodDays} days{" "}
+                      <span className="text-xs text-amber-600">{lateFeeGraceWarningB(bKindForTerms, lateFee.gracePeriodDays)}</span>
+                    </span>
+                  ) : (
+                    `${lateFee.gracePeriodDays} days`
+                  )
+                ) : showLateFeeDefaultWarnings && lateFee.gracePeriodDays !== 5 ? (
                   <span>
                     {lateFee.gracePeriodDays} days{" "}
-                    <span className="text-xs text-amber-600">Warning: different from default value of 5 days for this project type</span>
+                    <span className="text-xs text-amber-600">
+                      Warning: different from default value of 5 days for this project type
+                    </span>
                   </span>
-                ) : `${lateFee.gracePeriodDays} days`
+                ) : (
+                  `${lateFee.gracePeriodDays} days`
+                )
               }
             />
             <DataRow
               label="Daily Late Fee %"
               value={
                 <div className="space-y-0.5">
-                  <div>{fmtPct(lateFee.dailyPctInvestors)} per day ({fmtPct(lateFee.dailyPctInvestors)} to Investors, {fmtPct(lateFee.dailyPctASN)} to ASN)</div>
+                  <div>
+                    {fmtPct(lateFee.dailyPctInvestors)} per day ({fmtPct(lateFee.dailyPctInvestors)} to Investors,{" "}
+                    {fmtPct(lateFee.dailyPctASN)} to ASN)
+                  </div>
+                  {assetB && bDailyRecap && lateFeeDailyInvestorWarningB(bDailyRecap) && (
+                    <div className="text-xs text-amber-600">{lateFeeDailyInvestorWarningB(bDailyRecap)}</div>
+                  )}
+                  {assetB && bDailyRecap && lateFeeDailyAsnWarningB(bDailyRecap) && (
+                    <div className="text-xs text-amber-600">{lateFeeDailyAsnWarningB(bDailyRecap)}</div>
+                  )}
                   {showLateFeeDefaultWarnings && lateFee.dailyPctInvestors !== DEFAULT_INVESTOR_DAILY_PCT && (
                     <div className="text-xs text-amber-600">
                       Warning: different from default value 0.08% per day to Investors for this project type

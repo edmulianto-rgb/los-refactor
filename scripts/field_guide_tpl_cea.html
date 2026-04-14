@@ -108,6 +108,7 @@
               <th>Requested Limit <b class="b c-pl" onclick="select('L2')">L2</b></th>
               <th>PO Sub Limit <b class="b c-pl" onclick="select('L3')">L3</b></th>
               <th>Working Capital Sub Limit <b class="b c-pl" onclick="select('L4')">L4</b></th>
+              <th>Max review date <b class="b c-pl" onclick="select('L9')">L9</b> <span style="font-weight:400;color:#94a3b8">(B_MOD)</span></th>
             </tr>
           </thead>
           <tbody>
@@ -116,6 +117,7 @@
               <td><div style="font-weight:600;color:#059669">+Rp 3.000.000.000</div><div style="font-size:9px;color:#94a3b8">(to Rp 15.000.000.000)</div></td>
               <td><div style="font-weight:600;color:#059669">+Rp 3.000.000.000</div><div style="font-size:9px;color:#94a3b8">(to Rp 15.000.000.000)</div></td>
               <td><div style="font-weight:600;color:#64748b">Rp 0</div><div style="font-size:9px;color:#94a3b8">(to Rp 0)</div></td>
+              <td id="f-L9" style="font-size:10px;vertical-align:top">30 Sep 2026</td>
             </tr>
             <tr>
               <td class="row-label" id="f-L1">
@@ -134,12 +136,14 @@
                 <div style="font-size:9px">Remaining: Rp 9.000.000.000</div>
               </td>
               <td id="f-L4"><span style="color:#94a3b8">Rp 0</span></td>
+              <td style="font-size:10px;vertical-align:top">31 Mar 2026</td>
             </tr>
             <tr>
               <td class="row-label" id="f-L8">Superseded <b class="b c-pl" onclick="select('L8')">L8</b></td>
               <td style="color:#94a3b8">Rp 10.000.000.000</td>
               <td style="color:#94a3b8">Rp 10.000.000.000</td>
               <td style="color:#94a3b8">Rp 0</td>
+              <td style="color:#cbd5e1">—</td>
             </tr>
           </tbody>
         </table>
@@ -214,30 +218,76 @@
       <div class="card-section-title">Proposed and Past Projects Recap Table</div>
       <div class="card-body" style="overflow-x:auto">
         <p style="font-size:11px;color:#64748b;line-height:1.45;margin-bottom:8px">
-          The <strong>Proposed</strong> row for <em>this</em> submission is omitted from the table unless another
-          project appears here with status <strong>IC Review</strong> or <strong>Pending IC submission</strong>.
+          <strong>Asset B (B_MOD)</strong> — same wide recap as CUM: the Proposed tranche row is always included for this KP.
         </p>
-        <p style="font-size:10px;color:#94a3b8;font-style:italic;margin-bottom:8px">
-          This submission&apos;s proposed row is hidden in the recap because no other in-queue proposal is listed here.
-        </p>
-        <table class="tbl" style="min-width:900px;font-size:10px">
+        <table class="tbl" style="min-width:920px;font-size:9px">
           <thead>
             <tr>
-              <th class="right" style="width:28px">#</th>
-              <th>Project <b class="b c-pp" onclick="select('R1')">R1</b></th>
-              <th>Status <b class="b c-pp" onclick="select('R2')">R2</b></th>
-              <th>Financing Type <b class="b c-pp" onclick="select('R3')">R3</b></th>
-              <th class="right">Amount <b class="b c-pp" onclick="select('R4')">R4</b></th>
-              <th class="right">Outstanding <b class="b c-pp" onclick="select('R5')">R5</b></th>
-              <th class="right">Term <b class="b c-pp" onclick="select('R6')">R6</b></th>
-              <th class="right">PvA <b class="b c-pp" onclick="select('R7')">R7</b></th>
-              <th class="right">IRR <b class="b c-pp" onclick="select('R8')">R8</b></th>
-              <th class="right">MOIC <b class="b c-pp" onclick="select('R9')">R9</b></th>
-              <th class="right">DPD <b class="b c-pp" onclick="select('R10')">R10</b></th>
+              <th class="right">#</th>
+              <th>Project</th>
+              <th>Status</th>
+              <th>Fin.</th>
+              <th class="right">Amt</th>
+              <th class="right">Out</th>
+              <th>Type</th>
+              <th>Payor</th>
+              <th class="right">Term</th>
+              <th class="right">Min d</th>
+              <th class="right">I30</th>
+              <th class="right">S30</th>
+              <th>Late</th>
+              <th class="right">Gr</th>
+              <th>Daily</th>
+              <th class="right">DPD</th>
+              <th class="right">PvA</th>
+              <th class="right">IRR</th>
+              <th class="right">MOIC</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td colspan="11" style="text-align:center;padding:16px;color:#94a3b8;font-size:11px">No rows to display for this recap filter.</td></tr>
+            <tr style="background:#eff6ff">
+              <td class="right">1</td>
+              <td id="f-R1" style="font-weight:600">CEA — Aztech #1</td>
+              <td id="f-R2"><span class="tag tag-amber" style="font-size:8px">Proposed</span></td>
+              <td id="f-R3">Daily</td>
+              <td id="f-R4" class="right">6B</td>
+              <td id="f-R5" class="right" style="color:#94a3b8">—</td>
+              <td><span class="tag tag-slate" style="font-size:8px">B-PO</span></td>
+              <td>Aztech</td>
+              <td id="f-R6" class="right">90d</td>
+              <td class="right">45</td>
+              <td class="right">1.6%</td>
+              <td class="right">0.6%</td>
+              <td>OutPrin</td>
+              <td class="right">0</td>
+              <td style="font-size:8px">0.08%/0.02%</td>
+              <td id="f-R10" class="right" style="color:#94a3b8">—</td>
+              <td id="f-R7" class="right" style="color:#94a3b8">N/A</td>
+              <td id="f-R8" class="right">18.5% proj</td>
+              <td id="f-R9" class="right">1.05x · BEP 2</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-section-title">Proposed Project&apos;s Payor / PO / Invoice Details <span style="font-size:10px;font-weight:400;color:#94a3b8">(B_MOD)</span></div>
+      <div class="card-body" style="overflow-x:auto">
+        <table class="tbl" style="min-width:680px;font-size:10px">
+          <thead><tr>
+            <th>#</th><th>Payor</th><th>PO / Invoice #</th><th>Due</th><th class="right">Amount</th><th>Type</th><th>Risk</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Aztech Industries Berhad</td>
+              <td class="mono">PO-AZTECH-DOM-2025-8841</td>
+              <td>12 Feb 2026</td>
+              <td class="right" style="font-weight:600">Rp 6.000.000.000</td>
+              <td>Corporate PO</td>
+              <td><span class="tag tag-slate" style="font-size:8px">Low</span></td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -246,7 +296,8 @@
     <div class="card">
       <div class="card-section-title">Project Terms Details</div>
       <div class="card-body">
-        <div class="sub-h">Disbursement Schedule</div>
+        <div class="sub-h">Disbursement Schedule <span style="font-size:10px;color:#94a3b8">(B_MOD)</span></div>
+        <div style="font-size:11px;margin-bottom:8px;color:#334155"><strong>Project target amount:</strong> Rp 6.000.000.000</div>
         <table class="tbl">
           <thead><tr>
             <th>Disbursement # <b class="b c-tm" onclick="select('T1')">T1</b></th>
@@ -265,14 +316,14 @@
         <div class="field-row" id="f-T6"><span class="field-label">Service fee (30-day) <b class="b c-tm" onclick="select('T6')">T6</b></span><span class="field-value">0.6%</span></div>
         <div class="field-row" id="f-T7"><span class="field-label">Tenor (days) <b class="b c-tm" onclick="select('T7')">T7</b></span><span class="field-value">90 days</span></div>
         <div class="field-row" id="f-T8"><span class="field-label">Min interest period <b class="b c-tm" onclick="select('T8')">T8</b></span><span class="field-value">45 days</span></div>
-        <div class="field-row" id="f-T9"><span class="field-label">Service fee basis <b class="b c-tm" onclick="select('T9')">T9</b></span><span class="field-value">Disbursed Amount</span></div>
+        <div class="field-row" id="f-T9"><span class="field-label">Service fee basis <b class="b c-tm" onclick="select('T9')">T9</b></span><span class="field-value">Outstanding Principal</span></div>
         <div class="field-row" id="f-T10"><span class="field-label">MOIC <b class="b c-tm" onclick="select('T10')">T10</b></span><span class="field-value">1.05x projected</span></div>
         <div class="field-row" id="f-T11"><span class="field-label">IRR <b class="b c-tm" onclick="select('T11')">T11</b></span><span class="field-value">18.5% projected</span></div>
         <div class="field-row" id="f-T12"><span class="field-label">BEP <b class="b c-tm" onclick="select('T12')">T12</b></span><span class="field-value">Month 2 projected</span></div>
         <div class="sub-h" style="margin-top:14px">Late Fees</div>
-        <div class="field-row" id="f-T13"><span class="field-label">Late Fee Basis <b class="b c-tm" onclick="select('T13')">T13</b></span><span class="field-value">Disbursed Amount</span></div>
+        <div class="field-row" id="f-T13"><span class="field-label">Late Fee Basis <b class="b c-tm" onclick="select('T13')">T13</b></span><span class="field-value">Overdue Amount <span style="font-size:10px;color:#64748b">(per Coda)</span></span></div>
         <div class="field-row" id="f-T14"><span class="field-label">Grace period (days) <b class="b c-tm" onclick="select('T14')">T14</b></span><span class="field-value">5 days</span></div>
-        <div class="field-row" id="f-T15"><span class="field-label">Daily late fee % <b class="b c-tm" onclick="select('T15')">T15</b></span><span class="field-value">0.08% investors · 0.02% ASN</span></div>
+        <div class="field-row" id="f-T15"><span class="field-label">Daily late fee % <b class="b c-tm" onclick="select('T15')">T15</b></span><span class="field-value">0.08% to Investors · 0.02% to ASN per day <span style="font-size:10px;color:#64748b">(Coda; not 1.6%/30 &amp; 0.6%/30)</span></span></div>
         <div class="field-row" id="f-T16"><span class="field-label">Notes <b class="b c-tm" onclick="select('T16')">T16</b></span><span class="field-value" style="font-size:11px">Daily interest PO structure per term sheet.</span></div>
       </div>
     </div>

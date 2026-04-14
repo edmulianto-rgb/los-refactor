@@ -11,6 +11,7 @@ import { FinancialReviews } from "@/components/sections/FinancialReviews";
 import { KPDetails } from "@/components/sections/KPDetails";
 import { KPContacts } from "@/components/sections/KPContacts";
 import { PastProjectsRecap } from "@/components/sections/PastProjectsRecap";
+import { PayorInvoiceSection } from "@/components/sections/PayorInvoiceSection";
 import { ProjectTerms } from "@/components/sections/ProjectTerms";
 import { CreditMemoNotes } from "@/components/sections/CreditMemoNotes";
 import { PTDetails } from "@/components/sections/PTDetails";
@@ -92,6 +93,10 @@ export default async function ProjectPage({ params }: Params) {
       {/* Past Projects */}
       <div className="mb-4">
         <PastProjectsRecap project={project} />
+      </div>
+
+      <div className="mb-4">
+        <PayorInvoiceSection project={project} />
       </div>
 
       {/* Project Terms */}

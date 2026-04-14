@@ -104,6 +104,7 @@
               <th>Requested Limit <b class="b c-pl" onclick="select('L2')">L2</b></th>
               <th>PO Sub Limit <b class="b c-pl" onclick="select('L3')">L3</b></th>
               <th>Working Capital Sub Limit <b class="b c-pl" onclick="select('L4')">L4</b></th>
+              <th>Max review date <b class="b c-pl" onclick="select('L9')">L9</b> <span style="font-weight:400;color:#94a3b8">(B_MOD)</span></th>
             </tr>
           </thead>
           <tbody>
@@ -128,12 +129,14 @@
                 <div style="font-size:9px;color:#94a3b8">Outstanding: Rp 0</div>
                 <div style="font-size:9px">Remaining: Rp 2.000.000.000</div>
               </td>
+              <td id="f-L9" style="font-size:10px;color:#334155;vertical-align:top">30 Jun 2026</td>
             </tr>
             <tr>
               <td class="row-label" id="f-L8">Superseded <b class="b c-pl" onclick="select('L8')">L8</b></td>
               <td style="color:#94a3b8">Rp 2.500.000.000</td>
               <td style="color:#94a3b8">Rp 1.500.000.000</td>
               <td style="color:#94a3b8">Rp 1.000.000.000</td>
+              <td style="color:#cbd5e1">—</td>
             </tr>
           </tbody>
         </table>
@@ -228,72 +231,94 @@
       <div class="card-section-title">Proposed and Past Projects Recap Table</div>
       <div class="card-body" style="overflow-x:auto">
         <p style="font-size:11px;color:#64748b;line-height:1.45;margin-bottom:8px">
-          The <strong>Proposed</strong> row for <em>this</em> submission is omitted from the table unless another
-          project appears here with status <strong>IC Review</strong> or <strong>Pending IC submission</strong>
-          (so multiple in-flight proposals stay comparable).
+          <strong>Asset B (B_MOD)</strong> — wide recap: project type, payors, daily-interest economics, late-fee checks, DPD, IRR, MOIC/BEP.
+          Rows sorted by status then IC approval date. Because project #27 is <strong>Pending IC submission</strong>, the Proposed row (#26) stays visible.
         </p>
-        <p style="font-size:10px;color:#94a3b8;font-style:italic;margin-bottom:8px">
-          Because project #27 is listed as Pending IC submission, this submission&apos;s Proposed row (#26) stays visible in the recap.
-        </p>
-        <table class="tbl" style="min-width:900px;font-size:10px">
+        <table class="tbl" style="min-width:1180px;font-size:9px">
           <thead>
             <tr>
-              <th class="right" style="width:28px">#</th>
+              <th class="right">#</th>
               <th>Project <b class="b c-pp" onclick="select('R1')">R1</b></th>
               <th>Status <b class="b c-pp" onclick="select('R2')">R2</b></th>
-              <th>Financing Type <b class="b c-pp" onclick="select('R3')">R3</b></th>
-              <th class="right">Amount <b class="b c-pp" onclick="select('R4')">R4</b></th>
-              <th class="right">Outstanding <b class="b c-pp" onclick="select('R5')">R5</b></th>
-              <th class="right">Term <b class="b c-pp" onclick="select('R6')">R6</b></th>
-              <th class="right">PvA <b class="b c-pp" onclick="select('R7')">R7</b></th>
-              <th class="right">IRR <b class="b c-pp" onclick="select('R8')">R8</b></th>
-              <th class="right">MOIC <b class="b c-pp" onclick="select('R9')">R9</b></th>
-              <th class="right">DPD <b class="b c-pp" onclick="select('R10')">R10</b></th>
+              <th>Fin. <b class="b c-pp" onclick="select('R3')">R3</b></th>
+              <th class="right">Amt</th>
+              <th class="right">Out</th>
+              <th>Type</th>
+              <th>Payor(s)</th>
+              <th class="right">Term</th>
+              <th class="right">Min d</th>
+              <th class="right">I30</th>
+              <th class="right">S30</th>
+              <th>Late</th>
+              <th class="right">Gr</th>
+              <th>Daily late</th>
+              <th class="right">DPD</th>
+              <th class="right">PvA</th>
+              <th class="right">IRR</th>
+              <th class="right">MOIC</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td class="right" style="color:#94a3b8">1</td><td style="font-weight:500">Cipta Usaha Media (#22) — PO - Orang Tua (Apr 2025)</td><td><span class="tag tag-slate" style="font-size:9px">Completed</span></td><td>Fixed Return</td><td class="right">Rp 375.000.000</td><td class="right" style="color:#94a3b8">—</td><td class="right">2 mo OTF</td><td class="right" style="color:#94a3b8">N/A</td><td class="right"><span class="irr-green">21.8% OTF</span></td><td class="right" style="font-size:9px">1.03x</td><td class="right" style="color:#94a3b8">—</td></tr>
-            <tr><td class="right" style="color:#94a3b8">2</td><td style="font-weight:500">Cipta Usaha Media (#23) — PO - Orang Tua (Jun 2025)</td><td><span class="tag tag-slate" style="font-size:9px">Completed</span></td><td>Fixed Return</td><td class="right">Rp 300.000.000</td><td class="right" style="color:#94a3b8">—</td><td class="right">2 mo OTF</td><td class="right" style="color:#94a3b8">N/A</td><td class="right"><span class="irr-green">21.2% OTF</span></td><td class="right" style="font-size:9px">1.03x</td><td class="right" style="color:#94a3b8">—</td></tr>
-            <tr><td class="right" style="color:#94a3b8">3</td><td style="font-weight:500">Cipta Usaha Media (#24) — PO - Orang Tua (Sep 2025)</td><td><span class="tag tag-slate" style="font-size:9px">Completed</span></td><td>Fixed Return</td><td class="right">Rp 249.000.000</td><td class="right" style="color:#94a3b8">—</td><td class="right">2 mo OTF</td><td class="right" style="color:#94a3b8">N/A</td><td class="right"><span class="irr-green">21.1% OTF</span></td><td class="right" style="font-size:9px">1.03x</td><td class="right" style="color:#94a3b8">—</td></tr>
-            <tr><td class="right" style="color:#94a3b8">4</td><td style="font-weight:500">Cipta Usaha Media (#25) — PO - Orang Tua (Jan 2026)</td><td><span class="tag tag-green" style="font-size:9px">Active</span></td><td>Fixed Return</td><td class="right">Rp 323.172.379</td><td class="right" style="font-weight:600">Rp 323.172.379</td><td class="right">2 months</td><td class="right" style="color:#94a3b8">N/A</td><td class="right"><span class="irr-green">21.1%</span></td><td class="right" style="font-size:9px">1.03x</td><td class="right" style="font-size:9px">3d max <span style="color:#64748b">(paid)</span></td></tr>
-            <tr><td class="right" style="color:#94a3b8">5</td><td style="font-weight:500">Cipta Usaha Media (#27) — PO: Orang Tua (draft, pending submission)</td><td><span class="tag tag-blue" style="font-size:9px">Pending IC submission</span></td><td>Fixed Return</td><td class="right">Rp 180.000.000</td><td class="right" style="color:#94a3b8">—</td><td class="right">2 months</td><td class="right" style="color:#94a3b8">N/A</td><td class="right">21.0% projected</td><td class="right" style="font-size:9px">1.03x</td><td class="right" style="color:#94a3b8">—</td></tr>
-            <tr>
+            <tr><td class="right" style="color:#94a3b8">1</td><td>CUM (#22)</td><td><span class="tag tag-slate" style="font-size:8px">Done</span></td><td>Fixed</td><td class="right">375jt</td><td class="right" style="color:#94a3b8">—</td><td><span class="tag tag-slate" style="font-size:8px">B-PO</span></td><td>Orang Tua</td><td class="right">2 mo</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td>OutPrin</td><td class="right">0</td><td style="font-size:8px">0.1%/0%</td><td class="right" style="color:#94a3b8">—</td><td class="right" style="color:#94a3b8">N/A</td><td class="right"><span class="irr-green">21.8%</span></td><td class="right">1.03x</td></tr>
+            <tr><td class="right" style="color:#94a3b8">2</td><td>CUM (#23)</td><td><span class="tag tag-slate" style="font-size:8px">Done</span></td><td>Fixed</td><td class="right">300jt</td><td class="right" style="color:#94a3b8">—</td><td><span class="tag tag-slate" style="font-size:8px">B-PO</span></td><td>Orang Tua</td><td class="right">2 mo</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td>OutPrin</td><td class="right">0</td><td style="font-size:8px">0.1%/0%</td><td class="right" style="color:#94a3b8">—</td><td class="right" style="color:#94a3b8">N/A</td><td class="right"><span class="irr-green">21.2%</span></td><td class="right">1.03x</td></tr>
+            <tr><td class="right" style="color:#94a3b8">3</td><td>CUM (#24)</td><td><span class="tag tag-slate" style="font-size:8px">Done</span></td><td>Fixed</td><td class="right">249jt</td><td class="right" style="color:#94a3b8">—</td><td><span class="tag tag-slate" style="font-size:8px">B-PO</span></td><td>Orang Tua</td><td class="right">2 mo</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td>OutPrin</td><td class="right">0</td><td style="font-size:8px">0.1%/0%</td><td class="right" style="color:#94a3b8">—</td><td class="right" style="color:#94a3b8">N/A</td><td class="right"><span class="irr-green">21.1%</span></td><td class="right">1.03x</td></tr>
+            <tr><td class="right" style="color:#94a3b8">4</td><td>CUM (#25)</td><td><span class="tag tag-green" style="font-size:8px">Active</span></td><td>Fixed</td><td class="right">323jt</td><td class="right">323jt</td><td><span class="tag tag-slate" style="font-size:8px">B-PO</span></td><td>Orang Tua</td><td class="right">2 mo</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td>OutPrin</td><td class="right">0</td><td style="font-size:8px">0.1%/0%</td><td class="right" style="font-size:8px">3d</td><td class="right" style="color:#94a3b8">N/A</td><td class="right"><span class="irr-green">21.1%</span></td><td class="right">1.03x</td></tr>
+            <tr><td class="right" style="color:#94a3b8">5</td><td>CUM (#27)</td><td><span class="tag tag-blue" style="font-size:8px">Pending</span></td><td>Fixed</td><td class="right">180jt</td><td class="right" style="color:#94a3b8">—</td><td><span class="tag tag-slate" style="font-size:8px">B-PO</span></td><td>Orang Tua</td><td class="right">2 mo</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td>OutPrin</td><td class="right">0</td><td style="font-size:8px">0.1%/0%</td><td class="right" style="color:#94a3b8">—</td><td class="right" style="color:#94a3b8">N/A</td><td class="right">21.0% proj</td><td class="right">1.03x</td></tr>
+            <tr style="background:#eff6ff">
               <td class="right" style="color:#94a3b8">6</td>
-              <td id="f-R1" style="font-weight:500">Cipta Usaha Media (#26) — PO Financing: Orang Tua [PROPOSED]</td>
-              <td id="f-R2"><span class="tag tag-amber" style="font-size:9px">Proposed</span></td>
-              <td id="f-R3">Fixed Return</td>
-              <td id="f-R4" class="right">Rp 249.000.000</td>
+              <td id="f-R1" style="font-weight:600">CUM (#26) [PROPOSED]</td>
+              <td id="f-R2"><span class="tag tag-amber" style="font-size:8px">Proposed</span></td>
+              <td id="f-R3">Daily Int.</td>
+              <td id="f-R4" class="right">249jt</td>
               <td id="f-R5" class="right" style="color:#94a3b8">—</td>
-              <td id="f-R6" class="right">2 months</td>
-              <td id="f-R7" class="right" style="color:#94a3b8">N/A</td>
-              <td id="f-R8" class="right"><span class="irr-green">21.1% projected</span></td>
-              <td id="f-R9" class="right" style="font-size:9px">1.03x projected · BEP month 1</td>
+              <td><span class="tag tag-slate" style="font-size:8px">B-PO</span></td>
+              <td>Orang Tua</td>
+              <td id="f-R6" class="right">60d</td>
+              <td class="right">30</td>
+              <td class="right">1.6%</td>
+              <td class="right">0.6%</td>
+              <td>OutPrin</td>
+              <td class="right">0</td>
+              <td style="font-size:8px">0.1%/0%</td>
               <td id="f-R10" class="right" style="color:#94a3b8">—</td>
+              <td id="f-R7" class="right" style="color:#94a3b8">N/A</td>
+              <td id="f-R8" class="right"><span class="irr-green">21.1% proj</span></td>
+              <td id="f-R9" class="right" style="font-size:8px">1.032x · BEP 1</td>
             </tr>
           </tbody>
-          <tfoot>
-            <tr style="font-size:10px;background:#f8fafc;font-weight:600;color:#64748b">
-              <td></td>
-              <td colspan="2">3 Completed, 1 Active, 1 Pending IC submission, 1 Proposed</td>
-              <td>6× Fixed Return</td>
-              <td class="right" style="color:#334155">Rp 1.676.172.379</td>
-              <td class="right" style="font-size:9px;line-height:1.35">excl. proposed: Rp 323.172.379<br/>incl. proposed: Rp 572.172.379</td>
-              <td class="right">—</td>
-              <td class="right" style="font-size:9px">N/A</td>
-              <td class="right">—</td>
-              <td class="right" style="font-size:9px">—</td>
-              <td class="right" style="color:#cbd5e1">—</td>
-            </tr>
-          </tfoot>
         </table>
         <p style="font-size:10px;color:#94a3b8;margin-top:8px;font-style:italic">⚠️ OTF MOIC and PvA are not currently available from the LMS Reporting Layer.</p>
       </div>
     </div>
 
     <div class="card">
+      <div class="card-section-title">Proposed Project&apos;s Payor / PO / Invoice Details <span style="font-size:10px;font-weight:400;color:#94a3b8">(B_MOD)</span></div>
+      <div class="card-body" style="overflow-x:auto">
+        <table class="tbl" style="min-width:720px;font-size:10px">
+          <thead><tr>
+            <th>#</th><th>Payor</th><th>PO / Invoice #</th><th>Due</th><th class="right">Amount</th><th>Type</th><th>Payee</th><th>Risk</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Orang Tua Group</td>
+              <td class="mono">PO-OT-2026-APR-0142</td>
+              <td>8 Jun 2026</td>
+              <td class="right" style="font-weight:600">Rp 249.000.000</td>
+              <td>Corporate PO</td>
+              <td>CUM (#26)</td>
+              <td><span class="tag tag-slate" style="font-size:8px">Low</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
       <div class="card-section-title">Project Terms Details</div>
       <div class="card-body">
-        <div class="sub-h">Disbursement Schedule</div>
+        <div class="sub-h">Disbursement Schedule <span style="font-size:10px;color:#94a3b8">(B_MOD: project target)</span></div>
+        <div style="font-size:11px;margin-bottom:8px;color:#334155"><strong>Project target amount:</strong> Rp 249.000.000 <span style="color:#94a3b8">(matches schedule)</span></div>
         <table class="tbl">
           <thead><tr>
             <th>Disbursement # <b class="b c-tm" onclick="select('T1')">T1</b></th>
@@ -307,20 +332,23 @@
             <tr><td id="f-T4" colspan="2">Total Disbursements <b class="b c-tm" onclick="select('T4')">T4</b></td><td class="right" style="font-weight:600">Rp 249.000.000</td></tr>
           </tfoot>
         </table>
-        <div class="sub-h" style="margin-top:14px">Fixed Return Terms</div>
-        <div class="field-row" id="f-T5"><span class="field-label">Repayment schedule <b class="b c-tm" onclick="select('T5')">T5</b></span><span class="field-value" style="font-size:11px">Month 1: Rp 124.925.000 · Month 2: Rp 124.925.000</span></div>
-        <div class="field-row" id="f-T6"><span class="field-label">Total repayment <b class="b c-tm" onclick="select('T6')">T6</b></span><span class="field-value">Rp 257.268.000</span></div>
-        <div class="field-row" id="f-T7"><span class="field-label">Principal + interest <b class="b c-tm" onclick="select('T7')">T7</b></span><span class="field-value">Rp 249.000.000 + Rp 6.468.000 · Carry Rp 1.800.000</span></div>
-        <div class="field-row" id="f-T8"><span class="field-label">Tenor <b class="b c-tm" onclick="select('T8')">T8</b></span><span class="field-value">2 months</span></div>
-        <div class="field-row" id="f-T9"><span class="field-label">MOIC <b class="b c-tm" onclick="select('T9')">T9</b></span><span class="field-value">1.03x projected</span></div>
-        <div class="field-row" id="f-T10"><span class="field-label">IRR <b class="b c-tm" onclick="select('T10')">T10</b></span><span class="field-value">21.1% projected</span></div>
-        <div class="field-row" id="f-T11"><span class="field-label">Payor <b class="b c-tm" onclick="select('T11')">T11</b></span><span class="field-value">Orang Tua Group (whitelisted)</span></div>
-        <div class="field-row" id="f-T12"><span class="field-label">Structure <b class="b c-tm" onclick="select('T12')">T12</b></span><span class="field-value">Daily interest (KF/KCF) · 2-month cycle</span></div>
-        <div class="sub-h" style="margin-top:14px">Late Fees</div>
+        <div class="sub-h" style="margin-top:14px">Daily Interest Terms</div>
+        <div class="field-row" id="f-T5"><span class="field-label">Interest (30-day) <b class="b c-tm" onclick="select('T5')">T5</b></span><span class="field-value">1.6%</span></div>
+        <div class="field-row" id="f-T6"><span class="field-label">Service fee (30-day) <b class="b c-tm" onclick="select('T6')">T6</b></span><span class="field-value">0.6%</span></div>
+        <div class="field-row" id="f-T7"><span class="field-label">Tenor (days) <b class="b c-tm" onclick="select('T7')">T7</b></span><span class="field-value">60 days</span></div>
+        <div class="field-row" id="f-T8"><span class="field-label">Min interest period <b class="b c-tm" onclick="select('T8')">T8</b></span><span class="field-value">30 days (= tenor/2)</span></div>
+        <div class="field-row" id="f-T9"><span class="field-label">Service fee basis <b class="b c-tm" onclick="select('T9')">T9</b></span><span class="field-value">Outstanding Principal</span></div>
+        <div class="field-row" id="f-T10"><span class="field-label">MOIC <b class="b c-tm" onclick="select('T10')">T10</b></span><span class="field-value">1.032x projected</span></div>
+        <div class="field-row" id="f-T11"><span class="field-label">IRR <b class="b c-tm" onclick="select('T11')">T11</b></span><span class="field-value">21.1% projected</span></div>
+        <div class="field-row" id="f-T12"><span class="field-label">Structure <b class="b c-tm" onclick="select('T12')">T12</b></span><span class="field-value">Daily interest (KF/KCF) · 60-day tenor</span></div>
+        <div class="sub-h" style="margin-top:14px">Late Fees <span style="font-size:10px;color:#94a3b8">(Coda / IC card)</span></div>
         <div class="field-row" id="f-T13"><span class="field-label">Late Fee Basis <b class="b c-tm" onclick="select('T13')">T13</b></span><span class="field-value">Outstanding Principal</span></div>
-        <div class="field-row" id="f-T14"><span class="field-label">Grace period (days) <b class="b c-tm" onclick="select('T14')">T14</b></span><span class="field-value">5 days</span></div>
-        <div class="field-row" id="f-T15"><span class="field-label">Daily late fee % <b class="b c-tm" onclick="select('T15')">T15</b></span><span class="field-value">0.02% investors · 0.053% ASN</span></div>
-        <div class="field-row" id="f-T16"><span class="field-label">Notes <b class="b c-tm" onclick="select('T16')">T16</b></span><span class="field-value" style="font-size:11px">Standard PO financing late fee ladder.</span></div>
+        <div class="field-row" id="f-T14"><span class="field-label">Grace period (days) <b class="b c-tm" onclick="select('T14')">T14</b></span><span class="field-value">0 days</span></div>
+        <div class="field-row" id="f-T15"><span class="field-label">Daily late fee % <b class="b c-tm" onclick="select('T15')">T15</b></span><span class="field-value" style="line-height:1.45">0.1% per day (0.1% to Investors, 0.0% to ASN)<br/>
+          <span style="font-size:10px;color:#d97706;display:block;margin-top:4px">Warning: different from default value of daily interest rate to Investors for this project type</span>
+          <span style="font-size:10px;color:#d97706;display:block">Warning: different from default value of daily service fee rate to ASN for this project type</span>
+        </span></div>
+        <div class="field-row" id="f-T16"><span class="field-label">Notes <b class="b c-tm" onclick="select('T16')">T16</b></span><span class="field-value" style="font-size:11px">B_MOD compares stored daily late fees to 1.6%/30 (KF) and 0.6%/30 (KCF) when daily interest terms exist.</span></div>
       </div>
     </div>
 

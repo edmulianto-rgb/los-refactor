@@ -2,6 +2,7 @@ import { ICProject } from "@/data/types";
 import { SectionCard } from "@/components/ui/SectionCard";
 import { fmt, fmtDate } from "@/components/ui/DataRow";
 import { Warning } from "@/components/ui/Warning";
+import { isAssetB } from "@/lib/assetClass";
 
 interface Props {
   project: ICProject;
@@ -75,6 +76,8 @@ export function PlafondSection({ project }: Props) {
   ) : null;
 
   const showProposedDeltas = Boolean(p.proposed && p.current);
+  const showBModCols = isAssetB(project.assetClass);
+  const wcOutstanding = p.outstandingWC;
 
   return (
     <SectionCard title="Plafond" badge={badge}>
@@ -86,19 +89,33 @@ export function PlafondSection({ project }: Props) {
           <em>(to Rp …)</em>. <strong className="text-gray-600">Current</strong> and{" "}
           <strong className="text-gray-600">Superseded</strong> rows show absolute limits. Red banners only if a stored
           remaining sub-limit is negative.
+          {showBModCols && (
+            <>
+              {" "}
+              <strong className="text-gray-600">Asset B (B_MOD):</strong> WC column uses WC outstanding when provided;
+              <strong className="text-gray-600"> Max review date</strong> is shown when set on the limit row.
+            </>
+          )}
         </p>
         {negativeWarnings.map((w, i) => (
           <Warning key={i} message={w} level="error" />
         ))}
 
         <div className="overflow-x-auto -mx-1">
-          <table className="w-full text-xs min-w-[560px] border border-gray-100 rounded-lg overflow-hidden">
+          <table
+            className={`w-full text-xs border border-gray-100 rounded-lg overflow-hidden ${
+              showBModCols ? "min-w-[720px]" : "min-w-[560px]"
+            }`}
+          >
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50 text-gray-500 text-left">
                 <th className="py-2 px-3 font-medium w-36">Limit Status</th>
                 <th className="py-2 pr-3 font-medium">Total Limit</th>
                 <th className="py-2 pr-3 font-medium">PO Sub Limit</th>
                 <th className="py-2 pr-3 font-medium">Working Capital Sub Limit</th>
+                {showBModCols && (
+                  <th className="py-2 pr-3 font-medium whitespace-nowrap">Max review date</th>
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -114,6 +131,11 @@ export function PlafondSection({ project }: Props) {
                   <td className="py-3 pr-3 align-top">
                     <RequestedDeltaCell proposed={p.proposed!.wcSubLimit} current={p.current!.wcSubLimit} />
                   </td>
+                  {showBModCols && (
+                    <td className="py-3 pr-3 align-top text-gray-700">
+                      {p.proposed?.maxReviewDate ? fmtDate(p.proposed.maxReviewDate) : <span className="text-gray-400">—</span>}
+                    </td>
+                  )}
                 </tr>
               )}
 
@@ -147,10 +169,21 @@ export function PlafondSection({ project }: Props) {
                   <td className="py-3 pr-3 align-top">
                     <AbsoluteLimitCell
                       limit={p.current.wcSubLimit}
-                      outstanding={p.current.wcSubLimit > 0 ? p.outstandingTotal : undefined}
+                      outstanding={
+                        p.current.wcSubLimit > 0
+                          ? showBModCols
+                            ? wcOutstanding ?? 0
+                            : p.outstandingTotal
+                          : undefined
+                      }
                       remaining={showProposedDeltas ? null : p.remainingWC}
                     />
                   </td>
+                  {showBModCols && (
+                    <td className="py-3 pr-3 align-top text-gray-700">
+                      {p.current.maxReviewDate ? fmtDate(p.current.maxReviewDate) : <span className="text-gray-400">—</span>}
+                    </td>
+                  )}
                 </tr>
               )}
 
@@ -165,6 +198,9 @@ export function PlafondSection({ project }: Props) {
                   <td className="py-2 pr-3 align-top text-xs">{fmt(s.totalLimit)}</td>
                   <td className="py-2 pr-3 align-top text-xs">{fmt(s.poSubLimit)}</td>
                   <td className="py-2 pr-3 align-top text-xs">{fmt(s.wcSubLimit)}</td>
+                  {showBModCols && (
+                    <td className="py-2 pr-3 align-top text-xs text-gray-300">—</td>
+                  )}
                 </tr>
               ))}
             </tbody>

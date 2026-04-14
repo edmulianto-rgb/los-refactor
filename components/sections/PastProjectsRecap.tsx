@@ -4,11 +4,28 @@ import { Tag, statusVariant } from "@/components/ui/Tag";
 import { fmt, fmtDate, fmtPct } from "@/components/ui/DataRow";
 import { getPastProjectsRecapRows } from "@/lib/pastProjectsRecap";
 import { sortPastProjectsRecapRows } from "@/lib/pastProjectsRecapSort";
-import { isAssetAOrD } from "@/lib/assetClass";
+import { isAssetAOrD, isAssetB } from "@/lib/assetClass";
 import {
   getRecapRowRevShareSnapshot,
   REV_SHARE_RECAP_COMPARE_METRICS,
 } from "@/lib/revShareTermsComparison";
+import {
+  effectiveDailyRecap,
+  interestTooLow,
+  lateFeeBasisWarningAD,
+  lateFeeBasisWarningB,
+  lateFeeDailyAsnWarningAD,
+  lateFeeDailyAsnWarningB,
+  lateFeeDailyInvestorWarningAD,
+  lateFeeDailyInvestorWarningB,
+  lateFeeGraceWarningAD,
+  lateFeeGraceWarningB,
+  minInterestMismatch,
+  pvaClass,
+  rowBRecapKind,
+  serviceTooLow,
+  termDaysTooLong,
+} from "@/lib/bRecapRules";
 
 interface Props {
   project: ICProject;
@@ -92,7 +109,6 @@ function RevShareRecapComparisonTable({ project, projects }: { project: ICProjec
   );
 }
 
-// Absolute IRR colour thresholds per CSV spec
 function irrClass(irr: number | null): string {
   if (irr === null) return "text-gray-400";
   if (irr < 15) return "text-red-600 font-semibold";
@@ -100,7 +116,6 @@ function irrClass(irr: number | null): string {
   return "text-emerald-700 font-semibold";
 }
 
-// Financing type display label per CSV
 function returnTypeLabel(rt: string): string {
   const map: Record<string, string> = {
     "Revenue Share (Time-Capped)": "Revenue Share (Time-Capped)",
@@ -111,13 +126,385 @@ function returnTypeLabel(rt: string): string {
   return map[rt] ?? rt;
 }
 
+function pvaTextClass(kind: "red" | "amber" | "green" | "muted"): string {
+  if (kind === "red") return "text-red-600 font-semibold";
+  if (kind === "amber") return "text-amber-600 font-semibold";
+  if (kind === "green") return "text-emerald-700 font-semibold";
+  return "text-gray-300";
+}
+
+function warnLine(text: string, key: string) {
+  return (
+    <div key={key} className="text-[9px] text-red-600 font-medium leading-tight mt-0.5">
+      {text}
+    </div>
+  );
+}
+
+function AssetBRecapTable({ project, projects }: { project: ICProject; projects: PastProject[] }) {
+  const totalAmountInclProposed = projects.reduce((s, p) => s + p.amount, 0);
+  const totalOutstandingExclProposed = projects
+    .filter((p) => p.status !== "Proposed")
+    .reduce((s, p) => s + p.outstandingAmount, 0);
+  const totalOutstandingInclProposed =
+    totalOutstandingExclProposed +
+    projects.filter((p) => p.status === "Proposed").reduce((s, p) => s + p.amount, 0);
+
+  const termMonthsAvg =
+    projects.length > 0
+      ? projects.reduce((s, p) => {
+          const daily = effectiveDailyRecap(project, p);
+          if (daily) return s + daily.tenorDays / 30;
+          return s + p.projectedTermMonths;
+        }, 0) / projects.length
+      : 0;
+
+  const completedWithIRR = projects.filter((p) => p.otfIRR !== null);
+  const avgIRR =
+    completedWithIRR.length > 0
+      ? completedWithIRR.reduce((s, p) => s + (p.otfIRR ?? 0), 0) / completedWithIRR.length
+      : null;
+
+  const statusCounts: Record<string, number> = {};
+  const typeCounts: Record<string, number> = {};
+  const kindCounts: Record<string, number> = {};
+  projects.forEach((p) => {
+    statusCounts[p.status] = (statusCounts[p.status] ?? 0) + 1;
+    typeCounts[returnTypeLabel(p.returnType)] = (typeCounts[returnTypeLabel(p.returnType)] ?? 0) + 1;
+    kindCounts[rowBRecapKind(p, project)] = (kindCounts[rowBRecapKind(p, project)] ?? 0) + 1;
+  });
+
+  return (
+    <>
+      <p className="text-xs text-gray-500 leading-relaxed">
+        <strong>B_MOD layout</strong> (Asset B): wide recap per IC Review Card spec — project type, payors, daily-interest
+        economics, late-fee checks (B-I/B-PO vs older A/D rows), PvA where applicable. Rows sorted by status, then IC
+        approval date (newest first).
+      </p>
+      <div className="overflow-x-auto -mx-1">
+        <table className="w-full text-[10px] min-w-[1280px]">
+          <thead>
+            <tr className="border-b text-gray-400 text-left">
+              <th className="pb-2 pr-1 font-medium w-6">#</th>
+              <th className="pb-2 pr-2 font-medium min-w-[120px]">Project</th>
+              <th className="pb-2 pr-2 font-medium">Status</th>
+              <th className="pb-2 pr-2 font-medium">Financing</th>
+              <th className="pb-2 pr-2 font-medium text-right">Amount</th>
+              <th className="pb-2 pr-2 font-medium text-right">Outstd.</th>
+              <th className="pb-2 pr-2 font-medium">Type</th>
+              <th className="pb-2 pr-2 font-medium min-w-[72px]">Payor(s)</th>
+              <th className="pb-2 pr-2 font-medium text-right">Term</th>
+              <th className="pb-2 pr-2 font-medium text-right">Min int (d)</th>
+              <th className="pb-2 pr-2 font-medium text-right">Int 30d</th>
+              <th className="pb-2 pr-2 font-medium text-right">Svc 30d</th>
+              <th className="pb-2 pr-2 font-medium">Late basis</th>
+              <th className="pb-2 pr-2 font-medium text-right">Grace</th>
+              <th className="pb-2 pr-2 font-medium min-w-[88px]">Daily late</th>
+              <th className="pb-2 pr-2 font-medium text-right">DPD</th>
+              <th className="pb-2 pr-2 font-medium text-right">PvA</th>
+              <th className="pb-2 pr-2 font-medium text-right">IRR</th>
+              <th className="pb-2 font-medium text-right min-w-[88px]">MOIC / BEP</th>
+            </tr>
+          </thead>
+          <tbody>
+            {projects.map((p, i) => (
+              <AssetBRow key={p.id} project={project} p={p} index={i + 1} />
+            ))}
+          </tbody>
+          <tfoot className="border-t-2 border-gray-200 bg-gray-50 text-[10px]">
+            <tr>
+              <td className="pt-2 pr-1"></td>
+              <td className="pt-2 pr-2 text-gray-500 font-medium">
+                {Object.entries(statusCounts)
+                  .map(([s, n]) => `${n} ${s}`)
+                  .join(", ")}
+              </td>
+              <td className="pt-2 pr-2"></td>
+              <td className="pt-2 pr-2 text-gray-500">
+                {Object.entries(typeCounts)
+                  .map(([t, n]) => `${n}× ${t}`)
+                  .join(", ")}
+              </td>
+              <td className="pt-2 pr-2 text-right font-medium text-gray-700">{fmt(totalAmountInclProposed)}</td>
+              <td className="pt-2 pr-2 text-right">
+                <div className="font-medium text-gray-700">{fmt(totalOutstandingExclProposed)}</div>
+                <div className="text-gray-400 text-[9px]">excl. proposed</div>
+                <div className="font-medium text-gray-600 mt-0.5">{fmt(totalOutstandingInclProposed)}</div>
+                <div className="text-gray-400 text-[9px]">incl. proposed</div>
+              </td>
+              <td className="pt-2 pr-2 text-gray-500">{Object.entries(kindCounts).map(([k, n]) => `${n}× ${k}`).join(", ")}</td>
+              <td className="pt-2 pr-2"></td>
+              <td className="pt-2 pr-2 text-right text-gray-500">{termMonthsAvg.toFixed(1)} mo eq.</td>
+              <td className="pt-2 pr-2 text-right text-gray-300">—</td>
+              <td className="pt-2 pr-2 text-right text-gray-300">—</td>
+              <td className="pt-2 pr-2 text-right text-gray-300">—</td>
+              <td className="pt-2 pr-2"></td>
+              <td className="pt-2 pr-2"></td>
+              <td className="pt-2 pr-2"></td>
+              <td className="pt-2 pr-2 text-right text-gray-300">—</td>
+              <td className="pt-2 pr-2 text-right text-gray-300">—</td>
+              <td className="pt-2 pr-2 text-right">
+                {avgIRR !== null ? (
+                  <span className={irrClass(avgIRR)}>{fmtPct(avgIRR)} avg (OTF)</span>
+                ) : (
+                  <span className="text-gray-300">—</span>
+                )}
+              </td>
+              <td className="pt-2 text-right text-gray-400 text-[9px]">OTF MOIC N/A</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </>
+  );
+}
+
+function AssetBRow({ project, p, index }: { project: ICProject; p: PastProject; index: number }) {
+  const isProposed = p.status === "Proposed";
+  const kind = rowBRecapKind(p, project);
+  const daily = effectiveDailyRecap(project, p);
+  const late = p.lateFeeRecap;
+
+  const payorStr = p.payors?.length ? p.payors.join(", ") : "—";
+
+  const termCell = () => {
+    if (kind === "A/D") {
+      const longOtf = p.otfTermMonths != null && p.otfTermMonths > 60;
+      return (
+        <div>
+          {p.otfTermMonths != null && (
+            <div className={longOtf ? "text-amber-600 font-semibold" : ""}>
+              {p.otfTermMonths} mo OTF{longOtf ? " ⚠️ >60 mo" : ""}
+            </div>
+          )}
+          <div className="text-gray-500">{p.projectedTermMonths} mo projected</div>
+        </div>
+      );
+    }
+    if (daily) {
+      const tooLong = termDaysTooLong(daily.tenorDays);
+      return (
+        <div className={tooLong ? "text-red-600 font-semibold" : "text-gray-700"}>
+          {daily.tenorDays} days
+          {tooLong ? " ⚠️ >365d" : ""}
+        </div>
+      );
+    }
+    return (
+      <div>
+        {p.otfTermMonths != null && <div>{p.otfTermMonths} mo OTF</div>}
+        <div className="text-gray-500">{p.projectedTermMonths} mo</div>
+      </div>
+    );
+  };
+
+  const minIntCell = () => {
+    if (!daily || kind === "A/D") return <span className="text-gray-300">—</span>;
+    const bad = minInterestMismatch(daily);
+    return (
+      <div className={bad ? "text-red-600 font-semibold" : "text-gray-700"}>
+        {daily.minInterestPeriodDays}
+        {bad ? " ⚠️ ≠ tenor/2" : ""}
+      </div>
+    );
+  };
+
+  const int30Cell = () => {
+    if (!daily || kind === "A/D") return <span className="text-gray-300">—</span>;
+    const iWarn = interestTooLow(kind, daily.interestRate30DayPct);
+    return (
+      <div>
+        <div className={iWarn ? "text-red-600 font-semibold" : "text-gray-700"}>{fmtPct(daily.interestRate30DayPct)}</div>
+        {iWarn && warnLine(iWarn, "iw")}
+      </div>
+    );
+  };
+
+  const svc30Cell = () => {
+    if (!daily || kind === "A/D") return <span className="text-gray-300">—</span>;
+    const sWarn = serviceTooLow(kind, daily.serviceFee30DayPct);
+    return (
+      <div>
+        <div className={sWarn ? "text-red-600 font-semibold" : "text-gray-700"}>{fmtPct(daily.serviceFee30DayPct)}</div>
+        {sWarn && warnLine(sWarn, "sw")}
+      </div>
+    );
+  };
+
+  const lateBlock = () => {
+    if (daily && (kind === "B-I" || kind === "B-PO")) {
+      const w: string[] = [];
+      const b1 = lateFeeBasisWarningB(kind, daily.lateFeeBasis);
+      const g1 = lateFeeGraceWarningB(kind, daily.gracePeriodDays);
+      const d1 = lateFeeDailyInvestorWarningB(daily);
+      const d2 = lateFeeDailyAsnWarningB(daily);
+      if (b1) w.push(b1);
+      if (g1) w.push(g1);
+      if (d1) w.push(d1);
+      if (d2) w.push(d2);
+      return (
+        <div className="space-y-0.5">
+          <div className="text-gray-700">{daily.lateFeeBasis}</div>
+          <div className="text-gray-500">{daily.gracePeriodDays}d grace</div>
+          <div className="text-gray-600 leading-tight">
+            {fmtPct(daily.dailyPctInvestors)} inv / {fmtPct(daily.dailyPctASN)} ASN / day
+          </div>
+          {w.map((t, i) => warnLine(t, `lw-${i}`))}
+        </div>
+      );
+    }
+    if (kind === "A/D" && late) {
+      const w: string[] = [];
+      const b = lateFeeBasisWarningAD(late.basis);
+      const g = lateFeeGraceWarningAD(late.gracePeriodDays);
+      const d1 = lateFeeDailyInvestorWarningAD(late.dailyPctInvestors);
+      const d2 = lateFeeDailyAsnWarningAD(late.dailyPctASN);
+      if (b) w.push(b);
+      if (g) w.push(g);
+      if (d1) w.push(d1);
+      if (d2) w.push(d2);
+      return (
+        <div className="space-y-0.5">
+          <div className="text-gray-700">{late.basis}</div>
+          <div className="text-gray-500">{late.gracePeriodDays}d grace</div>
+          <div className="text-gray-600 leading-tight">
+            {fmtPct(late.dailyPctInvestors)} inv / {fmtPct(late.dailyPctASN)} ASN / day
+          </div>
+          {w.map((t, i) => warnLine(t, `ad-${i}`))}
+        </div>
+      );
+    }
+    if (late) {
+      return (
+        <div className="text-gray-600 leading-tight">
+          {late.basis} · {late.gracePeriodDays}d · {fmtPct(late.dailyPctInvestors)} / {fmtPct(late.dailyPctASN)}
+        </div>
+      );
+    }
+    return <span className="text-gray-300">—</span>;
+  };
+
+  const graceCell = () => {
+    if (daily && (kind === "B-I" || kind === "B-PO")) {
+      return <span className={lateFeeGraceWarningB(kind, daily.gracePeriodDays) ? "text-red-600 font-semibold" : ""}>{daily.gracePeriodDays}</span>;
+    }
+    if (late) return <span>{late.gracePeriodDays}</span>;
+    return <span className="text-gray-300">—</span>;
+  };
+
+  const basisShort = () => {
+    if (daily && (kind === "B-I" || kind === "B-PO")) {
+      const b = lateFeeBasisWarningB(kind, daily.lateFeeBasis);
+      return <span className={b ? "text-red-600 font-semibold" : "text-gray-700"}>{daily.lateFeeBasis}</span>;
+    }
+    if (late) {
+      const b = kind === "A/D" ? lateFeeBasisWarningAD(late.basis) : null;
+      return <span className={b ? "text-red-600 font-semibold" : "text-gray-700"}>{late.basis}</span>;
+    }
+    return <span className="text-gray-300">—</span>;
+  };
+
+  const pvaCell = () => {
+    if (kind !== "A/D") return <span className="text-gray-300 text-[9px]">N/A</span>;
+    if (p.pvaPct == null) return <span className="text-gray-300">—</span>;
+    const pc = pvaClass(p.pvaPct);
+    return <span className={pvaTextClass(pc)}>{fmtPct(p.pvaPct)}</span>;
+  };
+
+  const irrCell = () => {
+    const showOtf = p.otfIRR !== null;
+    return (
+      <div>
+        {showOtf && <div className={irrClass(p.otfIRR)}>{fmtPct(p.otfIRR!)} OTF</div>}
+        <div className={`${irrClass(p.projectedIRR)} ${showOtf ? "text-gray-500 font-normal" : ""}`}>
+          {fmtPct(p.projectedIRR)} {showOtf ? "orig." : "proj."}
+        </div>
+      </div>
+    );
+  };
+
+  const moicCell = () => {
+    const bepWarn = p.projectedBEPMonths > 30;
+    return (
+      <div>
+        <div className="text-gray-300 text-[9px]">OTF MOIC: N/A</div>
+        <div className="text-gray-600">{p.projectedMOIC} proj.</div>
+        <div className={`text-[9px] mt-0.5 ${bepWarn ? "text-amber-600" : "text-gray-500"}`}>
+          BEP mo {p.projectedBEPMonths}
+          {bepWarn ? " ⚠️ >30" : ""}
+        </div>
+      </div>
+    );
+  };
+
+  const ftWarning =
+    kind === "A/D" && p.returnType === "Fixed Return" && p.projectedTermMonths > 60
+      ? "long fixed"
+      : kind === "A/D" && p.returnType === "Fixed Return" && p.projectedTermMonths > 36
+      ? "fixed >36"
+      : null;
+
+  return (
+    <tr className={`border-b border-gray-50 align-top ${isProposed ? "bg-blue-50/40" : ""}`}>
+      <td className="py-2 pr-1 text-gray-400">{index}</td>
+      <td className="py-2 pr-2 text-gray-800 font-medium min-w-[120px] leading-snug">{p.projectName}</td>
+      <td className="py-2 pr-2">
+        <Tag label={p.status} variant={statusVariant(p.status)} />
+      </td>
+      <td className="py-2 pr-2 text-gray-600">
+        <div>{returnTypeLabel(p.returnType)}</div>
+        {ftWarning && (
+          <div className="mt-0.5 text-[9px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-1 py-0.5">
+            {ftWarning === "long fixed" ? "Warning: >60 mo" : "Warning: >36 mo Fixed Return"}
+          </div>
+        )}
+      </td>
+      <td className="py-2 pr-2 text-right text-gray-700">{fmt(p.amount)}</td>
+      <td className="py-2 pr-2 text-right text-gray-700">
+        {p.outstandingAmount > 0 ? fmt(p.outstandingAmount) : <span className="text-gray-300">—</span>}
+      </td>
+      <td className="py-2 pr-2">
+        <span className="inline-flex px-1 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">{kind}</span>
+      </td>
+      <td className="py-2 pr-2 text-gray-600 leading-snug">{payorStr}</td>
+      <td className="py-2 pr-2 text-right">{termCell()}</td>
+      <td className="py-2 pr-2 text-right">{minIntCell()}</td>
+      <td className="py-2 pr-2 text-right align-top">{int30Cell()}</td>
+      <td className="py-2 pr-2 text-right align-top">{svc30Cell()}</td>
+      <td className="py-2 pr-2 align-top">{basisShort()}</td>
+      <td className="py-2 pr-2 text-right align-top">{graceCell()}</td>
+      <td className="py-2 pr-2 align-top">{lateBlock()}</td>
+      <td className="py-2 pr-2 text-right align-top">
+        {p.currentDPD > 0 && <div className="text-red-600 font-semibold">{p.currentDPD}d now</div>}
+        {p.maxDPD > 0 && (
+          <div className={p.maxDPD > 30 ? "text-red-600 font-medium" : "text-amber-600"}>{p.maxDPD}d max</div>
+        )}
+        {p.currentDPD === 0 && p.maxDPD === 0 && <span className="text-gray-300">—</span>}
+        {p.overdueHistory && p.overdueHistory.length > 0 && (
+          <div className="mt-1 space-y-0.5 text-left">
+            {p.overdueHistory.map((ev, i) => (
+              <div key={i} className="text-[9px] text-gray-500">
+                {fmtDate(ev.dueDate)} — {ev.daysOverdue}d —{" "}
+                <span className={ev.status === "Unpaid" ? "text-red-600 font-medium" : "text-gray-400"}>{ev.status}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </td>
+      <td className="py-2 pr-2 text-right">{pvaCell()}</td>
+      <td className="py-2 pr-2 text-right">{irrCell()}</td>
+      <td className="py-2 text-right">{moicCell()}</td>
+    </tr>
+  );
+}
+
 export function PastProjectsRecap({ project }: Props) {
   const allRows = project.pastProjects;
   const projects = sortPastProjectsRecapRows(getPastProjectsRecapRows(allRows));
   const showRevShareCrossCompare =
     isAssetAOrD(project.assetClass) && project.revenueShareTerms != null;
+  const useAssetBTable = isAssetB(project.assetClass);
 
-  // Footer aggregations (visible rows only)
   const totalAmountInclProposed = projects.reduce((s, p) => s + p.amount, 0);
   const totalOutstandingExclProposed = projects
     .filter((p) => p.status !== "Proposed")
@@ -137,7 +524,6 @@ export function PastProjectsRecap({ project }: Props) {
       ? completedWithIRR.reduce((s, p) => s + (p.otfIRR ?? 0), 0) / completedWithIRR.length
       : null;
 
-  // Status count
   const statusCounts: Record<string, number> = {};
   const typeCounts: Record<string, number> = {};
   projects.forEach((p) => {
@@ -148,70 +534,80 @@ export function PastProjectsRecap({ project }: Props) {
   return (
     <SectionCard title="Proposed and Past Projects Recap Table">
       <div className="mt-2 space-y-3">
-        <p className="text-xs text-gray-500 leading-relaxed">
-          Includes the <strong>Proposed</strong> row for <em>this</em> submission alongside other projects for the KP.
-          Rows are sorted by status (Proposed, in-queue statuses, Active, then Completed), then by{" "}
-          <strong>IC approval date</strong> newest first.
-        </p>
+        {!useAssetBTable && (
+          <p className="text-xs text-gray-500 leading-relaxed">
+            Includes the <strong>Proposed</strong> row for <em>this</em> submission alongside other projects for the KP.
+            Rows are sorted by status (Proposed, in-queue statuses, Active, then Completed), then by{" "}
+            <strong>IC approval date</strong> newest first.
+          </p>
+        )}
         {projects.length === 0 ? (
           <p className="text-sm text-gray-400 italic px-1">No projects in this recap yet.</p>
+        ) : useAssetBTable ? (
+          <AssetBRecapTable project={project} projects={projects} />
         ) : (
-        <div className="overflow-x-auto -mx-1">
-          <table className="w-full text-xs min-w-[900px]">
-            <thead>
-              <tr className="border-b text-gray-400 text-left">
-                <th className="pb-2 pr-2 font-medium w-6">#</th>
-                <th className="pb-2 pr-3 font-medium">Project</th>
-                <th className="pb-2 pr-3 font-medium">Status</th>
-                <th className="pb-2 pr-3 font-medium">Financing Type</th>
-                <th className="pb-2 pr-3 font-medium text-right">Amount</th>
-                <th className="pb-2 pr-3 font-medium text-right">Outstanding</th>
-                <th className="pb-2 pr-3 font-medium text-right">Term</th>
-                <th className="pb-2 pr-3 font-medium text-right">PvA</th>
-                <th className="pb-2 pr-3 font-medium text-right">IRR</th>
-                <th className="pb-2 pr-3 font-medium text-right">MOIC</th>
-                <th className="pb-2 font-medium text-right">DPD</th>
-              </tr>
-            </thead>
-            <tbody>
-              {projects.map((p, i) => (
-                <ProjectRow key={p.id} p={p} index={i + 1} />
-              ))}
-            </tbody>
-            <tfoot className="border-t-2 border-gray-200 bg-gray-50 text-xs">
-              <tr>
-                <td className="pt-2 pr-2"></td>
-                <td className="pt-2 pr-3 text-gray-500 font-medium">
-                  {Object.entries(statusCounts).map(([s, n]) => `${n} ${s}`).join(", ")}
-                </td>
-                <td className="pt-2 pr-3"></td>
-                <td className="pt-2 pr-3 text-gray-500">
-                  {Object.entries(typeCounts).map(([t, n]) => `${n}× ${t}`).join(", ")}
-                </td>
-                <td className="pt-2 pr-3 text-right font-medium text-gray-700">
-                  {fmt(totalAmountInclProposed)}
-                </td>
-                <td className="pt-2 pr-3 text-right">
-                  <div className="font-medium text-gray-700">{fmt(totalOutstandingExclProposed)}</div>
-                  <div className="text-gray-400 text-[10px]">excl. proposed</div>
-                  <div className="font-medium text-gray-600 mt-0.5">{fmt(totalOutstandingInclProposed)}</div>
-                  <div className="text-gray-400 text-[10px]">incl. proposed</div>
-                </td>
-                <td className="pt-2 pr-3 text-right text-gray-500">{avgTerm.toFixed(0)} mo avg</td>
-                <td className="pt-2 pr-3 text-right text-gray-400 text-[10px]">N/A from LMS</td>
-                <td className="pt-2 pr-3 text-right">
-                  {avgIRR !== null ? (
-                    <span className={irrClass(avgIRR)}>{fmtPct(avgIRR)} avg</span>
-                  ) : (
-                    <span className="text-gray-300">—</span>
-                  )}
-                </td>
-                <td className="pt-2 pr-3 text-right text-gray-400 text-[10px]">OTF MOIC<br />not from LMS</td>
-                <td className="pt-2 text-right text-gray-300">—</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
+          <div className="overflow-x-auto -mx-1">
+            <table className="w-full text-xs min-w-[900px]">
+              <thead>
+                <tr className="border-b text-gray-400 text-left">
+                  <th className="pb-2 pr-2 font-medium w-6">#</th>
+                  <th className="pb-2 pr-3 font-medium">Project</th>
+                  <th className="pb-2 pr-3 font-medium">Status</th>
+                  <th className="pb-2 pr-3 font-medium">Financing Type</th>
+                  <th className="pb-2 pr-3 font-medium text-right">Amount</th>
+                  <th className="pb-2 pr-3 font-medium text-right">Outstanding</th>
+                  <th className="pb-2 pr-3 font-medium text-right">Term</th>
+                  <th className="pb-2 pr-3 font-medium text-right">PvA</th>
+                  <th className="pb-2 pr-3 font-medium text-right">IRR</th>
+                  <th className="pb-2 pr-3 font-medium text-right">MOIC</th>
+                  <th className="pb-2 font-medium text-right">DPD</th>
+                </tr>
+              </thead>
+              <tbody>
+                {projects.map((p, i) => (
+                  <ProjectRow key={p.id} p={p} index={i + 1} />
+                ))}
+              </tbody>
+              <tfoot className="border-t-2 border-gray-200 bg-gray-50 text-xs">
+                <tr>
+                  <td className="pt-2 pr-2"></td>
+                  <td className="pt-2 pr-3 text-gray-500 font-medium">
+                    {Object.entries(statusCounts)
+                      .map(([s, n]) => `${n} ${s}`)
+                      .join(", ")}
+                  </td>
+                  <td className="pt-2 pr-3"></td>
+                  <td className="pt-2 pr-3 text-gray-500">
+                    {Object.entries(typeCounts)
+                      .map(([t, n]) => `${n}× ${t}`)
+                      .join(", ")}
+                  </td>
+                  <td className="pt-2 pr-3 text-right font-medium text-gray-700">{fmt(totalAmountInclProposed)}</td>
+                  <td className="pt-2 pr-3 text-right">
+                    <div className="font-medium text-gray-700">{fmt(totalOutstandingExclProposed)}</div>
+                    <div className="text-gray-400 text-[10px]">excl. proposed</div>
+                    <div className="font-medium text-gray-600 mt-0.5">{fmt(totalOutstandingInclProposed)}</div>
+                    <div className="text-gray-400 text-[10px]">incl. proposed</div>
+                  </td>
+                  <td className="pt-2 pr-3 text-right text-gray-500">{avgTerm.toFixed(0)} mo avg</td>
+                  <td className="pt-2 pr-3 text-right text-gray-400 text-[10px]">N/A from LMS</td>
+                  <td className="pt-2 pr-3 text-right">
+                    {avgIRR !== null ? (
+                      <span className={irrClass(avgIRR)}>{fmtPct(avgIRR)} avg</span>
+                    ) : (
+                      <span className="text-gray-300">—</span>
+                    )}
+                  </td>
+                  <td className="pt-2 pr-3 text-right text-gray-400 text-[10px]">
+                    OTF MOIC
+                    <br />
+                    not from LMS
+                  </td>
+                  <td className="pt-2 text-right text-gray-300">—</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         )}
 
         {showRevShareCrossCompare && projects.length > 0 && (
@@ -229,7 +625,6 @@ export function PastProjectsRecap({ project }: Props) {
 function ProjectRow({ p, index }: { p: PastProject; index: number }) {
   const isProposed = p.status === "Proposed";
 
-  // Financing type warnings per CSV
   const ftWarning =
     p.returnType === "Fixed Return" && p.projectedTermMonths > 60
       ? { text: "Warning: >60 months (long)", cls: "text-amber-600 bg-amber-50 border-amber-200" }
@@ -237,65 +632,47 @@ function ProjectRow({ p, index }: { p: PastProject; index: number }) {
       ? { text: "Warning: >36 months on Fixed Return", cls: "text-red-600 bg-red-50 border-red-200" }
       : null;
 
-  // BEP warning per CSV
   const bepWarning = p.projectedBEPMonths > 30;
 
   return (
     <tr className={`border-b border-gray-50 align-top ${isProposed ? "bg-blue-50/40" : ""}`}>
       <td className="py-2 pr-2 text-gray-400">{index}</td>
 
-      {/* Project name */}
-      <td className="py-2 pr-3 text-gray-800 font-medium min-w-[160px]">
-        {p.projectName}
-      </td>
+      <td className="py-2 pr-3 text-gray-800 font-medium min-w-[160px]">{p.projectName}</td>
 
-      {/* Status */}
       <td className="py-2 pr-3">
         <Tag label={p.status} variant={statusVariant(p.status)} />
       </td>
 
-      {/* Financing Type */}
       <td className="py-2 pr-3 text-gray-600">
         <div>{returnTypeLabel(p.returnType)}</div>
         {ftWarning && (
-          <div className={`mt-0.5 text-[10px] px-1 py-0.5 rounded border ${ftWarning.cls}`}>
-            {ftWarning.text}
-          </div>
+          <div className={`mt-0.5 text-[10px] px-1 py-0.5 rounded border ${ftWarning.cls}`}>{ftWarning.text}</div>
         )}
       </td>
 
-      {/* Amount */}
       <td className="py-2 pr-3 text-right text-gray-700">{fmt(p.amount)}</td>
 
-      {/* Outstanding */}
       <td className="py-2 pr-3 text-right text-gray-700">
         {p.outstandingAmount > 0 ? fmt(p.outstandingAmount) : <span className="text-gray-300">—</span>}
       </td>
 
-      {/* Term: OTF / Original */}
       <td className="py-2 pr-3 text-right text-gray-600">
-        {p.otfTermMonths != null && (
-          <div className="font-medium">{p.otfTermMonths} months OTF</div>
-        )}
+        {p.otfTermMonths != null && <div className="font-medium">{p.otfTermMonths} months OTF</div>}
         <div className={p.otfTermMonths ? "text-gray-400" : ""}>
           {p.projectedTermMonths} months{p.otfTermMonths ? " original" : ""}
         </div>
       </td>
 
-      {/* PvA — not available */}
       <td className="py-2 pr-3 text-right text-gray-300 text-[10px]">N/A</td>
 
-      {/* IRR: OTF + Projected */}
       <td className="py-2 pr-3 text-right">
-        {p.otfIRR !== null && (
-          <div className={irrClass(p.otfIRR)}>{fmtPct(p.otfIRR)} OTF</div>
-        )}
+        {p.otfIRR !== null && <div className={irrClass(p.otfIRR)}>{fmtPct(p.otfIRR)} OTF</div>}
         <div className={`${irrClass(p.projectedIRR)} ${p.otfIRR ? "text-gray-400 font-normal" : ""}`}>
           {fmtPct(p.projectedIRR)} {p.otfIRR ? "original" : "projected"}
         </div>
       </td>
 
-      {/* MOIC: OTF + Projected + BEP */}
       <td className="py-2 pr-3 text-right">
         <div className="text-gray-300 text-[10px]">OTF MOIC: N/A</div>
         <div className="text-gray-600">{p.projectedMOIC} projected</div>
@@ -305,15 +682,10 @@ function ProjectRow({ p, index }: { p: PastProject; index: number }) {
         </div>
       </td>
 
-      {/* DPD */}
       <td className="py-2 text-right">
-        {p.currentDPD > 0 ? (
-          <div className="text-red-600 font-semibold">{p.currentDPD} days now</div>
-        ) : null}
+        {p.currentDPD > 0 ? <div className="text-red-600 font-semibold">{p.currentDPD} days now</div> : null}
         {p.maxDPD > 0 ? (
-          <div className={p.maxDPD > 30 ? "text-red-600 font-medium" : "text-amber-600"}>
-            {p.maxDPD} days max
-          </div>
+          <div className={p.maxDPD > 30 ? "text-red-600 font-medium" : "text-amber-600"}>{p.maxDPD} days max</div>
         ) : p.currentDPD === 0 ? (
           <div className="text-gray-300">—</div>
         ) : null}

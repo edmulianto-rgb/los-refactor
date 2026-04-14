@@ -1,0 +1,226 @@
+<template id="tpl-guide-assetd">
+  <div id="guideMount" class="card-wrap">
+
+    <div class="page-chrome">
+      <a class="page-back" href="field-guide.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+        All pending reviews
+      </a>
+      <div class="banner-stack" id="globalErrors" aria-label="Alerts"></div>
+      <div class="banner-stack" id="globalWarns" aria-label="Warnings"></div>
+    </div>
+
+    <div class="card">
+      <div class="proj-header">
+        <div class="proj-header-top">
+          <span class="proj-brand" id="f-H1">Maju</span>
+          <b class="b c-h" onclick="select('H1')">H1</b>
+          <span class="tag tag-slate" id="f-H3">D</span>
+          <b class="b c-h" onclick="select('H3')">H3</b>
+        </div>
+        <div class="proj-name" id="f-H2">
+          Maju #4 - Working Capital
+          <b class="b c-h" onclick="select('H2')">H2</b>
+        </div>
+        <div style="margin-bottom:8px">
+          <span class="tag tag-purple" id="f-H4">Project+Plafond</span>
+          <b class="b c-h" onclick="select('H4')">H4</b>
+        </div>
+        <div class="proj-meta">
+          <b style="color:#334155">Analyst:</b>
+          <span id="f-P2">Armeno Devan</span> <b class="b c-p" onclick="select('P2')">P2</b>
+          &nbsp;&nbsp;<b style="color:#334155">By:</b>
+          <span id="f-P1">Junaidi</span> <b class="b c-p" onclick="select('P1')">P1</b>
+          &nbsp;&nbsp;Submitted 2 Jun 2026
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-section-title">PIC</div>
+        <div class="card-body">
+          <div style="font-size:12px;line-height:2;color:#334155">
+            Submitter: &nbsp;<b id="f-P1b">Junaidi</b> <b class="b c-p" onclick="select('P1')">P1</b><br/>
+            Primary Analyst: &nbsp;<b id="f-P2b">Armeno Devan</b> <b class="b c-p" onclick="select('P2')">P2</b><br/>
+            Secondary Analyst: &nbsp;<b id="f-P3">—</b> <b class="b c-p" onclick="select('P3')">P3</b>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-section-title">Karmapreneur Details</div>
+        <div class="card-body">
+          <div id="f-K1" style="font-size:12px;line-height:1.5;color:#334155">
+            <span style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px">Referral Source <b class="b c-kd" onclick="select('K1')">K1</b></span>
+            <span>2nd+ project</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-section-title">Project Details</div>
+      <div class="card-body">
+        <div class="field-row" id="f-D1">
+          <span class="field-label">Project # <b class="b c-d" onclick="select('D1')">D1</b></span>
+          <span class="field-value">
+            <span class="bold">Project #4 for the KP</span>
+            <div id="f-D2" style="font-size:11px;color:#64748b;margin-top:4px;line-height:1.55">
+              1 active<br/>
+              2 completed<br/>
+              0 before IC <b class="b c-d" onclick="select('D2')">D2</b><br/>
+              0 pending disbursement
+            </div>
+          </span>
+        </div>
+        <div class="field-row" id="f-D3">
+          <span class="field-label">Sector <b class="b c-d" onclick="select('D3')">D3</b></span>
+          <span class="field-value">
+            <span class="tag tag-blue">Consumer Goods</span>
+          </span>
+        </div>
+        <div class="field-row" id="f-D4">
+          <span class="field-label">Asset Class <b class="b c-d" onclick="select('D4')">D4</b></span>
+          <span class="field-value"><span class="tag tag-slate">D</span></span>
+        </div>
+        <div class="field-row" id="f-D7">
+          <span class="field-label">Financing Use <b class="b c-d" onclick="select('D7')">D7</b></span>
+          <span class="field-value"><span class="tag tag-blue">Working Capital</span></span>
+        </div>
+        <div class="field-row" id="f-D6">
+          <span class="field-label">Requested Project Amount <b class="b c-d" onclick="select('D6')">D6</b></span>
+          <span class="field-value bold">Rp 1.800.000.000</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-section-title">Plafond</div>
+      <div class="card-body">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Limit Status <b class="b c-pl" onclick="select('L1')">L1</b></th>
+              <th>Total Limit <b class="b c-pl" onclick="select('L2')">L2</b></th>
+              <th>PO Sub Limit <b class="b c-pl" onclick="select('L3')">L3</b></th>
+              <th>WC Sub Limit <b class="b c-pl" onclick="select('L4')">L4</b></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background:#faf5ff">
+              <td class="row-label"><strong style="color:#5b21b6">Proposed</strong></td>
+              <td><div style="font-weight:600;color:#059669">+Rp 1.500.000.000</div><div style="font-size:9px;color:#94a3b8">(to Rp 4.000.000.000)</div></td>
+              <td><div style="font-weight:600;color:#64748b">Rp 0</div></td>
+              <td><div style="font-weight:600;color:#059669">+Rp 1.500.000.000</div><div style="font-size:9px;color:#94a3b8">(to Rp 4.000.000.000)</div></td>
+            </tr>
+            <tr>
+              <td class="row-label" id="f-L1"><strong>Current</strong><br/><span style="font-size:9px;color:#059669;font-weight:600">Active</span><br/><span style="font-size:9px;color:#94a3b8">1 Feb 2024 – 1 Feb 2027</span></td>
+              <td id="f-L2"><div style="font-weight:600">Rp 2.500.000.000</div><div style="font-size:9px;color:#94a3b8">Outstanding: Rp 900.000.000</div><div style="font-size:9px">Remaining: Rp 1.600.000.000</div></td>
+              <td id="f-L3"><span style="color:#94a3b8">Rp 0</span></td>
+              <td id="f-L4"><div style="font-weight:600">Rp 2.500.000.000</div><div style="font-size:9px;color:#94a3b8">Outstanding: Rp 0</div><div style="font-size:9px">Remaining: Rp 1.600.000.000</div></td>
+            </tr>
+            <tr>
+              <td class="row-label" id="f-L8">Superseded <b class="b c-pl" onclick="select('L8')">L8</b></td>
+              <td style="color:#94a3b8">Rp 1.500.000.000</td>
+              <td style="color:#94a3b8">Rp 0</td>
+              <td style="color:#94a3b8">Rp 1.500.000.000</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size:10px;color:#64748b;margin-top:8px;line-height:1.45"><strong>Coda</strong> <code style="font-size:9px;background:#f1f5f9;padding:1px 4px;border-radius:4px">i-_5laC-0qZa</code> · <strong>Maju #4 - Working Capital</strong> · Asset D · Project+Plafond. Plafond grid illustrative until synced from Brand/Project in Coda.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-section-title">Financial Reviews</div>
+      <div class="card-body" style="overflow-x:auto">
+        <table class="tbl" style="min-width:640px;font-size:10px">
+          <thead><tr><th></th><th>Submitted</th><th>Reports reviewed</th><th>Period end</th><th>Limit rec.</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:600;color:#64748b">Review 1</td>
+              <td id="f-F1">28 May 2026</td>
+              <td id="f-F2">Mgmt accounts + bank Q1–Q2 2026</td>
+              <td id="f-F3">30 Apr 2026</td>
+              <td id="f-F4"><span class="tag tag-green">Increase</span></td>
+              <td id="f-F5" style="max-width:220px">Working-capital cycle supports higher WC ceiling alongside project #4; align limit with latest management accounts.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-section-title">Karmapreneur Contacts</div>
+      <div class="card-body" style="overflow-x:auto">
+        <table class="tbl" style="min-width:640px;font-size:10px">
+          <thead><tr><th>#</th><th>Name <b class="b c-kc" onclick="select('C1')">C1</b></th><th>Role</th><th>Key?</th><th>SLIK URL</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td id="f-C1"><b>KP signatory (from People)</b></td>
+              <td id="f-C2">Direktur Utama</td>
+              <td id="f-C4">Yes</td>
+              <td id="f-C6"><a href="#" style="color:#2563eb">View ↗</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-section-title">Proposed and Past Projects Recap Table</div>
+      <div class="card-body" style="overflow-x:auto">
+        <p style="font-size:11px;color:#64748b">Asset A/D layout: financing type, term, PvA, IRR, MOIC — plus revenue-share comparison table when terms exist.</p>
+        <table class="tbl" style="min-width:720px;font-size:10px">
+          <thead><tr><th>#</th><th>Project</th><th>Status</th><th>Type</th><th class="right">Amount</th><th class="right">IRR</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Maju (#3) — Prior facility</td><td><span class="tag tag-slate" style="font-size:9px">Completed</span></td><td>Rev share</td><td class="right">Rp 1.2B</td><td class="right">19.2% OTF</td></tr>
+            <tr><td>2</td><td id="f-R1">Maju #4 - Working Capital <b class="b c-pp" onclick="select('R1')">R1</b></td><td><span class="tag tag-amber" style="font-size:9px">Proposed</span></td><td>Rev share</td><td class="right">Rp 1.8B</td><td class="right">22.4% proj</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-section-title">Project Terms Details</div>
+      <div class="card-body">
+        <div class="sub-h">Disbursement schedule</div>
+        <table class="tbl"><tbody>
+          <tr><td>Tranche 1</td><td>15 Jun 2026</td><td class="right" style="font-weight:600">Rp 1.800.000.000</td></tr>
+        </tbody></table>
+        <div class="sub-h" style="margin-top:12px">Revenue share (summary)</div>
+        <div class="field-row" id="f-T5"><span class="field-label">Cap <b class="b c-tm" onclick="select('T5')">T5</b></span><span class="field-value">Return cap 1.35× · Pre/Post BEP 7.5% / 8.0%</span></div>
+        <div class="sub-h" style="margin-top:12px">Late fees</div>
+        <div class="field-row" id="f-T13"><span class="field-label">Basis <b class="b c-tm" onclick="select('T13')">T13</b></span><span class="field-value">Overdue Amount</span></div>
+        <div class="field-row" id="f-T15"><span class="field-label">Daily late <b class="b c-tm" onclick="select('T15')">T15</b></span><span class="field-value">0.08% investors · 0.02% ASN (Asset D defaults)</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-section-title">Credit Memo &amp; Notes</div>
+      <div class="card-body">
+        <div id="f-K4" style="font-size:11px;color:#334155;background:#f9fafb;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px">KP memo: Maju — repeat relationship; project #4 extends working-capital line under existing Asset D structure.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-section-title">PT Details</div>
+      <div class="card-body">
+        <table class="tbl" style="font-size:10px"><tbody><tr><td id="f-E1"><b>PT Maju (legal name from Brand)</b></td><td id="f-E2">BCA</td><td class="mono" id="f-E3">—</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-section-title">Other</div>
+      <div class="card-body">
+        <div class="field-row" id="f-O1"><span class="field-label">Funding <b class="b c-ot" onclick="select('O1')">O1</b></span><span class="field-value">KF &amp; KCF</span></div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid #f1f5f9">
+          <div class="sub-h">Approval</div>
+          <div id="f-A1" style="font-size:12px"><div class="vote-row"><span class="vote-name">Ben Elberger</span><span class="vote-btn vote-pending">Pending</span></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</template>

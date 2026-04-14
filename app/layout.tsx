@@ -21,7 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
             <div className="flex items-center gap-4 text-xs">
               <a
-                href="/field-guide.html"
+                href="/field-guide"
                 className="font-medium text-indigo-600 hover:text-indigo-800 underline-offset-2 hover:underline"
               >
                 Interactive field guide

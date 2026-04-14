@@ -587,6 +587,7 @@ const projectCUM: ICProject = {
   assetClass: "B - PO",
   requestedAmountCurrency: "IDR",
   requestedAmount: 249_000_000,
+  trancheTargetAmount: 249_000_000,
   amountWarning: null,
   financingUse: "Domestic PO Financing",
   sectorWarning: null,
@@ -600,8 +601,10 @@ const projectCUM: ICProject = {
       effectiveDate: "2025-01-01",
       expiryDate: "2027-01-01",
       limitStatus: "Active",
+      maxReviewDate: "2026-06-30",
     },
     outstandingTotal: 323_172_379,
+    outstandingWC: 0,
     remainingTotal: 3_676_827_621,
     remainingPO: 1_676_827_621,
     remainingWC: 2_000_000_000,
@@ -685,6 +688,14 @@ const projectCUM: ICProject = {
       projectName: "Cipta Usaha Media (#22) — PO - Orang Tua (Apr 2025)",
       status: "Completed",
       icApprovalDate: "2025-04-18",
+      bRecapKind: "B-PO",
+      payors: ["Orang Tua Group"],
+      lateFeeRecap: {
+        basis: "Outstanding Principal",
+        gracePeriodDays: 0,
+        dailyPctInvestors: 0.1,
+        dailyPctASN: 0,
+      },
       returnType: "Fixed Return",
       amount: 375_000_000,
       outstandingAmount: 0,
@@ -703,6 +714,14 @@ const projectCUM: ICProject = {
       projectName: "Cipta Usaha Media (#23) — PO - Orang Tua (Jun 2025)",
       status: "Completed",
       icApprovalDate: "2025-06-22",
+      bRecapKind: "B-PO",
+      payors: ["Orang Tua Group"],
+      lateFeeRecap: {
+        basis: "Outstanding Principal",
+        gracePeriodDays: 0,
+        dailyPctInvestors: 0.1,
+        dailyPctASN: 0,
+      },
       returnType: "Fixed Return",
       amount: 300_000_000,
       outstandingAmount: 0,
@@ -721,6 +740,14 @@ const projectCUM: ICProject = {
       projectName: "Cipta Usaha Media (#24) — PO - Orang Tua (Sep 2025)",
       status: "Completed",
       icApprovalDate: "2025-09-30",
+      bRecapKind: "B-PO",
+      payors: ["Orang Tua Group"],
+      lateFeeRecap: {
+        basis: "Outstanding Principal",
+        gracePeriodDays: 0,
+        dailyPctInvestors: 0.1,
+        dailyPctASN: 0,
+      },
       returnType: "Fixed Return",
       amount: 249_000_000,
       outstandingAmount: 0,
@@ -739,6 +766,14 @@ const projectCUM: ICProject = {
       projectName: "Cipta Usaha Media (#25) — PO - Orang Tua (Jan 2026)",
       status: "Active",
       icApprovalDate: "2026-01-12",
+      bRecapKind: "B-PO",
+      payors: ["Orang Tua Group"],
+      lateFeeRecap: {
+        basis: "Outstanding Principal",
+        gracePeriodDays: 0,
+        dailyPctInvestors: 0.1,
+        dailyPctASN: 0,
+      },
       returnType: "Fixed Return",
       amount: 323_172_379,
       outstandingAmount: 323_172_379,
@@ -760,6 +795,14 @@ const projectCUM: ICProject = {
       projectName: "Cipta Usaha Media (#27) — PO: Orang Tua (draft, pending submission)",
       status: "Pending IC submission",
       icApprovalDate: null,
+      bRecapKind: "B-PO",
+      payors: ["Orang Tua Group"],
+      lateFeeRecap: {
+        basis: "Outstanding Principal",
+        gracePeriodDays: 0,
+        dailyPctInvestors: 0.1,
+        dailyPctASN: 0,
+      },
       returnType: "Fixed Return",
       amount: 180_000_000,
       outstandingAmount: 0,
@@ -779,7 +822,9 @@ const projectCUM: ICProject = {
       status: "Proposed",
       icApprovalDate: "2026-03-31",
       isCurrentSubmission: true,
-      returnType: "Fixed Return",
+      bRecapKind: "B-PO",
+      payors: ["Orang Tua Group"],
+      returnType: "Daily Interest",
       amount: 249_000_000,
       outstandingAmount: 0,
       projectedTermMonths: 2,
@@ -787,31 +832,33 @@ const projectCUM: ICProject = {
       otfIRR: null,
       projectedIRR: 21.1,
       otfMOIC: null,
-      projectedMOIC: "1.03x",
+      projectedMOIC: "1.032x",
       projectedBEPMonths: 1,
       currentDPD: 0,
       maxDPD: 0,
     },
   ],
 
-  returnType: "Fixed Return",
+  returnType: "Daily Interest",
   disbursements: [
     { tranche: 1, plannedAmount: 249_000_000, plannedDate: "2026-04-09" },
   ],
   branches: [],
   revenueShareTerms: null,
-  fixedReturnTerms: {
-    repaymentSchedule: fixedReturnScheduleFromTotals(2, 249_000_000, 6_468_000, 1_800_000),
-    totalRepayment: 257_268_000,
-    totalPrincipal: 249_000_000,
-    totalInterest: 6_468_000,
-    carry: 1_800_000,
+  fixedReturnTerms: null,
+  dailyInterestTerms: {
+    interestRate30DayPct: 1.6,
+    serviceFee30DayPct: 0.6,
+    tenorDays: 60,
+    minInterestPeriodDays: 30,
+    serviceFeeDailyBasis: "Outstanding Principal",
   },
+  // Coda / IC card: 0.1% per day to Investors, 0% to ASN (differs from B_MOD default derived from 1.6%/30 & 0.6%/30).
   lateFee: {
     basis: "Outstanding Principal",
-    gracePeriodDays: 5,
-    dailyPctInvestors: 0.02,
-    dailyPctASN: 0.053,
+    gracePeriodDays: 0,
+    dailyPctInvestors: 0.1,
+    dailyPctASN: 0,
   },
   termSheetLink: null,
 
@@ -847,6 +894,21 @@ const projectCUM: ICProject = {
       slikExecSummary:
         "Rekening BCA aktif sejak 2019. Tidak ada pinjaman korporat di perbankan. SLIK bersih per Maret 2026. Cashflow rekening konsisten dengan volume PO yang dilaporkan (IDR 1.5-2B/bulan). Bank details match those for the last project by the same PT as of IC Review.",
       warnings: [],
+    },
+  ],
+
+  payorInvoices: [
+    {
+      id: "pay-cum-1",
+      payorLabel: "Orang Tua Group",
+      poOrInvoiceNumber: "PO-OT-2026-APR-0142",
+      dueDate: "2026-06-08",
+      amount: 249_000_000,
+      currency: "IDR",
+      payorType: "Corporate PO (whitelisted)",
+      payeeProjects: "Cipta Usaha Media (#26)",
+      notes: "Underlying PO aligned to April 2026 production cycle.",
+      riskLevel: "Low",
     },
   ],
 
@@ -900,6 +962,7 @@ const projectCEA: ICProject = {
   assetClass: "B - PO",
   requestedAmountCurrency: "IDR",
   requestedAmount: 6_000_000_000,
+  trancheTargetAmount: 6_000_000_000,
   icVoteBasisAmount: 15_000_000_000,
   amountWarning: null,
   financingUse: "Domestic PO Financing",
@@ -910,6 +973,7 @@ const projectCEA: ICProject = {
       totalLimit: 15_000_000_000,
       poSubLimit: 15_000_000_000,
       wcSubLimit: 0,
+      maxReviewDate: "2026-09-30",
     },
     current: {
       totalLimit: 12_000_000_000,
@@ -918,8 +982,10 @@ const projectCEA: ICProject = {
       effectiveDate: "2024-04-01",
       expiryDate: "2027-04-01",
       limitStatus: "Active",
+      maxReviewDate: "2026-03-31",
     },
     outstandingTotal: 6_000_000_000,
+    outstandingWC: 0,
     remainingTotal: 9_000_000_000,
     remainingPO: 9_000_000_000,
     remainingWC: 0,
@@ -975,6 +1041,8 @@ const projectCEA: ICProject = {
       status: "Proposed",
       icApprovalDate: "2025-10-23",
       isCurrentSubmission: true,
+      bRecapKind: "B-PO",
+      payors: ["Aztech Group"],
       returnType: "Daily Interest",
       amount: 6_000_000_000,
       outstandingAmount: 0,
@@ -1000,10 +1068,11 @@ const projectCEA: ICProject = {
     serviceFee30DayPct: 0.6,
     tenorDays: 90,
     minInterestPeriodDays: 45,
-    serviceFeeDailyBasis: "Disbursed Amount",
+    serviceFeeDailyBasis: "Outstanding Principal",
   },
+  // Late fee: Coda uses standard 0.08% / 0.02% per day (not derived from 30-day coupon / 30).
   lateFee: {
-    basis: "Disbursed Amount",
+    basis: "Overdue Amount",
     gracePeriodDays: 5,
     dailyPctInvestors: 0.08,
     dailyPctASN: 0.02,
@@ -1037,6 +1106,21 @@ const projectCEA: ICProject = {
     },
   ],
 
+  payorInvoices: [
+    {
+      id: "pay-cea-1",
+      payorLabel: "Aztech Industries Berhad",
+      poOrInvoiceNumber: "PO-AZTECH-DOM-2025-8841",
+      dueDate: "2026-02-12",
+      amount: 6_000_000_000,
+      currency: "IDR",
+      payorType: "Corporate PO (anchor)",
+      payeeProjects: "Cahaya Energi Asia — Aztech #1",
+      notes: "Domestic PO line; diligence pack in GDrive.",
+      riskLevel: "Low",
+    },
+  ],
+
   fundingSource: "KF & KCF",
   bankDetailsReviewed: true,
   taxWithholdings: "Yes",
@@ -1055,6 +1139,245 @@ const projectCEA: ICProject = {
   ],
 };
 
+// ─── Project 5: Maju — Asset D, Project + Plafond ────────────────────────────
+// Coda row: i-_5laC-0qZa — Coda Project Name: **Maju #4 - Working Capital**
+// Identity fields match Coda; plafond / PIC dates / PT account are illustrative until the app reads live Coda + Brand rows.
+
+const projectAssetDPlafond: ICProject = {
+  id: "proj-assetd-plafond",
+  codaRowId: "i-_5laC-0qZa",
+  brandName: "Maju",
+  brandIsNew: false,
+  projectName: "Maju #4 - Working Capital",
+  approvalType: "Project+Plafond",
+  submittedAt: "2026-06-02T10:00:00Z",
+
+  pic: {
+    submitter: "Junaidi",
+    primaryAnalyst: "Armeno Devan",
+    secondaryAnalyst: null,
+  },
+
+  projectNumberForKP: 4,
+  brandActiveProjects: 1,
+  brandCompletedProjects: 2,
+  brandBeforeICProjects: 0,
+  brandPendingDisbursementProjects: 0,
+  mainSector: "Consumer Goods",
+  subSector: null,
+  syariah: false,
+  assetClass: "D",
+  requestedAmountCurrency: "IDR",
+  requestedAmount: 1_800_000_000,
+  trancheTargetAmount: 1_800_000_000,
+  amountWarning: null,
+  financingUse: "Working Capital",
+  sectorWarning: null,
+
+  plafond: {
+    proposed: {
+      totalLimit: 4_000_000_000,
+      poSubLimit: 0,
+      wcSubLimit: 4_000_000_000,
+    },
+    current: {
+      totalLimit: 2_500_000_000,
+      poSubLimit: 0,
+      wcSubLimit: 2_500_000_000,
+      effectiveDate: "2024-02-01",
+      expiryDate: "2027-02-01",
+      limitStatus: "Active",
+    },
+    outstandingTotal: 900_000_000,
+    outstandingWC: 0,
+    remainingTotal: 1_600_000_000,
+    remainingPO: 0,
+    remainingWC: 1_600_000_000,
+    superseded: [
+      {
+        totalLimit: 1_500_000_000,
+        poSubLimit: 0,
+        wcSubLimit: 1_500_000_000,
+        effectiveDate: "2022-01-01",
+        expiryDate: "2024-01-31",
+      },
+    ],
+  },
+
+  financialReviews: [
+    {
+      submissionDate: "2026-05-28",
+      financialReportsReviewed: "Mgmt accounts + bank Q1–Q2 2026",
+      periodEndingDate: "2026-04-30",
+      limitRecommendation: "Increase",
+      limitCurrentIdr: 2_500_000_000,
+      limitRecommendedIdr: 4_000_000_000,
+      reviewNotes:
+        "Working-capital cycle supports higher WC ceiling alongside project #4; align limit with latest management accounts.",
+    },
+  ],
+
+  referralSource: "2nd+ project",
+  specificReferror: null,
+  referrorBelongsToKP: null,
+  firstProjectReferralOverride: {
+    referralSource: "Karmapreneur",
+    specificReferror: null,
+    referrorBelongsToKP: null,
+  },
+  otherReferees: [],
+
+  submissionProjectedBEPMonths: 14,
+
+  kpContacts: [
+    {
+      id: "kpc-maju-1",
+      name: "KP signatory (sync People from Coda)",
+      role: "Direktur Utama",
+      notesOnPerson:
+        "Replace with People row linked from Coda for i-_5laC-0qZa. Placeholder keeps IC card shape only.",
+      referredProjects: [],
+      associatedKPs: [],
+      isKeyPerson: true,
+      slikFileUrl: "https://drive.google.com/file/maju-kp-slik-placeholder",
+      slikExecSummary:
+        "Replace with SLIK exec summary from diligence / People. Placeholder text for mock only.",
+      uboExposure: 900_000_000,
+    },
+  ],
+
+  pastProjects: [
+    {
+      id: "pp-maju-3",
+      projectName: "Maju (#3) — Prior facility",
+      status: "Completed",
+      icApprovalDate: "2025-08-01",
+      returnType: "Revenue Share (Return-Capped)",
+      amount: 1_200_000_000,
+      outstandingAmount: 0,
+      projectedTermMonths: 24,
+      otfTermMonths: 22,
+      otfIRR: 19.2,
+      projectedIRR: 18.0,
+      otfMOIC: null,
+      projectedMOIC: "1.28x",
+      projectedBEPMonths: 15,
+      currentDPD: 0,
+      maxDPD: 0,
+      pvaPct: 0.94,
+      revShareTermsSnapshot: {
+        capType: "Return Cap",
+        capMultiple: 1.3,
+        capTimePeriodMonths: null,
+        preBEPRevSharePct: 7.0,
+        postBEPRevSharePct: 7.5,
+        minReturn: null,
+        minReturnMultiple: null,
+        minReturnPayableMonths: null,
+      },
+      lateFeeRecap: {
+        basis: "Overdue Amount",
+        gracePeriodDays: 5,
+        dailyPctInvestors: 0.08,
+        dailyPctASN: 0.02,
+      },
+    },
+    {
+      id: "pp-maju-4",
+      projectName: "Maju #4 - Working Capital",
+      status: "Proposed",
+      icApprovalDate: "2026-06-02",
+      isCurrentSubmission: true,
+      returnType: "Revenue Share (Return-Capped)",
+      amount: 1_800_000_000,
+      outstandingAmount: 0,
+      projectedTermMonths: 26,
+      otfTermMonths: null,
+      otfIRR: null,
+      projectedIRR: 22.4,
+      otfMOIC: null,
+      projectedMOIC: "1.42x",
+      projectedBEPMonths: 14,
+      currentDPD: 0,
+      maxDPD: 0,
+    },
+  ],
+
+  returnType: "Revenue Share (Return-Capped)",
+  disbursements: [{ tranche: 1, plannedAmount: 1_800_000_000, plannedDate: "2026-06-15" }],
+  branches: [],
+  revenueShareTerms: {
+    sourceOfRevenueAccrued:
+      "KP net sales (after discounts, before VAT) as booked in management accounts — working-capital facility; revenue definition per term sheet",
+    frequency: "Monthly",
+    dueDate: "10th calendar day",
+    capType: "Return Cap",
+    capMultiple: 1.35,
+    capTimePeriodMonths: null,
+    revShareStartType: "Fixed",
+    revShareStartDate: "2026-07-01",
+    preBEPRevSharePct: 7.5,
+    postBEPRevSharePct: 8.0,
+    carryType: "Variable Platform Fee",
+    carryPct: 2.0,
+    minReturn: null,
+    minReturnMultiple: null,
+    minReturnPayableMonths: null,
+    revProjectionArray: monthsRevenueProjection(48, 420_000_000),
+  },
+  fixedReturnTerms: null,
+  lateFee: {
+    basis: "Overdue Amount",
+    gracePeriodDays: 5,
+    dailyPctInvestors: 0.08,
+    dailyPctASN: 0.02,
+  },
+  termSheetLink: null,
+
+  kpCreditMemo:
+    "**KP Credit Memo — Maju**\n\nRepeat KP; prior projects completed on revenue-share terms. Working-capital line supports inventory and receivables cycle — see latest financial review.",
+  projectCreditMemo:
+    "**Project Credit Memo — Maju #4 - Working Capital**\n\nCoda row i-_5laC-0qZa. Return-capped revenue share 1.35×, single disbursement. Combined IC includes WC plafond adjustment (illustrative limits in mock — replace from Brand/Project in production).",
+  financialsLink: "https://docs.google.com/spreadsheets/d/example-maju-wc-calc",
+  projectNotes: [
+    {
+      author: "Armeno Devan",
+      date: "2026-06-01",
+      content:
+        "Submission Project+Plafond for Maju #4 - Working Capital (i-_5laC-0qZa). Sync plafond + PT bank details from Coda before disbursement.",
+    },
+  ],
+
+  ptDetails: [
+    {
+      id: "pt-maju-1",
+      name: "PT Maju (legal name from Brand in Coda)",
+      bank: "BCA",
+      accountNumber: "TBD",
+      accountholderName: "PT Maju (legal name from Brand in Coda)",
+      slikFileUrl: "https://drive.google.com/file/slik-pt-maju-placeholder",
+      slikExecSummary: "Replace with corporate SLIK summary from Coda / diligence.",
+      warnings: [],
+    },
+  ],
+
+  fundingSource: "KF & KCF",
+  bankDetailsReviewed: true,
+  taxWithholdings: "Yes",
+  icVotes: [
+    { memberId: "ic-1", memberName: "Ben Elberger", isPrincipal: true, vote: null, votedAt: null },
+    { memberId: "ic-2", memberName: "Aldi Haryopratomo", isPrincipal: false, vote: null, votedAt: null },
+    { memberId: "ic-3", memberName: "Junaidi", isPrincipal: false, vote: null, votedAt: null },
+  ],
+  approvalNotes: "",
+  specialNotesForIC:
+    "⚠️ Combined IC: Maju #4 - Working Capital — tranche IDR 1.8B (Revenue Share Return-Capped 1.35×) + plafond line (WC sub-limit naik ke IDR 4B dari IDR 2.5B aktif, contoh mock). Outstanding KP IDR 900jt — sisa headroom setelah approval tercermin di baris Proposed.\n\nCoda Project row: i-_5laC-0qZa.",
+  conditionsSubsequent: [
+    "Execute tranche documentation and milestone sign-off before each disbursement",
+    "Confirm plafond registry update in Coda after IC approval",
+  ],
+};
+
 // ─── Export ───────────────────────────────────────────────────────────────────
 
 export const mockProjects: ICProject[] = [
@@ -1062,6 +1385,7 @@ export const mockProjects: ICProject[] = [
   projectShushu,
   projectCUM,
   projectCEA,
+  projectAssetDPlafond,
 ];
 
 export function getProjectById(id: string): ICProject | undefined {
