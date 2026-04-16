@@ -1,6 +1,8 @@
 import { FinancialReview, ICProject } from "@/data/types";
 import { SectionCard } from "@/components/ui/SectionCard";
 import { fmt, fmtDate } from "@/components/ui/DataRow";
+import { CalculatorGSheetEmbedBlock } from "@/components/sections/CalculatorGSheetSection";
+import { shouldShowCalculatorGSheet } from "@/lib/calculatorGSheetVisibility";
 
 interface Props {
   project: ICProject;
@@ -39,9 +41,19 @@ function monthsAgo(isoDate: string): number {
 export function FinancialReviews({ project }: Props) {
   const reviews = project.financialReviews.slice(0, 2);
 
+  const showCalculator = shouldShowCalculatorGSheet(project);
+
   return (
     <SectionCard title="Financial Reviews">
-      <div className="mt-2 overflow-x-auto -mx-1">
+      <div className="mt-2 space-y-4">
+        {showCalculator && (
+          <div className="pb-4 border-b border-gray-100">
+            <div className="text-xs font-semibold text-gray-900 mb-3">Calculator (Google Sheets)</div>
+            <CalculatorGSheetEmbedBlock project={project} />
+          </div>
+        )}
+
+        <div className="overflow-x-auto -mx-1">
         {reviews.length === 0 ? (
           <p className="text-sm text-gray-400 italic px-1">No financial reviews on record.</p>
         ) : (
@@ -92,6 +104,7 @@ export function FinancialReviews({ project }: Props) {
             </tbody>
           </table>
         )}
+        </div>
       </div>
     </SectionCard>
   );

@@ -57,7 +57,7 @@ const projectHolycow: ICProject = {
   brandPendingDisbursementProjects: 0,
   mainSector: "F&B",
   subSector: "Full Service Resto",
-  syariah: false,
+  syariah: true,
   assetClass: "A",
   requestedAmountCurrency: "IDR",
   requestedAmount: 3_100_000_000,

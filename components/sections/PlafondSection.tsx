@@ -2,7 +2,7 @@ import { ICProject } from "@/data/types";
 import { SectionCard } from "@/components/ui/SectionCard";
 import { fmt, fmtDate } from "@/components/ui/DataRow";
 import { Warning } from "@/components/ui/Warning";
-import { isAssetB } from "@/lib/assetClass";
+import { isAssetB, isAssetD } from "@/lib/assetClass";
 
 interface Props {
   project: ICProject;
@@ -12,28 +12,42 @@ function daysFromToday(isoDate: string): number {
   return Math.round((new Date(isoDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 }
 
-/** Absolute limit + optional outstanding / remaining. */
+/** Absolute limit + optional outstanding / remaining / remaining after this project amount (B & D). */
 function AbsoluteLimitCell({
   limit,
   outstanding,
   remaining,
+  remainingAfterProposed,
+  ccy = "IDR",
 }: {
   limit: number | null;
   outstanding?: number;
   remaining?: number | null;
+  /** Remaining − requested project amount; shown for Asset B & D only when provided. */
+  remainingAfterProposed?: number | null;
+  ccy?: "IDR" | "USD";
 }) {
   if (limit === null) return <span className="text-gray-300 text-xs">—</span>;
 
   const isNegRemaining = remaining !== null && remaining !== undefined && remaining < 0;
+  const isNegAfter =
+    remainingAfterProposed !== null && remainingAfterProposed !== undefined && remainingAfterProposed < 0;
 
   return (
     <div className="text-xs space-y-0.5">
-      <div className="font-semibold text-gray-800">{fmt(limit)}</div>
-      {outstanding != null && <div className="text-gray-500">Outstanding: {fmt(outstanding)}</div>}
+      <div className="font-semibold text-gray-800">{fmt(limit, ccy)}</div>
+      {outstanding != null && <div className="text-gray-500">Outstanding: {fmt(outstanding, ccy)}</div>}
       {remaining != null && (
         <div className={`font-medium ${isNegRemaining ? "text-red-600" : "text-gray-700"}`}>
-          Remaining: {fmt(remaining)}
+          Remaining: {fmt(remaining, ccy)}
           {isNegRemaining && " ⚠️"}
+        </div>
+      )}
+      {remainingAfterProposed != null && remainingAfterProposed !== undefined && (
+        <div className={`text-[11px] leading-snug ${isNegAfter ? "text-red-600 font-medium" : "text-gray-600"}`}>
+          <span className="text-gray-500">Remaining after current proposed: </span>
+          <span className="font-semibold">{fmt(remainingAfterProposed, ccy)}</span>
+          {isNegAfter && " ⚠️"}
         </div>
       )}
     </div>
@@ -79,6 +93,12 @@ export function PlafondSection({ project }: Props) {
   const showBModCols = isAssetB(project.assetClass);
   const wcOutstanding = p.outstandingWC;
 
+  const showRemainingAfterProposed = isAssetB(project.assetClass) || isAssetD(project.assetClass);
+  const requestedProjectAmount = project.trancheTargetAmount ?? project.requestedAmount;
+  const ccy = project.requestedAmountCurrency;
+  /** For B/D, keep Remaining visible on Current row even when Proposed deltas row exists (so “after proposed” sits under it). */
+  const hideRemainingOnCurrent = showProposedDeltas && !showRemainingAfterProposed;
+
   return (
     <SectionCard title="Plafond" badge={badge}>
       <div className="mt-2 space-y-3">
@@ -88,7 +108,9 @@ export function PlafondSection({ project }: Props) {
           <strong className="text-gray-600">−</strong>) and the <strong>proposed ceiling</strong> on the line below as{" "}
           <em>(to Rp …)</em>. <strong className="text-gray-600">Current</strong> and{" "}
           <strong className="text-gray-600">Superseded</strong> rows show absolute limits. Red banners only if a stored
-          remaining sub-limit is negative.
+          remaining sub-limit is negative. For <strong className="text-gray-600">Asset B &amp; Asset D</strong>, each
+          limit cell also shows <strong className="text-gray-600">Remaining after current proposed</strong> (remaining
+          minus this submission&apos;s requested project amount).
           {showBModCols && (
             <>
               {" "}
@@ -157,13 +179,21 @@ export function PlafondSection({ project }: Props) {
                     <AbsoluteLimitCell
                       limit={p.current.totalLimit}
                       outstanding={p.outstandingTotal}
-                      remaining={showProposedDeltas ? null : p.remainingTotal}
+                      remaining={hideRemainingOnCurrent ? null : p.remainingTotal}
+                      remainingAfterProposed={
+                        showRemainingAfterProposed ? p.remainingTotal - requestedProjectAmount : undefined
+                      }
+                      ccy={ccy}
                     />
                   </td>
                   <td className="py-3 pr-3 align-top">
                     <AbsoluteLimitCell
                       limit={p.current.poSubLimit}
-                      remaining={showProposedDeltas ? null : p.remainingPO}
+                      remaining={hideRemainingOnCurrent ? null : p.remainingPO}
+                      remainingAfterProposed={
+                        showRemainingAfterProposed ? p.remainingPO - requestedProjectAmount : undefined
+                      }
+                      ccy={ccy}
                     />
                   </td>
                   <td className="py-3 pr-3 align-top">
@@ -176,7 +206,11 @@ export function PlafondSection({ project }: Props) {
                             : p.outstandingTotal
                           : undefined
                       }
-                      remaining={showProposedDeltas ? null : p.remainingWC}
+                      remaining={hideRemainingOnCurrent ? null : p.remainingWC}
+                      remainingAfterProposed={
+                        showRemainingAfterProposed ? p.remainingWC - requestedProjectAmount : undefined
+                      }
+                      ccy={ccy}
                     />
                   </td>
                   {showBModCols && (

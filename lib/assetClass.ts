@@ -4,6 +4,11 @@ export function isAssetAOrD(assetClass: string): boolean {
   return c === "A" || c === "D" || c === "Asset A" || c === "Asset D";
 }
 
+export function isAssetD(assetClass: string): boolean {
+  const c = assetClass.trim();
+  return c === "D" || c === "Asset D";
+}
+
 const norm = (s: string) => s.replace(/\s+/g, " ").trim();
 
 /** Asset B (B_MOD): B-I / B-PO invoice & PO financing ruleset. */

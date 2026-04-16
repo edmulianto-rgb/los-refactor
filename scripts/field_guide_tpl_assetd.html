@@ -185,40 +185,138 @@
     <div class="card">
       <div class="card-section-title">Project Terms Details</div>
       <div class="card-body">
-        <div class="sub-h">Disbursement schedule</div>
-        <table class="tbl"><tbody>
-          <tr><td>Tranche 1</td><td>15 Jun 2026</td><td class="right" style="font-weight:600">Rp 1.800.000.000</td></tr>
-        </tbody></table>
-        <div class="sub-h" style="margin-top:12px">Revenue share (summary)</div>
-        <div class="field-row" id="f-T5"><span class="field-label">Cap <b class="b c-tm" onclick="select('T5')">T5</b></span><span class="field-value">Return cap 1.35× · Pre/Post BEP 7.5% / 8.0%</span></div>
-        <div class="sub-h" style="margin-top:12px">Late fees</div>
-        <div class="field-row" id="f-T13"><span class="field-label">Basis <b class="b c-tm" onclick="select('T13')">T13</b></span><span class="field-value">Overdue Amount</span></div>
-        <div class="field-row" id="f-T15"><span class="field-label">Daily late <b class="b c-tm" onclick="select('T15')">T15</b></span><span class="field-value">0.08% investors · 0.02% ASN (Asset D defaults)</span></div>
+        <div class="sub-h">Disbursement Schedule</div>
+        <table class="tbl">
+          <thead><tr>
+            <th>Disbursement # <b class="b c-tm" onclick="select('T1')">T1</b></th>
+            <th>Planned Disbursement Date <b class="b c-tm" onclick="select('T2')">T2</b></th>
+            <th class="right">Planned Disbursement Amount <b class="b c-tm" onclick="select('T3')">T3</b></th>
+          </tr></thead>
+          <tbody>
+            <tr><td id="f-T1">Disbursement 1</td><td id="f-T2">15 Jun 2026</td><td class="right" id="f-T3" style="font-weight:600">Rp 1.800.000.000</td></tr>
+          </tbody>
+          <tfoot>
+            <tr><td id="f-T4" colspan="2">Total Disbursements <b class="b c-tm" onclick="select('T4')">T4</b></td><td class="right" style="font-weight:600">Rp 1.800.000.000</td></tr>
+          </tfoot>
+        </table>
+
+        <div class="sub-h" style="margin-top:14px">Revenue Share Terms</div>
+        <div class="field-row" id="f-T5">
+          <span class="field-label">Source of Revenue Accrued <b class="b c-tm" onclick="select('T5')">T5</b></span>
+          <span class="field-value" style="font-size:11px">KP net sales (after discounts, before VAT) per management accounts — WC facility.</span>
+        </div>
+        <div class="field-row" id="f-T6">
+          <span class="field-label">Revenue Share Frequency <b class="b c-tm" onclick="select('T6')">T6</b></span>
+          <span class="field-value">Monthly</span>
+        </div>
+        <div class="field-row" id="f-T7">
+          <span class="field-label">Revenue Share Due Date <b class="b c-tm" onclick="select('T7')">T7</b></span>
+          <span class="field-value">10th calendar day</span>
+        </div>
+        <div class="field-row" id="f-T8">
+          <span class="field-label">Revenue Share Cap Type <b class="b c-tm" onclick="select('T8')">T8</b></span>
+          <span class="field-value">Return Cap</span>
+        </div>
+        <div class="field-row" id="f-T9">
+          <span class="field-label">Cap Multiple <b class="b c-tm" onclick="select('T9')">T9</b></span>
+          <span class="field-value bold">1.35x Investor Cap / 1.38x Total Cap</span>
+        </div>
+        <div class="field-row" id="f-T10">
+          <span class="field-label">Revenue Share Start Date <b class="b c-tm" onclick="select('T10')">T10</b></span>
+          <span class="field-value">Fixed Revenue Share Start Date on 1 Jul 2026</span>
+        </div>
+        <div class="field-row" id="f-T11">
+          <span class="field-label">Revenue Share % <b class="b c-tm" onclick="select('T11')">T11</b></span>
+          <span class="field-value bold">7.5% Pre-BEP Revenue Share / 8.0% Post-BEP Revenue Share</span>
+        </div>
+        <div class="field-row" id="f-T12">
+          <span class="field-label">Carry <b class="b c-tm" onclick="select('T12')">T12</b></span>
+          <span class="field-value">Variable Platform Fee: 2.0%</span>
+        </div>
+
+        <div style="margin-top:10px;padding:10px 12px;background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;font-size:11px;color:#334155">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#94a3b8;margin-bottom:6px">Projection summary <b class="b c-tm" onclick="select('T13')">T13</b></div>
+          <div id="f-T13" style="display:grid;grid-template-columns:1fr auto;gap:4px 16px;max-width:320px">
+            <span style="color:#94a3b8">Avg/month</span><span style="text-align:right;font-weight:600">Rp 420.000.000</span>
+            <span style="color:#94a3b8">Peak (Month 1)</span><span style="text-align:right">Rp 420.000.000</span>
+            <span style="color:#94a3b8">Floor (Month 1)</span><span style="text-align:right">Rp 420.000.000</span>
+            <span style="color:#94a3b8">Projection span</span><span style="text-align:right">48 months</span>
+          </div>
+        </div>
+        <p style="font-size:10px;color:#94a3b8;margin-top:8px;font-style:italic">Branch Details block omitted when <code style="font-size:9px">branches</code> is empty (typical WC).</p>
+
+        <div class="sub-h" style="margin-top:14px">Late Fees</div>
+        <div class="field-row" id="f-T14">
+          <span class="field-label">Late Fee Basis <b class="b c-tm" onclick="select('T14')">T14</b></span>
+          <span class="field-value">Overdue Amount</span>
+        </div>
+        <div class="field-row" id="f-T15">
+          <span class="field-label">Late Fee Grace Period (days) <b class="b c-tm" onclick="select('T15')">T15</b></span>
+          <span class="field-value">5 days</span>
+        </div>
+        <div class="field-row" id="f-T16">
+          <span class="field-label">Daily Late Fee % <b class="b c-tm" onclick="select('T16')">T16</b></span>
+          <span class="field-value">0.08% (Investors) · 0.02% (ASN)</span>
+        </div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-section-title">Credit Memo &amp; Notes</div>
       <div class="card-body">
-        <div id="f-K4" style="font-size:11px;color:#334155;background:#f9fafb;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px">KP memo: Maju — repeat relationship; project #4 extends working-capital line under existing Asset D structure.</div>
+        <div class="sub-h">KP Credit Memo <b class="b c-m" onclick="select('K4')">K4</b></div>
+        <div id="f-K4" style="font-size:11px;color:#334155;background:#f9fafb;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;margin-bottom:12px">Maju — repeat relationship; project #4 extends working-capital line under existing Asset D structure.</div>
+        <div class="sub-h">Project Credit Memo <b class="b c-m" onclick="select('K5')">K5</b></div>
+        <div id="f-K5" style="font-size:11px;color:#334155;background:#f9fafb;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px">Maju #4 - Working Capital (Coda i-_5laC-0qZa). Return-capped 1.35×, single disbursement; combined with WC plafond line per Brand/Project.</div>
+        <div class="sub-h" style="margin-top:10px">Financials <b class="b c-m" onclick="select('K6')">K6</b></div>
+        <div id="f-K6" style="font-size:11px"><a href="#" style="color:#2563eb">Calculator / financials (mock link)</a></div>
+        <div class="sub-h" style="margin-top:10px">Notes Feed <b class="b c-m" onclick="select('K7')">K7</b></div>
+        <div id="f-K7" style="font-size:11px;color:#64748b">1 Jun 2026 — Armeno Devan: Submission Project+Plafond; sync plafond + PT from Coda before disbursement.</div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-section-title">PT Details</div>
       <div class="card-body">
-        <table class="tbl" style="font-size:10px"><tbody><tr><td id="f-E1"><b>PT Maju (legal name from Brand)</b></td><td id="f-E2">BCA</td><td class="mono" id="f-E3">—</td></tr></tbody></table>
+        <table class="tbl" style="font-size:10px"><tbody><tr><td id="f-E1"><b>PT Maju (legal name from Brand in Coda)</b></td><td id="f-E2">BCA</td><td class="mono" id="f-E3">TBD</td></tr></tbody></table>
       </div>
     </div>
 
     <div class="card">
       <div class="card-section-title">Other</div>
       <div class="card-body">
-        <div class="field-row" id="f-O1"><span class="field-label">Funding <b class="b c-ot" onclick="select('O1')">O1</b></span><span class="field-value">KF &amp; KCF</span></div>
-        <div style="margin-top:12px;padding-top:12px;border-top:1px solid #f1f5f9">
-          <div class="sub-h">Approval</div>
-          <div id="f-A1" style="font-size:12px"><div class="vote-row"><span class="vote-name">Ben Elberger</span><span class="vote-btn vote-pending">Pending</span></div></div>
+        <div class="field-row" id="f-O1">
+          <span class="field-label">Funding Source <b class="b c-ot" onclick="select('O1')">O1</b></span>
+          <span class="field-value">KF &amp; KCF</span>
         </div>
+        <div class="field-row" id="f-O3">
+          <span class="field-label">Tax Withholdings <b class="b c-ot" onclick="select('O3')">O3</b></span>
+          <span class="field-value">Karmapreneur will withhold</span>
+        </div>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid #f1f5f9">
+          <div class="sub-h" style="margin-top:0">Approval</div>
+          <div style="font-size:11px;color:#b45306;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;margin-bottom:10px;line-height:1.45">
+            <strong>Special notes for IC</strong><br/>
+            ⚠️ Combined IC: Maju #4 - Working Capital — tranche + WC plafond (limits illustrative in mock; sync from Coda).
+          </div>
+          <div style="font-size:11px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;color:#475569">
+            <span style="font-weight:700;color:#334155">Rule:</span>
+            <span>≤ IDR 4B — Principal approval only required</span>
+            <span style="margin-left:auto;font-size:10px;color:#94a3b8">0/3 voted</span>
+          </div>
+          <div id="f-A1" style="font-size:12px">
+            <div class="vote-row"><span class="vote-name">Ben Elberger <span style="font-size:9px;color:#7c3aed;border:1px solid #e9d5ff;background:#faf5ff;padding:1px 5px;border-radius:4px">Principal</span></span><span class="vote-btn vote-pending">Pending</span></div>
+            <div class="vote-row"><span class="vote-name">Aldi Haryopratomo <span style="font-size:9px;color:#94a3b8;font-style:italic">optional</span></span><span class="vote-btn vote-pending">Pending</span></div>
+            <div class="vote-row"><span class="vote-name">Junaidi <span style="font-size:9px;color:#94a3b8;font-style:italic">optional</span></span><span class="vote-btn vote-pending">Pending</span></div>
+          </div>
+        </div>
+        <div class="sub-h" style="margin-top:14px">Approval Notes <b class="b c-ap" onclick="select('A2')">A2</b></div>
+        <div id="f-A2" style="font-size:11px;color:#94a3b8;font-style:italic">(empty)</div>
+        <div class="sub-h" style="margin-top:10px">Conditions Subsequent <b class="b c-ap" onclick="select('A3')">A3</b></div>
+        <ul id="f-A3" style="font-size:11px;color:#334155;padding-left:16px;line-height:1.9">
+          <li>Execute tranche documentation and milestone sign-off before each disbursement</li>
+          <li>Confirm plafond registry update in Coda after IC approval</li>
+        </ul>
       </div>
     </div>
 

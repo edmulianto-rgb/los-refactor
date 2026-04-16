@@ -51,6 +51,16 @@ export function ProjectDetails({ project }: Props) {
         />
         <DataRow label="Financing Type" value={<span className="text-gray-800">{project.returnType}</span>} />
         <DataRow
+          label="Syariah"
+          value={
+            project.syariah ? (
+              <Tag label="Syariah" variant="syariah" />
+            ) : (
+              <span className="text-gray-600">No</span>
+            )
+          }
+        />
+        <DataRow
           label="Asset Class"
           value={
             <Tag

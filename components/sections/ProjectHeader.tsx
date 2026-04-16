@@ -28,15 +28,6 @@ export function ProjectHeader({ project }: Props) {
             variant={approvalTypeVariant(project.approvalType)}
             className="text-sm px-3 py-1"
           />
-          <div
-            className={`text-xs font-medium px-2.5 py-1 rounded-md border ${
-              project.syariah
-                ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                : "border-gray-200 bg-gray-50 text-gray-600"
-            }`}
-          >
-            Syariah · {project.syariah ? "Yes" : "No"}
-          </div>
         </div>
       </div>
     </div>
