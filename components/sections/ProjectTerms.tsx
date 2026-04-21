@@ -1,44 +1,27 @@
 import { ICProject } from "@/data/types";
 import { SectionCard } from "@/components/ui/SectionCard";
-import { DataRow, fmt, fmtPct, fmtDate } from "@/components/ui/DataRow";
+import { DataRow, fmt, fmtDate } from "@/components/ui/DataRow";
 import { ExternalLink, MapPin } from "lucide-react";
-import { isAssetAOrD, isAssetB, isAssetBI } from "@/lib/assetClass";
-import {
-  dailyRecapFromProject,
-  lateFeeBasisWarningB,
-  lateFeeDailyAsnWarningB,
-  lateFeeDailyInvestorWarningB,
-  lateFeeGraceWarningB,
-} from "@/lib/bRecapRules";
+import { isAssetB } from "@/lib/assetClass";
 
 interface Props {
   project: ICProject;
 }
 
-// Late fee defaults for Asset A / Asset D (policy)
-const DEFAULT_INVESTOR_DAILY_PCT = 0.08;
-const DEFAULT_ASN_DAILY_PCT = 0.02;
-
 export function ProjectTerms({ project }: Props) {
-  const { revenueShareTerms: rst, fixedReturnTerms: frt, disbursements, branches, lateFee } = project;
-  const showLateFeeDefaultWarnings = isAssetAOrD(project.assetClass);
+  const { fixedReturnTerms: frt, disbursements, branches } = project;
   const assetB = isAssetB(project.assetClass);
-  const bDailyRecap = assetB && project.dailyInterestTerms ? dailyRecapFromProject(project) : null;
-  const bKindForTerms = isAssetBI(project.assetClass) ? "B-I" : "B-PO";
 
   const totalDisbursed = disbursements.reduce((s, d) => s + d.plannedAmount, 0);
   const disbursementTarget = project.trancheTargetAmount ?? project.requestedAmount;
   const disbursementMismatch = totalDisbursed !== disbursementTarget;
 
-  // Revenue projection summary
-  const revArray = rst?.revProjectionArray ?? [];
-  const avgRevenue = revArray.length > 0 ? revArray.reduce((s, r) => s + r.revenue, 0) / revArray.length : null;
-  const maxRevEntry = revArray.length > 0 ? revArray.reduce((a, b) => (b.revenue > a.revenue ? b : a)) : null;
-  const minRevEntry = revArray.length > 0 ? revArray.reduce((a, b) => (b.revenue < a.revenue ? b : a)) : null;
-
   return (
     <SectionCard title="Project Terms Details">
       <div className="mt-2 space-y-6">
+        <p className="text-[10px] text-gray-500 -mt-1 mb-2">
+          Economics, caps, and payment terms are compared in <strong>Past Projects Recap</strong> (sections B–F). This card keeps schedule, branch grid, and amortization detail only.
+        </p>
 
         {/* Disbursement schedule */}
         <div>
@@ -88,103 +71,6 @@ export function ProjectTerms({ project }: Props) {
             </table>
           </div>
         </div>
-
-        {/* Revenue Share Terms */}
-        {rst && (
-          <div>
-            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Revenue Share Terms</h4>
-            <div className="space-y-0">
-              <DataRow label="Source of Revenue Accrued" value={rst.sourceOfRevenueAccrued} />
-
-              {/* Branch build-out duration — only if branches exist */}
-              {branches.length > 0 && (
-                <DataRow label="Branch Build-out Duration (months)" value="Per branch opening schedule" />
-              )}
-
-              <DataRow
-                label="Revenue Share Frequency"
-                value={
-                  rst.frequency !== "Monthly" ? (
-                    <span className="text-amber-600">
-                      {rst.frequency}{" "}
-                      <span className="text-xs">Warning: not monthly (the default setting)</span>
-                    </span>
-                  ) : rst.frequency
-                }
-              />
-              <DataRow label="Revenue Share Due Date" value={rst.dueDate} />
-              <DataRow label="Revenue Share Cap Type" value={rst.capType} />
-              {rst.capType === "Return Cap" && rst.capMultiple != null && (
-                <DataRow
-                  label="Cap Multiple"
-                  value={`${rst.capMultiple}x Investor Cap / ${(rst.capMultiple * (1 + rst.carryPct / 100)).toFixed(2)}x Total Cap`}
-                />
-              )}
-              {rst.capType === "Time Cap" && rst.capTimePeriodMonths != null && (
-                <DataRow label="Time Cap Period (months)" value={`${rst.capTimePeriodMonths} months`} />
-              )}
-              <DataRow
-                label="Revenue Share Start Date"
-                value={
-                  rst.revShareStartType === "Fixed" && rst.revShareStartDate
-                    ? `Fixed Revenue Share Start Date on ${fmtDate(rst.revShareStartDate)}`
-                    : "Anchored to Branch Opening"
-                }
-              />
-              <DataRow
-                label="Revenue Share %"
-                value={`${fmtPct(rst.preBEPRevSharePct)} Pre-BEP Revenue Share / ${fmtPct(rst.postBEPRevSharePct)} Post-BEP Revenue Share`}
-              />
-              <DataRow
-                label="Carry"
-                value={
-                  rst.carryType === "Fixed Platform Fee"
-                    ? `${fmtPct(rst.carryPct)} Fixed Platform Fee`
-                    : `${rst.carryType}: ${fmtPct(rst.carryPct)}`
-                }
-              />
-              {rst.minReturn != null && (
-                <DataRow
-                  label="Investor Minimum Return"
-                  value={
-                    rst.minReturnMultiple != null
-                      ? `Gross up to ${rst.minReturnMultiple}x at month ${rst.minReturnPayableMonths}`
-                      : rst.capType === "Time Cap"
-                      ? `Continual up to ${fmtPct(rst.minReturn)} within ${rst.minReturnPayableMonths} months`
-                      : `${fmtPct(rst.minReturn)} within ${rst.minReturnPayableMonths} months`
-                  }
-                />
-              )}
-            </div>
-
-            {/* Revenue projection summary (full monthly array lives in data; span = row count) */}
-            {avgRevenue !== null && maxRevEntry && minRevEntry && (
-              <div className="mt-3 space-y-2">
-                <div className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                  Revenue projections (monthly model)
-                </div>
-                <div className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-xs text-gray-700">
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
-                    <span className="text-gray-400">Avg/month</span>
-                    <span className="text-right font-medium">{fmt(Math.round(avgRevenue))}</span>
-                    <span className="text-gray-400">Peak (Month {maxRevEntry.month})</span>
-                    <span className="text-right">{fmt(maxRevEntry.revenue)}</span>
-                    <span className="text-gray-400">Floor (Month {minRevEntry.month})</span>
-                    <span className="text-right">{fmt(minRevEntry.revenue)}</span>
-                    <span className="text-gray-400">Projection span</span>
-                    <span className="text-right">{revArray.length} months</span>
-                  </div>
-                </div>
-                {project.submissionProjectedBEPMonths != null && (
-                  <div className="text-xs text-gray-700">
-                    <span className="text-gray-500">Projected BEP (mos)</span>{" "}
-                    <span className="font-semibold text-gray-900">{project.submissionProjectedBEPMonths}</span>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
 
         {/* Branch Details */}
         {branches.length > 0 && (
@@ -285,110 +171,22 @@ export function ProjectTerms({ project }: Props) {
           </div>
         )}
 
-        {/* Daily Interest (PO / invoice) */}
+        {/* Daily Interest — service fee basis only (rates, tenor, min period are in Recap B/C) */}
         {project.dailyInterestTerms && (
           <div>
-            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Daily Interest Terms</h4>
+            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Daily Interest — Service Fee Basis</h4>
             <div className="space-y-0">
-              <DataRow
-                label="Interest Rate (30-Day)"
-                value={fmtPct(project.dailyInterestTerms.interestRate30DayPct)}
-              />
-              <DataRow
-                label="Service Fee Rate (30-Day)"
-                value={fmtPct(project.dailyInterestTerms.serviceFee30DayPct)}
-              />
-              <DataRow label="Tenor (days)" value={`${project.dailyInterestTerms.tenorDays} days`} />
-              <DataRow
-                label="Minimum Interest Period (days)"
-                value={`${project.dailyInterestTerms.minInterestPeriodDays} days`}
-              />
               <DataRow label="Service Fee Daily Interest Basis" value={project.dailyInterestTerms.serviceFeeDailyBasis} />
             </div>
+            <p className="text-[10px] text-gray-400 mt-1.5">
+              Interest rate, service fee rate, tenor, min payment period — see <strong>Past Projects Recap (B, C)</strong> above.
+            </p>
           </div>
         )}
 
-        {/* Late Fees */}
-        <div>
-          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Late Fees</h4>
-          <div className="space-y-0">
-            <DataRow
-              label="Late Fee Basis"
-              value={
-                assetB && bDailyRecap ? (
-                  lateFeeBasisWarningB(bKindForTerms, lateFee.basis) ? (
-                    <span>
-                      {lateFee.basis}{" "}
-                      <span className="text-xs text-amber-600">{lateFeeBasisWarningB(bKindForTerms, lateFee.basis)}</span>
-                    </span>
-                  ) : (
-                    lateFee.basis
-                  )
-                ) : showLateFeeDefaultWarnings && lateFee.basis !== "Overdue Amount" ? (
-                  <span>
-                    {lateFee.basis}{" "}
-                    <span className="text-xs text-amber-600">
-                      Warning: different from default value of Overdue Amount for this project type
-                    </span>
-                  </span>
-                ) : (
-                  lateFee.basis
-                )
-              }
-            />
-            <DataRow
-              label="Late Fee Grace Period (days)"
-              value={
-                assetB && bDailyRecap ? (
-                  lateFeeGraceWarningB(bKindForTerms, lateFee.gracePeriodDays) ? (
-                    <span>
-                      {lateFee.gracePeriodDays} days{" "}
-                      <span className="text-xs text-amber-600">{lateFeeGraceWarningB(bKindForTerms, lateFee.gracePeriodDays)}</span>
-                    </span>
-                  ) : (
-                    `${lateFee.gracePeriodDays} days`
-                  )
-                ) : showLateFeeDefaultWarnings && lateFee.gracePeriodDays !== 5 ? (
-                  <span>
-                    {lateFee.gracePeriodDays} days{" "}
-                    <span className="text-xs text-amber-600">
-                      Warning: different from default value of 5 days for this project type
-                    </span>
-                  </span>
-                ) : (
-                  `${lateFee.gracePeriodDays} days`
-                )
-              }
-            />
-            <DataRow
-              label="Daily Late Fee %"
-              value={
-                <div className="space-y-0.5">
-                  <div>
-                    {fmtPct(lateFee.dailyPctInvestors)} per day ({fmtPct(lateFee.dailyPctInvestors)} to Investors,{" "}
-                    {fmtPct(lateFee.dailyPctASN)} to ASN)
-                  </div>
-                  {assetB && bDailyRecap && lateFeeDailyInvestorWarningB(bDailyRecap) && (
-                    <div className="text-xs text-amber-600">{lateFeeDailyInvestorWarningB(bDailyRecap)}</div>
-                  )}
-                  {assetB && bDailyRecap && lateFeeDailyAsnWarningB(bDailyRecap) && (
-                    <div className="text-xs text-amber-600">{lateFeeDailyAsnWarningB(bDailyRecap)}</div>
-                  )}
-                  {showLateFeeDefaultWarnings && lateFee.dailyPctInvestors !== DEFAULT_INVESTOR_DAILY_PCT && (
-                    <div className="text-xs text-amber-600">
-                      Warning: different from default value 0.08% per day to Investors for this project type
-                    </div>
-                  )}
-                  {showLateFeeDefaultWarnings && lateFee.dailyPctASN !== DEFAULT_ASN_DAILY_PCT && (
-                    <div className="text-xs text-amber-600">
-                      Warning: different from default value 0.02% per day to ASN for this project type
-                    </div>
-                  )}
-                </div>
-              }
-            />
-          </div>
-        </div>
+        <p className="text-[10px] text-gray-400">
+          Late fee terms (basis, grace period, daily rates) — see <strong>Past Projects Recap (F)</strong> above.
+        </p>
 
         {project.termSheetLink && (
           <a

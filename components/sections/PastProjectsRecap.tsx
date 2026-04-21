@@ -1,70 +1,998 @@
-import { ICProject, PastProject } from "@/data/types";
+import React from "react";
+import { ICProject, PastProject, ReturnType } from "@/data/types";
 import { SectionCard } from "@/components/ui/SectionCard";
 import { Tag, statusVariant } from "@/components/ui/Tag";
 import { fmt, fmtDate, fmtPct } from "@/components/ui/DataRow";
 import { getPastProjectsRecapRows } from "@/lib/pastProjectsRecap";
 import { sortPastProjectsRecapRows } from "@/lib/pastProjectsRecapSort";
-import { isAssetAOrD, isAssetB } from "@/lib/assetClass";
-import {
-  getRecapRowRevShareSnapshot,
-  REV_SHARE_RECAP_COMPARE_METRICS,
-} from "@/lib/revShareTermsComparison";
-import {
-  effectiveDailyRecap,
-  interestTooLow,
-  lateFeeBasisWarningAD,
-  lateFeeBasisWarningB,
-  lateFeeDailyAsnWarningAD,
-  lateFeeDailyAsnWarningB,
-  lateFeeDailyInvestorWarningAD,
-  lateFeeDailyInvestorWarningB,
-  lateFeeGraceWarningAD,
-  lateFeeGraceWarningB,
-  minInterestMismatch,
-  pvaClass,
-  rowBRecapKind,
-  serviceTooLow,
-  termDaysTooLong,
-} from "@/lib/bRecapRules";
 
 interface Props {
   project: ICProject;
 }
 
-function RevShareRecapComparisonTable({ project, projects }: { project: ICProject; projects: PastProject[] }) {
-  const submissionIdx = projects.findIndex((p) => p.isCurrentSubmission);
-  const baselineIdx =
-    submissionIdx >= 0 ? submissionIdx : projects.findIndex((p) => p.status === "Proposed");
-  const baselineRow = baselineIdx >= 0 ? projects[baselineIdx] : null;
-  const baselineSnap = baselineRow ? getRecapRowRevShareSnapshot(project, baselineRow) : null;
+// ── Return type helpers ────────────────────────────────────────────────────────
+
+function isRevShare(rt: ReturnType): boolean {
+  return rt === "Revenue Share (Return-Capped)" || rt === "Revenue Share (Time-Capped)" || rt === "Fixed + Revenue Share";
+}
+function isFixedPlusRS(rt: ReturnType): boolean {
+  return rt === "Fixed + Revenue Share";
+}
+function isFixedReturn(rt: ReturnType): boolean {
+  return rt === "Fixed Return";
+}
+function isDailyInterest(rt: ReturnType): boolean {
+  return rt === "Daily Interest";
+}
+function hasFixedLeg(rt: ReturnType): boolean {
+  return rt === "Fixed Return" || rt === "Fixed + Revenue Share";
+}
+function hasFixedROIC(rt: ReturnType): boolean {
+  return rt === "Fixed Return" || rt === "Daily Interest";
+}
+function hasBEP(rt: ReturnType): boolean {
+  return rt !== "Daily Interest";
+}
+
+function returnTypeShort(rt: ReturnType): string {
+  const map: Record<ReturnType, string> = {
+    "Revenue Share (Return-Capped)": "RS Return-Cap",
+    "Revenue Share (Time-Capped)": "RS Time-Cap",
+    "Fixed + Revenue Share": "Fixed + RS",
+    "Fixed Return": "Fixed Return",
+    "Daily Interest": "Daily Interest",
+  };
+  return map[rt] ?? rt;
+}
+
+function returnTypeBadgeColor(rt: ReturnType): string {
+  if (rt === "Revenue Share (Return-Capped)") return "bg-violet-100 text-violet-800";
+  if (rt === "Revenue Share (Time-Capped)") return "bg-purple-100 text-purple-800";
+  if (rt === "Fixed + Revenue Share") return "bg-indigo-100 text-indigo-800";
+  if (rt === "Fixed Return") return "bg-blue-100 text-blue-800";
+  if (rt === "Daily Interest") return "bg-orange-100 text-orange-800";
+  return "bg-gray-100 text-gray-600";
+}
+
+function irrClass(irr: number | null): string {
+  if (irr === null) return "text-gray-400";
+  if (irr < 15) return "text-red-600 font-semibold";
+  if (irr < 20) return "text-amber-600 font-semibold";
+  return "text-emerald-700 font-semibold";
+}
+
+function na(): React.ReactNode {
+  return <span className="text-gray-300">—</span>;
+}
+
+function warn(msg: string): React.ReactNode {
+  return (
+    <span className="text-[10px] text-amber-600 font-medium leading-tight block mt-0.5">{msg}</span>
+  );
+}
+
+// ── Value renderers: proposed project (from ICProject) ────────────────────────
+
+function proposedFinancingType(proj: ICProject): React.ReactNode {
+  return (
+    <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium ${returnTypeBadgeColor(proj.returnType)}`}>
+      {returnTypeShort(proj.returnType)}
+    </span>
+  );
+}
+
+function proposedPT(proj: ICProject): React.ReactNode {
+  return proj.ptDetails.length > 0 ? proj.ptDetails.map((pt) => pt.name).join(", ") : na();
+}
+
+function proposedRevSharePct(proj: ICProject): React.ReactNode {
+  if (!isRevShare(proj.returnType) || !proj.revenueShareTerms) return na();
+  const rst = proj.revenueShareTerms;
+  return (
+    <div className="space-y-0.5">
+      <div>{fmtPct(rst.preBEPRevSharePct)} Pre-BEP</div>
+      <div>{fmtPct(rst.postBEPRevSharePct)} Post-BEP</div>
+    </div>
+  );
+}
+
+function proposedCap(proj: ICProject): React.ReactNode {
+  if (!isRevShare(proj.returnType) || !proj.revenueShareTerms) return na();
+  const rst = proj.revenueShareTerms;
+  if (rst.capType === "Return Cap" && rst.capMultiple != null) {
+    return <div><span className="font-medium">{rst.capMultiple}x</span> investor return cap</div>;
+  }
+  if (rst.capType === "Time Cap" && rst.capTimePeriodMonths != null) {
+    return <div><span className="font-medium">{rst.capTimePeriodMonths} months</span> time cap</div>;
+  }
+  return na();
+}
+
+function proposedRevShareStart(proj: ICProject): React.ReactNode {
+  if (!isRevShare(proj.returnType) || !proj.revenueShareTerms) return na();
+  const rst = proj.revenueShareTerms;
+  if (rst.revShareStartType === "Fixed" && rst.revShareStartDate) {
+    return (
+      <div className="space-y-0.5">
+        <div className="font-medium">Fixed start date</div>
+        <div>{fmtDate(rst.revShareStartDate)}</div>
+      </div>
+    );
+  }
+  return <div className="text-gray-700">Anchored to Branch Opening</div>;
+}
+
+function pastRevShareStart(p: PastProject): React.ReactNode {
+  if (!isRevShare(p.returnType)) return na();
+  const s = p.revShareTermsSnapshot;
+  if (!s) return na();
+  if (s.revShareStartType === "Fixed" && s.revShareStartDate) {
+    return (
+      <div className="space-y-0.5">
+        <div className="font-medium">Fixed start date</div>
+        <div>{fmtDate(s.revShareStartDate)}</div>
+      </div>
+    );
+  }
+  if (s.revShareStartType === "Anchored to Branch Opening" || (s.revShareStartType == null && s.revShareStartDate == null)) {
+    return <div className="text-gray-700">Anchored to Branch Opening</div>;
+  }
+  return na();
+}
+
+function proposedFixedLeg(proj: ICProject): React.ReactNode {
+  if (!hasFixedLeg(proj.returnType)) return na();
+  if (isFixedReturn(proj.returnType) && proj.fixedReturnTerms) {
+    const frt = proj.fixedReturnTerms;
+    return (
+      <div className="space-y-0.5">
+        <div className="font-medium">{fmt(frt.totalRepayment)}</div>
+        <div className="text-gray-500">total repayment</div>
+        <div className="text-gray-500">{frt.repaymentSchedule.length} monthly installments</div>
+      </div>
+    );
+  }
+  if (isFixedPlusRS(proj.returnType) && proj.fixedReturnTerms) {
+    const frt = proj.fixedReturnTerms;
+    return (
+      <div className="space-y-0.5">
+        <div className="font-medium">{fmt(frt.totalRepayment)}</div>
+        <div className="text-gray-500">fixed leg repayment</div>
+        <div className="text-gray-500">{frt.repaymentSchedule.length} monthly installments</div>
+      </div>
+    );
+  }
+  return na();
+}
+
+function proposedCarry(proj: ICProject): React.ReactNode {
+  if (proj.revenueShareTerms) {
+    const rst = proj.revenueShareTerms;
+    return `${fmtPct(rst.carryPct)} ${rst.carryType}`;
+  }
+  return na();
+}
+
+function proposedInvestorROIC(proj: ICProject): React.ReactNode {
+  if (!hasFixedROIC(proj.returnType)) return na();
+  if (isDailyInterest(proj.returnType) && proj.dailyInterestTerms) {
+    const dit = proj.dailyInterestTerms;
+    return (
+      <div className="space-y-0.5">
+        <div className="font-medium">{fmtPct(dit.interestRate30DayPct)} per 30 days</div>
+        <div className="text-gray-400 text-[10px]">to investors</div>
+      </div>
+    );
+  }
+  if (isFixedReturn(proj.returnType) && proj.fixedReturnTerms) {
+    const frt = proj.fixedReturnTerms;
+    const months = frt.repaymentSchedule.length;
+    if (months > 0) {
+      const perMonth = (frt.totalInterest / frt.totalPrincipal / months) * 100;
+      return (
+        <div className="space-y-0.5">
+          <div className="font-medium">{perMonth.toFixed(3)}% per month</div>
+          <div className="text-gray-400 text-[10px]">investor interest rate</div>
+        </div>
+      );
+    }
+  }
+  return na();
+}
+
+function proposedTotalROIC(proj: ICProject): React.ReactNode {
+  if (!hasFixedROIC(proj.returnType)) return na();
+  if (isDailyInterest(proj.returnType) && proj.dailyInterestTerms) {
+    const dit = proj.dailyInterestTerms;
+    const total = dit.interestRate30DayPct + dit.serviceFee30DayPct;
+    return (
+      <div className="space-y-0.5">
+        <div className="font-medium">{fmtPct(total)} per 30 days</div>
+        <div className="text-gray-400 text-[10px]">investor + carry (service fee)</div>
+      </div>
+    );
+  }
+  if (isFixedReturn(proj.returnType) && proj.fixedReturnTerms) {
+    const frt = proj.fixedReturnTerms;
+    const months = frt.repaymentSchedule.length;
+    if (months > 0) {
+      const perMonth = ((frt.totalInterest + frt.carry) / frt.totalPrincipal / months) * 100;
+      return (
+        <div className="space-y-0.5">
+          <div className="font-medium">{perMonth.toFixed(3)}% per month</div>
+          <div className="text-gray-400 text-[10px]">investor + carry (total implied)</div>
+        </div>
+      );
+    }
+  }
+  return na();
+}
+
+function proposedTerm(proj: ICProject): React.ReactNode {
+  if (isDailyInterest(proj.returnType) && proj.dailyInterestTerms) {
+    return <div className="font-medium">{proj.dailyInterestTerms.tenorDays} days</div>;
+  }
+  const term = proj.revenueShareTerms
+    ? proj.revenueShareTerms.capType === "Time Cap"
+      ? proj.revenueShareTerms.capTimePeriodMonths ?? null
+      : null
+    : null;
+  const projected = proj.pastProjects.find((p) => p.isCurrentSubmission)?.projectedTermMonths ?? null;
+  return (
+    <div className="space-y-0.5">
+      <div className="font-medium">{projected != null ? `${projected} months` : "—"}</div>
+      {term != null && <div className="text-gray-400 text-[10px]">= cap period</div>}
+    </div>
+  );
+}
+
+function proposedBranchOpening(proj: ICProject): React.ReactNode {
+  if (!isRevShare(proj.returnType)) return na();
+  if (proj.branches.length === 0) return <span className="text-gray-400">N/A — no branch opening</span>;
+  return (
+    <div className="space-y-0.5">
+      {proj.branches.map((b) => (
+        <div key={b.id}>
+          <span className="font-medium">{b.name}</span>
+          {b.type === "Opening Branch" && <span className="text-gray-400"> (Opening)</span>}
+        </div>
+      ))}
+      <div className="text-gray-400 text-[10px]">Scheduled per disbursement</div>
+    </div>
+  );
+}
+
+function proposedMinPeriod(proj: ICProject): React.ReactNode {
+  if (!isDailyInterest(proj.returnType)) return na();
+  if (proj.dailyInterestTerms) {
+    return <div className="font-medium">{proj.dailyInterestTerms.minInterestPeriodDays} days</div>;
+  }
+  return na();
+}
+
+function proposedPvA(proj: ICProject): React.ReactNode {
+  if (!isRevShare(proj.returnType)) return na();
+  return <span className="text-gray-400">N/A — not yet started</span>;
+}
+
+function proposedIRR(proj: ICProject): React.ReactNode {
+  const p = proj.pastProjects.find((p) => p.isCurrentSubmission);
+  if (!p) return na();
+  return (
+    <div className="space-y-0.5">
+      <div className="text-gray-400 text-[10px]">OTF N/A — not yet started</div>
+      <div className={irrClass(p.projectedIRR)}>{fmtPct(p.projectedIRR)} projected</div>
+    </div>
+  );
+}
+
+function proposedMOIC(proj: ICProject): React.ReactNode {
+  const p = proj.pastProjects.find((pp) => pp.isCurrentSubmission);
+  if (!p) return na();
+  return (
+    <div className="space-y-0.5">
+      <div className="text-gray-400 text-[10px]">OTF N/A</div>
+      <div className="text-gray-700">{p.projectedMOIC} projected</div>
+    </div>
+  );
+}
+
+function proposedBEP(proj: ICProject): React.ReactNode {
+  if (!hasBEP(proj.returnType)) return na();
+  const p = proj.pastProjects.find((pp) => pp.isCurrentSubmission);
+  if (!p) return na();
+  return (
+    <div className="space-y-0.5">
+      <div className="text-gray-400 text-[10px]">OTF N/A</div>
+      <div className="text-gray-700">Month {p.projectedBEPMonths} projected</div>
+    </div>
+  );
+}
+
+function proposedMinReturn(proj: ICProject): React.ReactNode {
+  if (!isRevShare(proj.returnType) || !proj.revenueShareTerms) return na();
+  const rst = proj.revenueShareTerms;
+  if (rst.minReturnMultiple != null && rst.minReturnPayableMonths != null) {
+    return (
+      <div>
+        <div className="font-medium">Gross up to {rst.minReturnMultiple}x</div>
+        <div className="text-gray-500">at month {rst.minReturnPayableMonths}</div>
+      </div>
+    );
+  }
+  if (rst.minReturn != null && rst.minReturnPayableMonths != null) {
+    return (
+      <div>
+        <div className="font-medium">Continual min {fmtPct(rst.minReturn)}</div>
+        <div className="text-gray-500">within {rst.minReturnPayableMonths} months</div>
+      </div>
+    );
+  }
+  return <span className="text-gray-400">None</span>;
+}
+
+function proposedDPD(_proj: ICProject): React.ReactNode {
+  return <span className="text-gray-400">N/A — not yet disbursed</span>;
+}
+
+function proposedRevProjections(proj: ICProject): React.ReactNode {
+  if (!isRevShare(proj.returnType) || !proj.revenueShareTerms) return na();
+  const arr = proj.revenueShareTerms.revProjectionArray;
+  if (arr.length === 0) return na();
+  const avg = arr.reduce((s, r) => s + r.revenue, 0) / arr.length;
+  const peak = arr.reduce((a, b) => (b.revenue > a.revenue ? b : a));
+  const floor = arr.reduce((a, b) => (b.revenue < a.revenue ? b : a));
+  return (
+    <div className="space-y-0.5">
+      <div><span className="text-gray-400">Avg</span> {fmt(Math.round(avg))}/mo</div>
+      <div><span className="text-gray-400">Peak</span> {fmt(peak.revenue)}</div>
+      <div><span className="text-gray-400">Floor</span> {fmt(floor.revenue)}</div>
+      <div className="text-gray-400 text-[10px]">{arr.length} month projection</div>
+    </div>
+  );
+}
+
+function proposedSourceOfRevenue(proj: ICProject): React.ReactNode {
+  if (!isRevShare(proj.returnType) || !proj.revenueShareTerms) return na();
+  return <span className="text-gray-700 text-[10px] leading-snug">{proj.revenueShareTerms.sourceOfRevenueAccrued}</span>;
+}
+
+function proposedPaymentFreq(proj: ICProject): React.ReactNode {
+  if (isRevShare(proj.returnType) && proj.revenueShareTerms) {
+    const rst = proj.revenueShareTerms;
+    return (
+      <div className="space-y-0.5">
+        <div>Revenue share: {rst.frequency}, {rst.dueDate}</div>
+        <div className="text-gray-400 text-[10px]">Carry: same schedule</div>
+      </div>
+    );
+  }
+  if (isDailyInterest(proj.returnType)) {
+    return <div>At maturity (bullet repayment)</div>;
+  }
+  if (isFixedReturn(proj.returnType)) {
+    return <div>Monthly installment</div>;
+  }
+  return na();
+}
+
+function proposedLateFee(proj: ICProject): React.ReactNode {
+  const lf = proj.lateFee;
+  return (
+    <div className="space-y-0.5">
+      <div><span className="text-gray-400">Basis:</span> {lf.basis}</div>
+      <div><span className="text-gray-400">Grace:</span> {lf.gracePeriodDays} days</div>
+      <div><span className="text-gray-400">To investors:</span> {fmtPct(lf.dailyPctInvestors)}/day</div>
+      <div><span className="text-gray-400">To ASN:</span> {fmtPct(lf.dailyPctASN)}/day</div>
+    </div>
+  );
+}
+
+// ── Value renderers: past project (from PastProject) ─────────────────────────
+
+function pastFinancingType(p: PastProject): React.ReactNode {
+  return (
+    <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium ${returnTypeBadgeColor(p.returnType)}`}>
+      {returnTypeShort(p.returnType)}
+    </span>
+  );
+}
+
+function pastPT(p: PastProject): React.ReactNode {
+  return p.extendedTermsSnapshot?.ptName ?? na();
+}
+
+function pastRevSharePct(p: PastProject): React.ReactNode {
+  if (!isRevShare(p.returnType) || !p.revShareTermsSnapshot) return na();
+  const s = p.revShareTermsSnapshot;
+  return (
+    <div className="space-y-0.5">
+      <div>{fmtPct(s.preBEPRevSharePct)} Pre-BEP</div>
+      <div>{fmtPct(s.postBEPRevSharePct)} Post-BEP</div>
+    </div>
+  );
+}
+
+function pastCap(p: PastProject): React.ReactNode {
+  if (!isRevShare(p.returnType) || !p.revShareTermsSnapshot) return na();
+  const s = p.revShareTermsSnapshot;
+  if (s.capType === "Return Cap" && s.capMultiple != null) {
+    return <div><span className="font-medium">{s.capMultiple}x</span> investor return cap</div>;
+  }
+  if (s.capType === "Time Cap" && s.capTimePeriodMonths != null) {
+    return <div><span className="font-medium">{s.capTimePeriodMonths} months</span> time cap</div>;
+  }
+  return na();
+}
+
+function pastFixedLeg(p: PastProject): React.ReactNode {
+  if (!hasFixedLeg(p.returnType)) return na();
+  const ext = p.extendedTermsSnapshot;
+  if (!ext?.fixedLegTotalAmount) return na();
+  const label = isFixedReturn(p.returnType) ? "total repayment" : "fixed leg repayment";
+  return (
+    <div className="space-y-0.5">
+      <div className="font-medium">{fmt(ext.fixedLegTotalAmount)}</div>
+      <div className="text-gray-500">{label}</div>
+      {ext.fixedLegInstallmentMonths && (
+        <div className="text-gray-500">{ext.fixedLegInstallmentMonths} monthly installments</div>
+      )}
+    </div>
+  );
+}
+
+function pastCarry(p: PastProject): React.ReactNode {
+  const s = p.revShareTermsSnapshot;
+  if (s?.carryPct != null) {
+    return `${fmtPct(s.carryPct)} ${s.carryType ?? ""}`.trim();
+  }
+  return na();
+}
+
+function pastInvestorROIC(p: PastProject): React.ReactNode {
+  if (!hasFixedROIC(p.returnType)) return na();
+  const ext = p.extendedTermsSnapshot;
+  if (ext?.investorROICPerPeriod != null) {
+    return (
+      <div className="space-y-0.5">
+        <div className="font-medium">{fmtPct(ext.investorROICPerPeriod)} {ext.roicPeriodLabel}</div>
+        <div className="text-gray-400 text-[10px]">to investors</div>
+      </div>
+    );
+  }
+  if (isDailyInterest(p.returnType) && p.dailyInterestRecap) {
+    return (
+      <div className="space-y-0.5">
+        <div className="font-medium">{fmtPct(p.dailyInterestRecap.interestRate30DayPct)} per 30 days</div>
+        <div className="text-gray-400 text-[10px]">to investors</div>
+      </div>
+    );
+  }
+  return na();
+}
+
+function pastTotalROIC(p: PastProject): React.ReactNode {
+  if (!hasFixedROIC(p.returnType)) return na();
+  const ext = p.extendedTermsSnapshot;
+  if (ext?.totalImpliedROICPerPeriod != null) {
+    return (
+      <div className="space-y-0.5">
+        <div className="font-medium">{fmtPct(ext.totalImpliedROICPerPeriod)} {ext.roicPeriodLabel}</div>
+        <div className="text-gray-400 text-[10px]">investor + carry (total implied)</div>
+      </div>
+    );
+  }
+  if (isDailyInterest(p.returnType) && p.dailyInterestRecap) {
+    const total = p.dailyInterestRecap.interestRate30DayPct + p.dailyInterestRecap.serviceFee30DayPct;
+    return (
+      <div className="space-y-0.5">
+        <div className="font-medium">{fmtPct(total)} per 30 days</div>
+        <div className="text-gray-400 text-[10px]">investor + service fee (total)</div>
+      </div>
+    );
+  }
+  return na();
+}
+
+function pastTerm(p: PastProject): React.ReactNode {
+  if (isDailyInterest(p.returnType)) {
+    const days = p.dailyInterestRecap?.tenorDays ?? null;
+    return days != null ? <div className="font-medium">{days} days</div> : na();
+  }
+  return (
+    <div className="space-y-0.5">
+      {p.otfTermMonths != null && <div className="font-medium">{p.otfTermMonths} months OTF</div>}
+      <div className={p.otfTermMonths != null ? "text-gray-400 text-[10px]" : "font-medium"}>
+        {p.projectedTermMonths} months {p.otfTermMonths != null ? "original" : "projected"}
+      </div>
+    </div>
+  );
+}
+
+function pastBranchOpening(p: PastProject): React.ReactNode {
+  if (!isRevShare(p.returnType)) return na();
+  const ext = p.extendedTermsSnapshot;
+  if (!ext?.branchOpeningScheduledDate) return <span className="text-gray-400">N/A — no branch opening</span>;
+  const scheduled = fmtDate(ext.branchOpeningScheduledDate);
+  const actual = ext.branchOpeningActualDate ? fmtDate(ext.branchOpeningActualDate) : null;
+  return (
+    <div className="space-y-0.5">
+      <div><span className="text-gray-400">Sched:</span> {scheduled}</div>
+      {actual && <div><span className="text-gray-400">Actual:</span> {actual}</div>}
+    </div>
+  );
+}
+
+function pastMinPeriod(p: PastProject): React.ReactNode {
+  if (!isDailyInterest(p.returnType)) return na();
+  const days = p.dailyInterestRecap?.minInterestPeriodDays;
+  return days != null ? <div className="font-medium">{days} days</div> : na();
+}
+
+function pastPvA(p: PastProject): React.ReactNode {
+  if (!isRevShare(p.returnType)) return na();
+  if (p.pvaPct == null) return <span className="text-gray-400">—</span>;
+  const cls = p.pvaPct >= 100 ? "text-emerald-700 font-semibold" : p.pvaPct >= 85 ? "text-amber-600 font-semibold" : "text-red-600 font-semibold";
+  return <span className={cls}>{fmtPct(p.pvaPct)}</span>;
+}
+
+function pastIRR(p: PastProject): React.ReactNode {
+  return (
+    <div className="space-y-0.5">
+      {p.otfIRR != null && <div className={irrClass(p.otfIRR)}>{fmtPct(p.otfIRR)} OTF</div>}
+      <div className={`${irrClass(p.projectedIRR)} ${p.otfIRR != null ? "text-[10px] text-gray-400 font-normal" : ""}`}>
+        {fmtPct(p.projectedIRR)} {p.otfIRR != null ? "original proj." : "projected"}
+      </div>
+    </div>
+  );
+}
+
+function pastMOIC(p: PastProject): React.ReactNode {
+  return (
+    <div className="space-y-0.5">
+      {p.otfMOIC != null
+        ? <div className="font-medium">{p.otfMOIC}x OTF</div>
+        : <div className="text-gray-400 text-[10px]">OTF N/A from LMS</div>
+      }
+      <div className="text-gray-500">{p.projectedMOIC} projected</div>
+    </div>
+  );
+}
+
+function pastBEP(p: PastProject): React.ReactNode {
+  if (!hasBEP(p.returnType)) return na();
+  return (
+    <div className="space-y-0.5">
+      <div className="text-gray-400 text-[10px]">OTF N/A from LMS</div>
+      <div className="text-gray-700">Month {p.projectedBEPMonths} projected</div>
+    </div>
+  );
+}
+
+function pastMinReturn(p: PastProject): React.ReactNode {
+  if (!isRevShare(p.returnType) || !p.revShareTermsSnapshot) return na();
+  const s = p.revShareTermsSnapshot;
+  if (s.minReturnMultiple != null && s.minReturnPayableMonths != null) {
+    return (
+      <div>
+        <div className="font-medium">Gross up to {s.minReturnMultiple}x</div>
+        <div className="text-gray-500">at month {s.minReturnPayableMonths}</div>
+      </div>
+    );
+  }
+  if (s.minReturn != null && s.minReturnPayableMonths != null) {
+    return (
+      <div>
+        <div className="font-medium">Continual min {fmtPct(s.minReturn)}</div>
+        <div className="text-gray-500">within {s.minReturnPayableMonths} months</div>
+      </div>
+    );
+  }
+  return <span className="text-gray-400">None</span>;
+}
+
+function pastDPD(p: PastProject): React.ReactNode {
+  if (p.status === "Proposed") return <span className="text-gray-400">N/A — not yet disbursed</span>;
+  const hasAny = p.currentDPD > 0 || p.maxDPD > 0;
+  if (!hasAny) return <span className="text-emerald-700">Clean</span>;
+  return (
+    <div className="space-y-0.5">
+      {p.currentDPD > 0 && <div className="text-red-600 font-semibold">{p.currentDPD}d current</div>}
+      {p.maxDPD > 0 && (
+        <div className={p.maxDPD > 30 ? "text-red-600 font-medium" : "text-amber-600"}>
+          {p.maxDPD}d max ever
+        </div>
+      )}
+      {p.overdueHistory?.map((ev, i) => (
+        <div key={i} className="text-[10px] text-gray-500">
+          {fmtDate(ev.dueDate)} — {ev.daysOverdue}d —{" "}
+          <span className={ev.status === "Unpaid" ? "text-red-600" : "text-gray-400"}>{ev.status}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function pastRevProjections(p: PastProject): React.ReactNode {
+  if (!isRevShare(p.returnType)) return na();
+  const ext = p.extendedTermsSnapshot;
+  if (!ext?.avgRevenuePerMonth) return na();
+  return (
+    <div className="space-y-0.5">
+      <div><span className="text-gray-400">Avg</span> {fmt(ext.avgRevenuePerMonth)}/mo</div>
+      {ext.peakRevenuePerMonth && <div><span className="text-gray-400">Peak</span> {fmt(ext.peakRevenuePerMonth)}</div>}
+      {ext.floorRevenuePerMonth && <div><span className="text-gray-400">Floor</span> {fmt(ext.floorRevenuePerMonth)}</div>}
+      {ext.revProjectionSpanMonths && (
+        <div className="text-gray-400 text-[10px]">{ext.revProjectionSpanMonths} month projection</div>
+      )}
+    </div>
+  );
+}
+
+function pastSourceOfRevenue(p: PastProject): React.ReactNode {
+  if (!isRevShare(p.returnType)) return na();
+  const src = p.revShareTermsSnapshot?.sourceOfRevenueAccrued;
+  if (!src) return na();
+  return <span className="text-gray-700 text-[10px] leading-snug">{src}</span>;
+}
+
+function pastPaymentFreq(p: PastProject): React.ReactNode {
+  const ext = p.extendedTermsSnapshot;
+  if (ext?.paymentFrequency) return <div>{ext.paymentFrequency}</div>;
+  if (isDailyInterest(p.returnType)) return <div>At maturity (bullet repayment)</div>;
+  if (isFixedReturn(p.returnType)) return <div>Monthly installment</div>;
+  if (isRevShare(p.returnType)) return <div>Monthly revenue share</div>;
+  return na();
+}
+
+function pastLateFee(p: PastProject): React.ReactNode {
+  const lf = p.lateFeeRecap;
+  const di = p.dailyInterestRecap;
+
+  const basis = lf?.basis ?? di?.lateFeeBasis ?? null;
+  const grace = lf?.gracePeriodDays ?? di?.gracePeriodDays ?? null;
+  const inv = lf?.dailyPctInvestors ?? di?.dailyPctInvestors ?? null;
+  const asn = lf?.dailyPctASN ?? di?.dailyPctASN ?? null;
+
+  if (!basis) return na();
+
+  const basisWarn =
+    (isFixedReturn(p.returnType) && basis !== "Outstanding Amount")
+      ? warn("Expected: Outstanding Amount for Fixed Return")
+      : (isRevShare(p.returnType) && basis !== "Overdue Amount")
+      ? warn("Expected: Overdue Amount for Rev Share")
+      : null;
+
+  const graceWarn =
+    (isFixedReturn(p.returnType) && grace !== 0)
+      ? warn("Expected: 0 days for Fixed Return")
+      : (isRevShare(p.returnType) && grace !== 5)
+      ? warn("Expected: 5 days for Rev Share")
+      : null;
+
+  return (
+    <div className="space-y-0.5">
+      <div>
+        <span className="text-gray-400">Basis:</span> {basis}
+        {basisWarn}
+      </div>
+      <div>
+        <span className="text-gray-400">Grace:</span> {grace} days
+        {graceWarn}
+      </div>
+      {inv != null && <div><span className="text-gray-400">To investors:</span> {fmtPct(inv)}/day</div>}
+      {asn != null && <div><span className="text-gray-400">To ASN:</span> {fmtPct(asn)}/day</div>}
+    </div>
+  );
+}
+
+// ── Main comparison table ─────────────────────────────────────────────────────
+
+interface FieldSection {
+  sectionLabel: string;
+  fields: FieldDef[];
+}
+
+interface FieldDef {
+  id: string;
+  label: string;
+  sublabel?: string;
+  nuanceNote?: string;
+  /** Show this row at all given the return types present in the set. */
+  showForSet(allTypes: ReturnType[]): boolean;
+  /** Is this field applicable to this specific project? If not, render N/A. */
+  applicableForProject(rt: ReturnType, allTypes: ReturnType[]): boolean;
+  valueProposed(proj: ICProject): React.ReactNode;
+  valuePast(p: PastProject, proj: ICProject): React.ReactNode;
+}
+
+function buildFieldSections(allTypes: ReturnType[]): FieldSection[] {
+  const setHasRevShare = allTypes.some(isRevShare);
+  const setHasDI = allTypes.some(isDailyInterest);
+  const setHasFixed = allTypes.some(isFixedReturn);
+  const setHasFixedPlusRS = allTypes.some(isFixedPlusRS);
+  const setHasFixedLeg = allTypes.some(hasFixedLeg);
+  const setHasFixedROIC = allTypes.some(hasFixedROIC);
+
+  void setHasFixed;
+  void setHasFixedPlusRS;
+
+  return [
+    {
+      sectionLabel: "A — Identity & Structure",
+      fields: [
+        {
+          id: "financing-type",
+          label: "Financing type",
+          showForSet: () => true,
+          applicableForProject: () => true,
+          valueProposed: proposedFinancingType,
+          valuePast: (p) => pastFinancingType(p),
+        },
+        {
+          id: "pt",
+          label: "PT (legal entity)",
+          sublabel: "Same PT = shared liability exposure",
+          showForSet: () => true,
+          applicableForProject: () => true,
+          valueProposed: proposedPT,
+          valuePast: pastPT,
+        },
+        {
+          id: "amount",
+          label: "Amount",
+          showForSet: () => true,
+          applicableForProject: () => true,
+          valueProposed: (proj) => <span className="font-medium">{fmt(proj.requestedAmount)}</span>,
+          valuePast: (p) => <span className="font-medium">{fmt(p.amount)}</span>,
+        },
+        {
+          id: "outstanding",
+          label: "Principal outstanding",
+          sublabel: "N/A if not yet disbursed or fully repaid",
+          showForSet: () => true,
+          applicableForProject: () => true,
+          valueProposed: (_proj) => <span className="text-gray-400">N/A — not yet disbursed</span>,
+          valuePast: (p) =>
+            p.outstandingAmount > 0
+              ? <span className="font-medium">{fmt(p.outstandingAmount)}</span>
+              : <span className="text-gray-400">{p.status === "Proposed" ? "N/A" : "—"}</span>,
+        },
+      ],
+    },
+    {
+      sectionLabel: "B — Return Structure",
+      fields: [
+        {
+          id: "rev-share-pct",
+          label: "Revenue share %",
+          sublabel: "Pre-BEP and Post-BEP shown separately",
+          showForSet: () => setHasRevShare,
+          applicableForProject: (rt) => isRevShare(rt),
+          valueProposed: proposedRevSharePct,
+          valuePast: (p) => pastRevSharePct(p),
+        },
+        {
+          id: "cap",
+          label: "Cap",
+          sublabel: "Return Cap = MOIC cap · Time Cap = month cap",
+          nuanceNote: "Different cap types represent different risk profiles — always label explicitly",
+          showForSet: () => setHasRevShare,
+          applicableForProject: (rt) => isRevShare(rt),
+          valueProposed: proposedCap,
+          valuePast: (p) => pastCap(p),
+        },
+        {
+          id: "rev-share-start",
+          label: "Revenue share start",
+          sublabel: "Fixed date vs anchored to branch opening",
+          showForSet: () => setHasRevShare,
+          applicableForProject: (rt) => isRevShare(rt),
+          valueProposed: proposedRevShareStart,
+          valuePast: (p) => pastRevShareStart(p),
+        },
+        {
+          id: "fixed-amount",
+          label: "Fixed amount / repayment",
+          sublabel: "Fixed Return = full schedule · Fixed+RS = fixed leg only",
+          showForSet: () => setHasFixedLeg,
+          applicableForProject: (rt) => hasFixedLeg(rt),
+          valueProposed: proposedFixedLeg,
+          valuePast: (p) => pastFixedLeg(p),
+        },
+        {
+          id: "carry",
+          label: "Target carry",
+          sublabel: "Rate + type",
+          showForSet: () => true,
+          applicableForProject: () => true,
+          valueProposed: proposedCarry,
+          valuePast: (p) => pastCarry(p),
+        },
+        {
+          id: "investor-roic",
+          label: "Fixed payment investor ROIC",
+          sublabel: "Per month (Fixed Return) · Per 30 days (Daily Interest)",
+          nuanceNote: "Unit differs by type — label explicitly when comparing across Fixed Return and Daily Interest",
+          showForSet: () => setHasFixedROIC,
+          applicableForProject: (rt) => hasFixedROIC(rt),
+          valueProposed: proposedInvestorROIC,
+          valuePast: (p) => pastInvestorROIC(p),
+        },
+        {
+          id: "total-roic",
+          label: "Fixed payment total implied ROIC",
+          sublabel: "Investor rate + carry · Same unit caveat as above",
+          showForSet: () => setHasFixedROIC,
+          applicableForProject: (rt) => hasFixedROIC(rt),
+          valueProposed: proposedTotalROIC,
+          valuePast: (p) => pastTotalROIC(p),
+        },
+      ],
+    },
+    {
+      sectionLabel: "C — Timeline & Operations",
+      fields: [
+        {
+          id: "term",
+          label: "Term",
+          sublabel: "Months for Rev Share / Fixed · Days for Daily Interest",
+          showForSet: () => true,
+          applicableForProject: () => true,
+          valueProposed: proposedTerm,
+          valuePast: (p) => pastTerm(p),
+        },
+        {
+          id: "branch-opening",
+          label: "Branch opening",
+          sublabel: "Scheduled vs actual",
+          showForSet: () => setHasRevShare,
+          applicableForProject: (rt) => isRevShare(rt),
+          valueProposed: proposedBranchOpening,
+          valuePast: (p) => pastBranchOpening(p),
+        },
+        {
+          id: "min-payment-period",
+          label: "Minimum payment period",
+          sublabel: "Shown if any project in this set is Daily Interest",
+          showForSet: () => setHasDI,
+          applicableForProject: (rt) => isDailyInterest(rt),
+          valueProposed: proposedMinPeriod,
+          valuePast: (p) => pastMinPeriod(p),
+        },
+      ],
+    },
+    {
+      sectionLabel: "D — Performance Metrics",
+      fields: [
+        {
+          id: "pva",
+          label: "PvA",
+          sublabel: "Plan vs actual revenue %",
+          showForSet: () => setHasRevShare,
+          applicableForProject: (rt) => isRevShare(rt),
+          valueProposed: proposedPvA,
+          valuePast: (p) => pastPvA(p),
+        },
+        {
+          id: "irr",
+          label: "IRR",
+          sublabel: "OTF and original projected",
+          showForSet: () => true,
+          applicableForProject: () => true,
+          valueProposed: proposedIRR,
+          valuePast: (p) => pastIRR(p),
+        },
+        {
+          id: "moic",
+          label: "MOIC",
+          sublabel: "OTF and original projected · OTF not available from LMS",
+          showForSet: () => true,
+          applicableForProject: () => true,
+          valueProposed: proposedMOIC,
+          valuePast: (p) => pastMOIC(p),
+        },
+        {
+          id: "bep",
+          label: "BEP",
+          sublabel: "N/A for Daily Interest instruments",
+          showForSet: () => allTypes.some(hasBEP),
+          applicableForProject: (rt) => hasBEP(rt),
+          valueProposed: proposedBEP,
+          valuePast: (p) => pastBEP(p),
+        },
+        {
+          id: "min-return",
+          label: "Minimum return",
+          sublabel: "Gross Up (MOIC floor) or Continual Rev Share (minimum MOIC)",
+          showForSet: () => setHasRevShare,
+          applicableForProject: (rt) => isRevShare(rt),
+          valueProposed: proposedMinReturn,
+          valuePast: (p) => pastMinReturn(p),
+        },
+        {
+          id: "dpd",
+          label: "DPD",
+          sublabel: "Max days ever past due + incident history",
+          showForSet: () => true,
+          applicableForProject: () => true,
+          valueProposed: proposedDPD,
+          valuePast: (p) => pastDPD(p),
+        },
+      ],
+    },
+    {
+      sectionLabel: "E — Revenue Model",
+      fields: [
+        {
+          id: "rev-projections",
+          label: "Revenue projections",
+          sublabel: "Avg / Peak / Floor per month + projection span",
+          showForSet: () => setHasRevShare,
+          applicableForProject: (rt) => isRevShare(rt),
+          valueProposed: proposedRevProjections,
+          valuePast: (p) => pastRevProjections(p),
+        },
+        {
+          id: "source-of-revenue",
+          label: "Source of revenue accrued",
+          sublabel: "Definition used in rev share calculation — affects cross-project comparability",
+          showForSet: () => setHasRevShare,
+          applicableForProject: (rt) => isRevShare(rt),
+          valueProposed: proposedSourceOfRevenue,
+          valuePast: (p) => pastSourceOfRevenue(p),
+        },
+      ],
+    },
+    {
+      sectionLabel: "F — Payment Mechanics",
+      fields: [
+        {
+          id: "payment-frequency",
+          label: "Payment frequency",
+          sublabel: "Rev Share: 3 sub-lines (rev share / fixed payment / carry) · Fixed: monthly only",
+          showForSet: () => true,
+          applicableForProject: () => true,
+          valueProposed: proposedPaymentFreq,
+          valuePast: (p) => pastPaymentFreq(p),
+        },
+        {
+          id: "late-fee",
+          label: "Late fee",
+          sublabel: "Basis · Grace period · Rate to investor · Rate to ASN",
+          nuanceNote: "Basis: Rev Share & PO = Overdue Amount; Fixed Return = Outstanding Amount. Grace: Rev Share & PO = 5d; Fixed Return = 0d.",
+          showForSet: () => true,
+          applicableForProject: () => true,
+          valueProposed: proposedLateFee,
+          valuePast: (p) => pastLateFee(p),
+        },
+      ],
+    },
+  ];
+}
+
+function ProjectComparisonTable({ project, projects }: { project: ICProject; projects: PastProject[] }) {
+  const allReturnTypes = projects.map((p) => p.returnType);
+  const sections = buildFieldSections(allReturnTypes);
+  const proposedIdx = projects.findIndex((p) => p.isCurrentSubmission);
 
   return (
     <div className="mt-4 border border-gray-100 rounded-lg overflow-hidden">
-      <div className="bg-gray-50 px-3 py-2 border-b border-gray-100">
-        <h4 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-          Revenue share terms — cross-project comparison
-        </h4>
-        <p className="text-[10px] text-gray-500 mt-0.5 leading-relaxed">
-          Same row order as above. The <strong>Proposed</strong> column uses this submission&apos;s revenue-share terms;
-          other columns use each row&apos;s stored snapshot when available. Highlighted cells differ from the Proposed
-          baseline.
-        </p>
-      </div>
       <div className="overflow-x-auto">
-        <table className="w-full text-xs min-w-[720px]">
+        <table className="w-full text-xs" style={{ minWidth: `${Math.max(700, projects.length * 200 + 200)}px` }}>
           <thead>
-            <tr className="border-b border-gray-200 text-left text-gray-500">
-              <th className="sticky left-0 z-10 bg-gray-50 py-2 pl-3 pr-2 font-medium w-48 border-r border-gray-100">
-                Metric
+            <tr className="border-b border-gray-200">
+              <th className="sticky left-0 z-10 bg-gray-50 py-2 pl-4 pr-3 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wide w-52 border-r border-gray-100">
+                Field
               </th>
-              {projects.map((p, j) => (
+              {projects.map((p, i) => (
                 <th
                   key={p.id}
-                  className={`py-2 pr-3 font-medium align-top min-w-[150px] max-w-[220px] ${
-                    j === baselineIdx ? "bg-violet-50/70" : "bg-gray-50"
+                  className={`py-2 px-3 text-left align-top font-normal min-w-[180px] max-w-[240px] ${
+                    i === proposedIdx ? "bg-blue-50/70 border-b-2 border-blue-200" : "bg-gray-50"
                   }`}
                 >
-                  <div className="text-gray-800 line-clamp-2 leading-snug" title={p.projectName}>
+                  <div className="font-semibold text-gray-800 text-xs leading-snug line-clamp-2" title={p.projectName}>
                     {p.projectName}
                   </div>
                   <div className="mt-1">
@@ -75,33 +1003,60 @@ function RevShareRecapComparisonTable({ project, projects }: { project: ICProjec
             </tr>
           </thead>
           <tbody>
-            {REV_SHARE_RECAP_COMPARE_METRICS.map((metric) => (
-              <tr key={metric.label + (metric.sublabel ?? "")} className="border-b border-gray-50">
-                <td className="sticky left-0 z-10 bg-white py-2 pl-3 pr-2 text-gray-600 border-r border-gray-100 align-top">
-                  <div className="font-medium text-gray-700 leading-snug">{metric.label}</div>
-                  {metric.sublabel ? (
-                    <div className="text-[10px] text-gray-400 mt-0.5">{metric.sublabel}</div>
-                  ) : null}
-                </td>
-                {projects.map((p, colIdx) => {
-                  const snap = getRecapRowRevShareSnapshot(project, p);
-                  const cell = snap ? metric.format(snap) : "—";
-                  const baseStr = baselineSnap ? metric.format(baselineSnap) : null;
-                  const differs =
-                    Boolean(baselineSnap && snap && baseStr !== null && cell !== baseStr && colIdx !== baselineIdx);
-                  return (
+            {sections.map((section) => {
+              const visibleFields = section.fields.filter((f) =>
+                f.showForSet(allReturnTypes)
+              );
+              if (visibleFields.length === 0) return null;
+              return (
+                <React.Fragment key={section.sectionLabel}>
+                  {/* Section header row */}
+                  <tr className="bg-gray-100/80">
                     <td
-                      key={p.id}
-                      className={`py-2 pr-3 align-top text-gray-800 leading-snug ${
-                        differs ? "bg-amber-50 text-amber-950" : colIdx === baselineIdx ? "bg-violet-50/25" : ""
-                      }`}
+                      colSpan={projects.length + 1}
+                      className="py-1.5 pl-4 pr-3 text-[10px] font-semibold text-gray-500 uppercase tracking-wide"
                     >
-                      {cell}
+                      {section.sectionLabel}
                     </td>
-                  );
-                })}
-              </tr>
-            ))}
+                  </tr>
+                  {/* Field rows */}
+                  {visibleFields.map((field) => (
+                    <tr key={field.id} className="border-b border-gray-50 hover:bg-gray-50/40">
+                      {/* Label column */}
+                      <td className="sticky left-0 z-10 bg-white py-2.5 pl-4 pr-3 align-top border-r border-gray-100 w-52">
+                        <div className="font-medium text-gray-700 leading-snug">{field.label}</div>
+                        {field.sublabel && (
+                          <div className="text-[10px] text-gray-400 mt-0.5 leading-snug">{field.sublabel}</div>
+                        )}
+                        {field.nuanceNote && (
+                          <div className="text-[10px] text-amber-600 mt-0.5 leading-snug">⚠ {field.nuanceNote}</div>
+                        )}
+                      </td>
+                      {/* Value columns */}
+                      {projects.map((p, colIdx) => {
+                        const applicable = field.applicableForProject(p.returnType, allReturnTypes);
+                        const isProposedCol = colIdx === proposedIdx;
+                        return (
+                          <td
+                            key={p.id}
+                            className={`py-2.5 px-3 align-top text-gray-800 leading-snug ${
+                              isProposedCol ? "bg-blue-50/25" : ""
+                            }`}
+                          >
+                            {applicable
+                              ? p.isCurrentSubmission
+                                ? field.valueProposed(project)
+                                : field.valuePast(p, project)
+                              : <span className="text-gray-300">—</span>
+                            }
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </React.Fragment>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -109,57 +1064,15 @@ function RevShareRecapComparisonTable({ project, projects }: { project: ICProjec
   );
 }
 
-function irrClass(irr: number | null): string {
-  if (irr === null) return "text-gray-400";
-  if (irr < 15) return "text-red-600 font-semibold";
-  if (irr < 20) return "text-amber-600 font-semibold";
-  return "text-emerald-700 font-semibold";
-}
+// ── Summary bar ───────────────────────────────────────────────────────────────
 
-function returnTypeLabel(rt: string): string {
-  const map: Record<string, string> = {
-    "Revenue Share (Time-Capped)": "Revenue Share (Time-Capped)",
-    "Revenue Share (Return-Capped)": "Revenue Share (Return-Capped)",
-    "Fixed Return": "Fixed Return",
-    "Daily Interest": "Daily Interest",
-  };
-  return map[rt] ?? rt;
-}
-
-function pvaTextClass(kind: "red" | "amber" | "green" | "muted"): string {
-  if (kind === "red") return "text-red-600 font-semibold";
-  if (kind === "amber") return "text-amber-600 font-semibold";
-  if (kind === "green") return "text-emerald-700 font-semibold";
-  return "text-gray-300";
-}
-
-function warnLine(text: string, key: string) {
-  return (
-    <div key={key} className="text-[9px] text-red-600 font-medium leading-tight mt-0.5">
-      {text}
-    </div>
-  );
-}
-
-function AssetBRecapTable({ project, projects }: { project: ICProject; projects: PastProject[] }) {
-  const totalAmountInclProposed = projects.reduce((s, p) => s + p.amount, 0);
-  const totalOutstandingExclProposed = projects
-    .filter((p) => p.status !== "Proposed")
+function SummaryBar({ projects }: { projects: PastProject[] }) {
+  const totalAmount = projects.reduce((s, p) => s + p.amount, 0);
+  const outstanding = projects
+    .filter((p) => !p.isCurrentSubmission)
     .reduce((s, p) => s + p.outstandingAmount, 0);
-  const totalOutstandingInclProposed =
-    totalOutstandingExclProposed +
-    projects.filter((p) => p.status === "Proposed").reduce((s, p) => s + p.amount, 0);
-
-  const termMonthsAvg =
-    projects.length > 0
-      ? projects.reduce((s, p) => {
-          const daily = effectiveDailyRecap(project, p);
-          if (daily) return s + daily.tenorDays / 30;
-          return s + p.projectedTermMonths;
-        }, 0) / projects.length
-      : 0;
-
-  const completedWithIRR = projects.filter((p) => p.otfIRR !== null);
+  const proposed = projects.filter((p) => p.isCurrentSubmission).reduce((s, p) => s + p.amount, 0);
+  const completedWithIRR = projects.filter((p) => p.otfIRR != null);
   const avgIRR =
     completedWithIRR.length > 0
       ? completedWithIRR.reduce((s, p) => s + (p.otfIRR ?? 0), 0) / completedWithIRR.length
@@ -167,541 +1080,66 @@ function AssetBRecapTable({ project, projects }: { project: ICProject; projects:
 
   const statusCounts: Record<string, number> = {};
   const typeCounts: Record<string, number> = {};
-  const kindCounts: Record<string, number> = {};
   projects.forEach((p) => {
     statusCounts[p.status] = (statusCounts[p.status] ?? 0) + 1;
-    typeCounts[returnTypeLabel(p.returnType)] = (typeCounts[returnTypeLabel(p.returnType)] ?? 0) + 1;
-    kindCounts[rowBRecapKind(p, project)] = (kindCounts[rowBRecapKind(p, project)] ?? 0) + 1;
+    typeCounts[p.returnType] = (typeCounts[p.returnType] ?? 0) + 1;
   });
 
   return (
-    <>
-      <p className="text-xs text-gray-500 leading-relaxed">
-        <strong>B_MOD layout</strong> (Asset B): wide recap per IC Review Card spec — project type, payors, daily-interest
-        economics, late-fee checks (B-I/B-PO vs older A/D rows), PvA where applicable. Rows sorted by status, then IC
-        approval date (newest first).
-      </p>
-      <div className="overflow-x-auto -mx-1">
-        <table className="w-full text-[10px] min-w-[1280px]">
-          <thead>
-            <tr className="border-b text-gray-400 text-left">
-              <th className="pb-2 pr-1 font-medium w-6">#</th>
-              <th className="pb-2 pr-2 font-medium min-w-[120px]">Project</th>
-              <th className="pb-2 pr-2 font-medium">Status</th>
-              <th className="pb-2 pr-2 font-medium">Financing</th>
-              <th className="pb-2 pr-2 font-medium text-right">Amount</th>
-              <th className="pb-2 pr-2 font-medium text-right">Outstd.</th>
-              <th className="pb-2 pr-2 font-medium">Type</th>
-              <th className="pb-2 pr-2 font-medium min-w-[72px]">Payor(s)</th>
-              <th className="pb-2 pr-2 font-medium text-right">Term</th>
-              <th className="pb-2 pr-2 font-medium text-right">Min int (d)</th>
-              <th className="pb-2 pr-2 font-medium text-right">Int 30d</th>
-              <th className="pb-2 pr-2 font-medium text-right">Svc 30d</th>
-              <th className="pb-2 pr-2 font-medium">Late basis</th>
-              <th className="pb-2 pr-2 font-medium text-right">Grace</th>
-              <th className="pb-2 pr-2 font-medium min-w-[88px]">Daily late</th>
-              <th className="pb-2 pr-2 font-medium text-right">DPD</th>
-              <th className="pb-2 pr-2 font-medium text-right">PvA</th>
-              <th className="pb-2 pr-2 font-medium text-right">IRR</th>
-              <th className="pb-2 font-medium text-right min-w-[88px]">MOIC / BEP</th>
-            </tr>
-          </thead>
-          <tbody>
-            {projects.map((p, i) => (
-              <AssetBRow key={p.id} project={project} p={p} index={i + 1} />
-            ))}
-          </tbody>
-          <tfoot className="border-t-2 border-gray-200 bg-gray-50 text-[10px]">
-            <tr>
-              <td className="pt-2 pr-1"></td>
-              <td className="pt-2 pr-2 text-gray-500 font-medium">
-                {Object.entries(statusCounts)
-                  .map(([s, n]) => `${n} ${s}`)
-                  .join(", ")}
-              </td>
-              <td className="pt-2 pr-2"></td>
-              <td className="pt-2 pr-2 text-gray-500">
-                {Object.entries(typeCounts)
-                  .map(([t, n]) => `${n}× ${t}`)
-                  .join(", ")}
-              </td>
-              <td className="pt-2 pr-2 text-right font-medium text-gray-700">{fmt(totalAmountInclProposed)}</td>
-              <td className="pt-2 pr-2 text-right">
-                <div className="font-medium text-gray-700">{fmt(totalOutstandingExclProposed)}</div>
-                <div className="text-gray-400 text-[9px]">excl. proposed</div>
-                <div className="font-medium text-gray-600 mt-0.5">{fmt(totalOutstandingInclProposed)}</div>
-                <div className="text-gray-400 text-[9px]">incl. proposed</div>
-              </td>
-              <td className="pt-2 pr-2 text-gray-500">{Object.entries(kindCounts).map(([k, n]) => `${n}× ${k}`).join(", ")}</td>
-              <td className="pt-2 pr-2"></td>
-              <td className="pt-2 pr-2 text-right text-gray-500">{termMonthsAvg.toFixed(1)} mo eq.</td>
-              <td className="pt-2 pr-2 text-right text-gray-300">—</td>
-              <td className="pt-2 pr-2 text-right text-gray-300">—</td>
-              <td className="pt-2 pr-2 text-right text-gray-300">—</td>
-              <td className="pt-2 pr-2"></td>
-              <td className="pt-2 pr-2"></td>
-              <td className="pt-2 pr-2"></td>
-              <td className="pt-2 pr-2 text-right text-gray-300">—</td>
-              <td className="pt-2 pr-2 text-right text-gray-300">—</td>
-              <td className="pt-2 pr-2 text-right">
-                {avgIRR !== null ? (
-                  <span className={irrClass(avgIRR)}>{fmtPct(avgIRR)} avg (OTF)</span>
-                ) : (
-                  <span className="text-gray-300">—</span>
-                )}
-              </td>
-              <td className="pt-2 text-right text-gray-400 text-[9px]">OTF MOIC N/A</td>
-            </tr>
-          </tfoot>
-        </table>
+    <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-2">
+        <div className="text-[10px] text-gray-400 uppercase tracking-wide">Total amount incl. proposed</div>
+        <div className="font-semibold text-gray-900 mt-0.5 text-sm">{fmt(totalAmount)}</div>
       </div>
-    </>
+      <div className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-2">
+        <div className="text-[10px] text-gray-400 uppercase tracking-wide">Outstanding (excl. proposed)</div>
+        <div className="font-semibold text-gray-900 mt-0.5 text-sm">{fmt(outstanding)}</div>
+        <div className="text-[10px] text-gray-500">{fmt(outstanding + proposed)} incl. proposed</div>
+      </div>
+      <div className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-2">
+        <div className="text-[10px] text-gray-400 uppercase tracking-wide">Avg OTF IRR (completed)</div>
+        <div className={`font-semibold mt-0.5 text-sm ${avgIRR != null ? irrClass(avgIRR) : "text-gray-400"}`}>
+          {avgIRR != null ? fmtPct(avgIRR) : "—"}
+        </div>
+        <div className="text-[10px] text-gray-500">{completedWithIRR.length} project(s) with OTF IRR</div>
+      </div>
+      <div className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-2">
+        <div className="text-[10px] text-gray-400 uppercase tracking-wide">Project mix</div>
+        <div className="mt-0.5 space-y-0.5">
+          {Object.entries(statusCounts).map(([s, n]) => (
+            <div key={s} className="text-[10px] text-gray-600">{n}× {s}</div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 
-function AssetBRow({ project, p, index }: { project: ICProject; p: PastProject; index: number }) {
-  const isProposed = p.status === "Proposed";
-  const kind = rowBRecapKind(p, project);
-  const daily = effectiveDailyRecap(project, p);
-  const late = p.lateFeeRecap;
-
-  const payorStr = p.payors?.length ? p.payors.join(", ") : "—";
-
-  const termCell = () => {
-    if (kind === "A/D") {
-      const longOtf = p.otfTermMonths != null && p.otfTermMonths > 60;
-      return (
-        <div>
-          {p.otfTermMonths != null && (
-            <div className={longOtf ? "text-amber-600 font-semibold" : ""}>
-              {p.otfTermMonths} mo OTF{longOtf ? " ⚠️ >60 mo" : ""}
-            </div>
-          )}
-          <div className="text-gray-500">{p.projectedTermMonths} mo projected</div>
-        </div>
-      );
-    }
-    if (daily) {
-      const tooLong = termDaysTooLong(daily.tenorDays);
-      return (
-        <div className={tooLong ? "text-red-600 font-semibold" : "text-gray-700"}>
-          {daily.tenorDays} days
-          {tooLong ? " ⚠️ >365d" : ""}
-        </div>
-      );
-    }
-    return (
-      <div>
-        {p.otfTermMonths != null && <div>{p.otfTermMonths} mo OTF</div>}
-        <div className="text-gray-500">{p.projectedTermMonths} mo</div>
-      </div>
-    );
-  };
-
-  const minIntCell = () => {
-    if (!daily || kind === "A/D") return <span className="text-gray-300">—</span>;
-    const bad = minInterestMismatch(daily);
-    return (
-      <div className={bad ? "text-red-600 font-semibold" : "text-gray-700"}>
-        {daily.minInterestPeriodDays}
-        {bad ? " ⚠️ ≠ tenor/2" : ""}
-      </div>
-    );
-  };
-
-  const int30Cell = () => {
-    if (!daily || kind === "A/D") return <span className="text-gray-300">—</span>;
-    const iWarn = interestTooLow(kind, daily.interestRate30DayPct);
-    return (
-      <div>
-        <div className={iWarn ? "text-red-600 font-semibold" : "text-gray-700"}>{fmtPct(daily.interestRate30DayPct)}</div>
-        {iWarn && warnLine(iWarn, "iw")}
-      </div>
-    );
-  };
-
-  const svc30Cell = () => {
-    if (!daily || kind === "A/D") return <span className="text-gray-300">—</span>;
-    const sWarn = serviceTooLow(kind, daily.serviceFee30DayPct);
-    return (
-      <div>
-        <div className={sWarn ? "text-red-600 font-semibold" : "text-gray-700"}>{fmtPct(daily.serviceFee30DayPct)}</div>
-        {sWarn && warnLine(sWarn, "sw")}
-      </div>
-    );
-  };
-
-  const lateBlock = () => {
-    if (daily && (kind === "B-I" || kind === "B-PO")) {
-      const w: string[] = [];
-      const b1 = lateFeeBasisWarningB(kind, daily.lateFeeBasis);
-      const g1 = lateFeeGraceWarningB(kind, daily.gracePeriodDays);
-      const d1 = lateFeeDailyInvestorWarningB(daily);
-      const d2 = lateFeeDailyAsnWarningB(daily);
-      if (b1) w.push(b1);
-      if (g1) w.push(g1);
-      if (d1) w.push(d1);
-      if (d2) w.push(d2);
-      return (
-        <div className="space-y-0.5">
-          <div className="text-gray-700">{daily.lateFeeBasis}</div>
-          <div className="text-gray-500">{daily.gracePeriodDays}d grace</div>
-          <div className="text-gray-600 leading-tight">
-            {fmtPct(daily.dailyPctInvestors)} inv / {fmtPct(daily.dailyPctASN)} ASN / day
-          </div>
-          {w.map((t, i) => warnLine(t, `lw-${i}`))}
-        </div>
-      );
-    }
-    if (kind === "A/D" && late) {
-      const w: string[] = [];
-      const b = lateFeeBasisWarningAD(late.basis);
-      const g = lateFeeGraceWarningAD(late.gracePeriodDays);
-      const d1 = lateFeeDailyInvestorWarningAD(late.dailyPctInvestors);
-      const d2 = lateFeeDailyAsnWarningAD(late.dailyPctASN);
-      if (b) w.push(b);
-      if (g) w.push(g);
-      if (d1) w.push(d1);
-      if (d2) w.push(d2);
-      return (
-        <div className="space-y-0.5">
-          <div className="text-gray-700">{late.basis}</div>
-          <div className="text-gray-500">{late.gracePeriodDays}d grace</div>
-          <div className="text-gray-600 leading-tight">
-            {fmtPct(late.dailyPctInvestors)} inv / {fmtPct(late.dailyPctASN)} ASN / day
-          </div>
-          {w.map((t, i) => warnLine(t, `ad-${i}`))}
-        </div>
-      );
-    }
-    if (late) {
-      return (
-        <div className="text-gray-600 leading-tight">
-          {late.basis} · {late.gracePeriodDays}d · {fmtPct(late.dailyPctInvestors)} / {fmtPct(late.dailyPctASN)}
-        </div>
-      );
-    }
-    return <span className="text-gray-300">—</span>;
-  };
-
-  const graceCell = () => {
-    if (daily && (kind === "B-I" || kind === "B-PO")) {
-      return <span className={lateFeeGraceWarningB(kind, daily.gracePeriodDays) ? "text-red-600 font-semibold" : ""}>{daily.gracePeriodDays}</span>;
-    }
-    if (late) return <span>{late.gracePeriodDays}</span>;
-    return <span className="text-gray-300">—</span>;
-  };
-
-  const basisShort = () => {
-    if (daily && (kind === "B-I" || kind === "B-PO")) {
-      const b = lateFeeBasisWarningB(kind, daily.lateFeeBasis);
-      return <span className={b ? "text-red-600 font-semibold" : "text-gray-700"}>{daily.lateFeeBasis}</span>;
-    }
-    if (late) {
-      const b = kind === "A/D" ? lateFeeBasisWarningAD(late.basis) : null;
-      return <span className={b ? "text-red-600 font-semibold" : "text-gray-700"}>{late.basis}</span>;
-    }
-    return <span className="text-gray-300">—</span>;
-  };
-
-  const pvaCell = () => {
-    if (kind !== "A/D") return <span className="text-gray-300 text-[9px]">N/A</span>;
-    if (p.pvaPct == null) return <span className="text-gray-300">—</span>;
-    const pc = pvaClass(p.pvaPct);
-    return <span className={pvaTextClass(pc)}>{fmtPct(p.pvaPct)}</span>;
-  };
-
-  const irrCell = () => {
-    const showOtf = p.otfIRR !== null;
-    return (
-      <div>
-        {showOtf && <div className={irrClass(p.otfIRR)}>{fmtPct(p.otfIRR!)} OTF</div>}
-        <div className={`${irrClass(p.projectedIRR)} ${showOtf ? "text-gray-500 font-normal" : ""}`}>
-          {fmtPct(p.projectedIRR)} {showOtf ? "orig." : "proj."}
-        </div>
-      </div>
-    );
-  };
-
-  const moicCell = () => {
-    const bepWarn = p.projectedBEPMonths > 30;
-    return (
-      <div>
-        <div className="text-gray-300 text-[9px]">OTF MOIC: N/A</div>
-        <div className="text-gray-600">{p.projectedMOIC} proj.</div>
-        <div className={`text-[9px] mt-0.5 ${bepWarn ? "text-amber-600" : "text-gray-500"}`}>
-          BEP mo {p.projectedBEPMonths}
-          {bepWarn ? " ⚠️ >30" : ""}
-        </div>
-      </div>
-    );
-  };
-
-  const ftWarning =
-    kind === "A/D" && p.returnType === "Fixed Return" && p.projectedTermMonths > 60
-      ? "long fixed"
-      : kind === "A/D" && p.returnType === "Fixed Return" && p.projectedTermMonths > 36
-      ? "fixed >36"
-      : null;
-
-  return (
-    <tr className={`border-b border-gray-50 align-top ${isProposed ? "bg-blue-50/40" : ""}`}>
-      <td className="py-2 pr-1 text-gray-400">{index}</td>
-      <td className="py-2 pr-2 text-gray-800 font-medium min-w-[120px] leading-snug">{p.projectName}</td>
-      <td className="py-2 pr-2">
-        <Tag label={p.status} variant={statusVariant(p.status)} />
-      </td>
-      <td className="py-2 pr-2 text-gray-600">
-        <div>{returnTypeLabel(p.returnType)}</div>
-        {ftWarning && (
-          <div className="mt-0.5 text-[9px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-1 py-0.5">
-            {ftWarning === "long fixed" ? "Warning: >60 mo" : "Warning: >36 mo Fixed Return"}
-          </div>
-        )}
-      </td>
-      <td className="py-2 pr-2 text-right text-gray-700">{fmt(p.amount)}</td>
-      <td className="py-2 pr-2 text-right text-gray-700">
-        {p.outstandingAmount > 0 ? fmt(p.outstandingAmount) : <span className="text-gray-300">—</span>}
-      </td>
-      <td className="py-2 pr-2">
-        <span className="inline-flex px-1 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">{kind}</span>
-      </td>
-      <td className="py-2 pr-2 text-gray-600 leading-snug">{payorStr}</td>
-      <td className="py-2 pr-2 text-right">{termCell()}</td>
-      <td className="py-2 pr-2 text-right">{minIntCell()}</td>
-      <td className="py-2 pr-2 text-right align-top">{int30Cell()}</td>
-      <td className="py-2 pr-2 text-right align-top">{svc30Cell()}</td>
-      <td className="py-2 pr-2 align-top">{basisShort()}</td>
-      <td className="py-2 pr-2 text-right align-top">{graceCell()}</td>
-      <td className="py-2 pr-2 align-top">{lateBlock()}</td>
-      <td className="py-2 pr-2 text-right align-top">
-        {p.currentDPD > 0 && <div className="text-red-600 font-semibold">{p.currentDPD}d now</div>}
-        {p.maxDPD > 0 && (
-          <div className={p.maxDPD > 30 ? "text-red-600 font-medium" : "text-amber-600"}>{p.maxDPD}d max</div>
-        )}
-        {p.currentDPD === 0 && p.maxDPD === 0 && <span className="text-gray-300">—</span>}
-        {p.overdueHistory && p.overdueHistory.length > 0 && (
-          <div className="mt-1 space-y-0.5 text-left">
-            {p.overdueHistory.map((ev, i) => (
-              <div key={i} className="text-[9px] text-gray-500">
-                {fmtDate(ev.dueDate)} — {ev.daysOverdue}d —{" "}
-                <span className={ev.status === "Unpaid" ? "text-red-600 font-medium" : "text-gray-400"}>{ev.status}</span>
-              </div>
-            ))}
-          </div>
-        )}
-      </td>
-      <td className="py-2 pr-2 text-right">{pvaCell()}</td>
-      <td className="py-2 pr-2 text-right">{irrCell()}</td>
-      <td className="py-2 text-right">{moicCell()}</td>
-    </tr>
-  );
-}
+// ── Export ────────────────────────────────────────────────────────────────────
 
 export function PastProjectsRecap({ project }: Props) {
   const allRows = project.pastProjects;
   const projects = sortPastProjectsRecapRows(getPastProjectsRecapRows(allRows));
-  const showRevShareCrossCompare =
-    isAssetAOrD(project.assetClass) && project.revenueShareTerms != null;
-  const useAssetBTable = isAssetB(project.assetClass);
 
-  const totalAmountInclProposed = projects.reduce((s, p) => s + p.amount, 0);
-  const totalOutstandingExclProposed = projects
-    .filter((p) => p.status !== "Proposed")
-    .reduce((s, p) => s + p.outstandingAmount, 0);
-  const totalOutstandingInclProposed =
-    totalOutstandingExclProposed +
-    projects.filter((p) => p.status === "Proposed").reduce((s, p) => s + p.amount, 0);
-
-  const avgTerm =
-    projects.length > 0
-      ? projects.reduce((s, p) => s + p.projectedTermMonths, 0) / projects.length
-      : 0;
-
-  const completedWithIRR = projects.filter((p) => p.otfIRR !== null);
-  const avgIRR =
-    completedWithIRR.length > 0
-      ? completedWithIRR.reduce((s, p) => s + (p.otfIRR ?? 0), 0) / completedWithIRR.length
-      : null;
-
-  const statusCounts: Record<string, number> = {};
-  const typeCounts: Record<string, number> = {};
-  projects.forEach((p) => {
-    statusCounts[p.status] = (statusCounts[p.status] ?? 0) + 1;
-    typeCounts[returnTypeLabel(p.returnType)] = (typeCounts[returnTypeLabel(p.returnType)] ?? 0) + 1;
-  });
+  if (projects.length === 0) {
+    return (
+      <SectionCard title="Proposed and Past Projects Recap">
+        <p className="text-sm text-gray-400 italic mt-2 px-1">No projects in this recap yet.</p>
+      </SectionCard>
+    );
+  }
 
   return (
-    <SectionCard title="Proposed and Past Projects Recap Table">
-      <div className="mt-2 space-y-3">
-        {!useAssetBTable && (
-          <p className="text-xs text-gray-500 leading-relaxed">
-            Includes the <strong>Proposed</strong> row for <em>this</em> submission alongside other projects for the KP.
-            Rows are sorted by status (Proposed, in-queue statuses, Active, then Completed), then by{" "}
-            <strong>IC approval date</strong> newest first.
-          </p>
-        )}
-        {projects.length === 0 ? (
-          <p className="text-sm text-gray-400 italic px-1">No projects in this recap yet.</p>
-        ) : useAssetBTable ? (
-          <AssetBRecapTable project={project} projects={projects} />
-        ) : (
-          <div className="overflow-x-auto -mx-1">
-            <table className="w-full text-xs min-w-[900px]">
-              <thead>
-                <tr className="border-b text-gray-400 text-left">
-                  <th className="pb-2 pr-2 font-medium w-6">#</th>
-                  <th className="pb-2 pr-3 font-medium">Project</th>
-                  <th className="pb-2 pr-3 font-medium">Status</th>
-                  <th className="pb-2 pr-3 font-medium">Financing Type</th>
-                  <th className="pb-2 pr-3 font-medium text-right">Amount</th>
-                  <th className="pb-2 pr-3 font-medium text-right">Outstanding</th>
-                  <th className="pb-2 pr-3 font-medium text-right">Term</th>
-                  <th className="pb-2 pr-3 font-medium text-right">PvA</th>
-                  <th className="pb-2 pr-3 font-medium text-right">IRR</th>
-                  <th className="pb-2 pr-3 font-medium text-right">MOIC</th>
-                  <th className="pb-2 font-medium text-right">DPD</th>
-                </tr>
-              </thead>
-              <tbody>
-                {projects.map((p, i) => (
-                  <ProjectRow key={p.id} p={p} index={i + 1} />
-                ))}
-              </tbody>
-              <tfoot className="border-t-2 border-gray-200 bg-gray-50 text-xs">
-                <tr>
-                  <td className="pt-2 pr-2"></td>
-                  <td className="pt-2 pr-3 text-gray-500 font-medium">
-                    {Object.entries(statusCounts)
-                      .map(([s, n]) => `${n} ${s}`)
-                      .join(", ")}
-                  </td>
-                  <td className="pt-2 pr-3"></td>
-                  <td className="pt-2 pr-3 text-gray-500">
-                    {Object.entries(typeCounts)
-                      .map(([t, n]) => `${n}× ${t}`)
-                      .join(", ")}
-                  </td>
-                  <td className="pt-2 pr-3 text-right font-medium text-gray-700">{fmt(totalAmountInclProposed)}</td>
-                  <td className="pt-2 pr-3 text-right">
-                    <div className="font-medium text-gray-700">{fmt(totalOutstandingExclProposed)}</div>
-                    <div className="text-gray-400 text-[10px]">excl. proposed</div>
-                    <div className="font-medium text-gray-600 mt-0.5">{fmt(totalOutstandingInclProposed)}</div>
-                    <div className="text-gray-400 text-[10px]">incl. proposed</div>
-                  </td>
-                  <td className="pt-2 pr-3 text-right text-gray-500">{avgTerm.toFixed(0)} mo avg</td>
-                  <td className="pt-2 pr-3 text-right text-gray-400 text-[10px]">N/A from LMS</td>
-                  <td className="pt-2 pr-3 text-right">
-                    {avgIRR !== null ? (
-                      <span className={irrClass(avgIRR)}>{fmtPct(avgIRR)} avg</span>
-                    ) : (
-                      <span className="text-gray-300">—</span>
-                    )}
-                  </td>
-                  <td className="pt-2 pr-3 text-right text-gray-400 text-[10px]">
-                    OTF MOIC
-                    <br />
-                    not from LMS
-                  </td>
-                  <td className="pt-2 text-right text-gray-300">—</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        )}
+    <SectionCard title="Proposed and Past Projects Recap">
+      <div className="mt-2 space-y-2">
+        <ProjectComparisonTable project={project} projects={projects} />
+        <SummaryBar projects={projects} />
 
-        {showRevShareCrossCompare && projects.length > 0 && (
-          <RevShareRecapComparisonTable project={project} projects={projects} />
-        )}
-
-        <p className="text-xs text-gray-400 italic">
-          ⚠️ OTF MOIC and PvA are not currently available from the LMS Reporting Layer.
+        <p className="text-[10px] text-gray-400 italic pt-1">
+          ⚠ OTF MOIC and PvA are not currently available from the LMS Reporting Layer.
+          Rows sorted: Proposed first, then by IC approval date (newest first).
         </p>
       </div>
     </SectionCard>
-  );
-}
-
-function ProjectRow({ p, index }: { p: PastProject; index: number }) {
-  const isProposed = p.status === "Proposed";
-
-  const ftWarning =
-    p.returnType === "Fixed Return" && p.projectedTermMonths > 60
-      ? { text: "Warning: >60 months (long)", cls: "text-amber-600 bg-amber-50 border-amber-200" }
-      : p.returnType === "Fixed Return" && p.projectedTermMonths > 36
-      ? { text: "Warning: >36 months on Fixed Return", cls: "text-red-600 bg-red-50 border-red-200" }
-      : null;
-
-  const bepWarning = p.projectedBEPMonths > 30;
-
-  return (
-    <tr className={`border-b border-gray-50 align-top ${isProposed ? "bg-blue-50/40" : ""}`}>
-      <td className="py-2 pr-2 text-gray-400">{index}</td>
-
-      <td className="py-2 pr-3 text-gray-800 font-medium min-w-[160px]">{p.projectName}</td>
-
-      <td className="py-2 pr-3">
-        <Tag label={p.status} variant={statusVariant(p.status)} />
-      </td>
-
-      <td className="py-2 pr-3 text-gray-600">
-        <div>{returnTypeLabel(p.returnType)}</div>
-        {ftWarning && (
-          <div className={`mt-0.5 text-[10px] px-1 py-0.5 rounded border ${ftWarning.cls}`}>{ftWarning.text}</div>
-        )}
-      </td>
-
-      <td className="py-2 pr-3 text-right text-gray-700">{fmt(p.amount)}</td>
-
-      <td className="py-2 pr-3 text-right text-gray-700">
-        {p.outstandingAmount > 0 ? fmt(p.outstandingAmount) : <span className="text-gray-300">—</span>}
-      </td>
-
-      <td className="py-2 pr-3 text-right text-gray-600">
-        {p.otfTermMonths != null && <div className="font-medium">{p.otfTermMonths} months OTF</div>}
-        <div className={p.otfTermMonths ? "text-gray-400" : ""}>
-          {p.projectedTermMonths} months{p.otfTermMonths ? " original" : ""}
-        </div>
-      </td>
-
-      <td className="py-2 pr-3 text-right text-gray-300 text-[10px]">N/A</td>
-
-      <td className="py-2 pr-3 text-right">
-        {p.otfIRR !== null && <div className={irrClass(p.otfIRR)}>{fmtPct(p.otfIRR)} OTF</div>}
-        <div className={`${irrClass(p.projectedIRR)} ${p.otfIRR ? "text-gray-400 font-normal" : ""}`}>
-          {fmtPct(p.projectedIRR)} {p.otfIRR ? "original" : "projected"}
-        </div>
-      </td>
-
-      <td className="py-2 pr-3 text-right">
-        <div className="text-gray-300 text-[10px]">OTF MOIC: N/A</div>
-        <div className="text-gray-600">{p.projectedMOIC} projected</div>
-        <div className={`text-[10px] mt-0.5 ${bepWarning ? "text-amber-600" : "text-gray-500"}`}>
-          BEP month {p.projectedBEPMonths}
-          {bepWarning && " ⚠️ >30 months"}
-        </div>
-      </td>
-
-      <td className="py-2 text-right">
-        {p.currentDPD > 0 ? <div className="text-red-600 font-semibold">{p.currentDPD} days now</div> : null}
-        {p.maxDPD > 0 ? (
-          <div className={p.maxDPD > 30 ? "text-red-600 font-medium" : "text-amber-600"}>{p.maxDPD} days max</div>
-        ) : p.currentDPD === 0 ? (
-          <div className="text-gray-300">—</div>
-        ) : null}
-        {p.overdueHistory && p.overdueHistory.length > 0 && (
-          <div className="mt-1 space-y-0.5 text-left">
-            {p.overdueHistory.map((ev, i) => (
-              <div key={i} className="text-[10px] text-gray-500">
-                {fmtDate(ev.dueDate)} — {ev.daysOverdue}d overdue —{" "}
-                <span className={ev.status === "Unpaid" ? "text-red-600 font-medium" : "text-gray-400"}>
-                  {ev.status}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </td>
-    </tr>
   );
 }

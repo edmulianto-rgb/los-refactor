@@ -10,6 +10,7 @@ export type ApprovalType =
 export type ReturnType =
   | "Revenue Share (Time-Capped)"
   | "Revenue Share (Return-Capped)"
+  | "Fixed + Revenue Share"
   | "Fixed Return"
   | "Daily Interest";
 
@@ -127,6 +128,50 @@ export interface RevShareTermsSnapshot {
   minReturn: number | null;
   minReturnMultiple: number | null;
   minReturnPayableMonths: number | null;
+  /** Carry rate at IC time — used in cross-project comparison. */
+  carryPct?: number | null;
+  carryType?: string | null;
+  /** Revenue accrual definition for this project — used in cross-project comparison. */
+  sourceOfRevenueAccrued?: string | null;
+  /** When revenue share begins — same semantics as `RevenueShareTerms` on ICProject. */
+  revShareStartType?: "Anchored to Branch Opening" | "Fixed" | null;
+  revShareStartDate?: string | null;
+}
+
+/**
+ * Additional snapshot fields for the cross-project comparison table.
+ * Stored on PastProject rows to enable the transposed comparison view.
+ */
+export interface ExtendedTermsSnapshot {
+  /** Legal entity (PT) for this past project. */
+  ptName?: string | null;
+
+  // ── Fixed leg (Fixed Return & Fixed+RS) ──────────────────────────────────
+  /** Total fixed repayment amount: full schedule for Fixed Return; fixed leg only for Fixed+RS. */
+  fixedLegTotalAmount?: number | null;
+  /** Number of monthly installments for the fixed leg. */
+  fixedLegInstallmentMonths?: number | null;
+
+  // ── Return economics (Fixed Return + Daily Interest) ─────────────────────
+  /** Investor return rate per period — per month for Fixed Return, per 30 days for Daily Interest. */
+  investorROICPerPeriod?: number | null;
+  /** Investor + carry total implied return per period. */
+  totalImpliedROICPerPeriod?: number | null;
+  /** Period label, e.g. "per month" or "per 30 days". */
+  roicPeriodLabel?: string | null;
+
+  // ── Branch opening (Revenue Share) ───────────────────────────────────────
+  branchOpeningScheduledDate?: string | null;
+  branchOpeningActualDate?: string | null;
+
+  // ── Revenue model (Revenue Share) ────────────────────────────────────────
+  avgRevenuePerMonth?: number | null;
+  peakRevenuePerMonth?: number | null;
+  floorRevenuePerMonth?: number | null;
+  revProjectionSpanMonths?: number | null;
+
+  // ── Payment mechanics (all types) ────────────────────────────────────────
+  paymentFrequency?: string | null;
 }
 
 export interface PastProject {
@@ -171,6 +216,8 @@ export interface PastProject {
     dailyPctInvestors: number;
     dailyPctASN: number;
   } | null;
+  /** Additional snapshot fields for the cross-project comparison table. */
+  extendedTermsSnapshot?: ExtendedTermsSnapshot | null;
 }
 
 export interface DisbursementRow {
