@@ -36,13 +36,26 @@ function hasBEP(rt: ReturnType): boolean {
 
 function returnTypeShort(rt: ReturnType): string {
   const map: Record<ReturnType, string> = {
-    "Revenue Share (Return-Capped)": "RS Return-Cap",
-    "Revenue Share (Time-Capped)": "RS Time-Cap",
-    "Fixed + Revenue Share": "Fixed + RS",
+    "Revenue Share (Return-Capped)": "Revenue Share (Return-Cap)",
+    "Revenue Share (Time-Capped)": "Revenue Share (Time-Cap)",
+    "Fixed + Revenue Share": "Fixed + Revenue Share",
     "Fixed Return": "Fixed Return",
     "Daily Interest": "Daily Interest",
   };
   return map[rt] ?? rt;
+}
+
+/** Financing type cell: Fixed + Revenue Share includes RS cap flavor from terms. */
+function financingTypeLabel(
+  returnType: ReturnType,
+  rsCapType?: "Return Cap" | "Time Cap" | null
+): string {
+  if (returnType !== "Fixed + Revenue Share") {
+    return returnTypeShort(returnType);
+  }
+  if (rsCapType === "Return Cap") return "Fixed + Revenue Share (Return-Cap)";
+  if (rsCapType === "Time Cap") return "Fixed + Revenue Share (Time-Cap)";
+  return "Fixed + Revenue Share";
 }
 
 function returnTypeBadgeColor(rt: ReturnType): string {
@@ -74,9 +87,10 @@ function warn(msg: string): React.ReactNode {
 // ── Value renderers: proposed project (from ICProject) ────────────────────────
 
 function proposedFinancingType(proj: ICProject): React.ReactNode {
+  const label = financingTypeLabel(proj.returnType, proj.revenueShareTerms?.capType);
   return (
     <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium ${returnTypeBadgeColor(proj.returnType)}`}>
-      {returnTypeShort(proj.returnType)}
+      {label}
     </span>
   );
 }
@@ -391,9 +405,10 @@ function proposedLateFee(proj: ICProject): React.ReactNode {
 // ── Value renderers: past project (from PastProject) ─────────────────────────
 
 function pastFinancingType(p: PastProject): React.ReactNode {
+  const label = financingTypeLabel(p.returnType, p.revShareTermsSnapshot?.capType);
   return (
     <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium ${returnTypeBadgeColor(p.returnType)}`}>
-      {returnTypeShort(p.returnType)}
+      {label}
     </span>
   );
 }
@@ -660,14 +675,14 @@ function pastLateFee(p: PastProject): React.ReactNode {
     (isFixedReturn(p.returnType) && basis !== "Outstanding Amount")
       ? warn("Expected: Outstanding Amount for Fixed Return")
       : (isRevShare(p.returnType) && basis !== "Overdue Amount")
-      ? warn("Expected: Overdue Amount for Rev Share")
+      ? warn("Expected: Overdue Amount for Revenue Share")
       : null;
 
   const graceWarn =
     (isFixedReturn(p.returnType) && grace !== 0)
       ? warn("Expected: 0 days for Fixed Return")
       : (isRevShare(p.returnType) && grace !== 5)
-      ? warn("Expected: 5 days for Rev Share")
+      ? warn("Expected: 5 days for Revenue Share")
       : null;
 
   return (
@@ -794,7 +809,7 @@ function buildFieldSections(allTypes: ReturnType[]): FieldSection[] {
         {
           id: "fixed-amount",
           label: "Fixed amount / repayment",
-          sublabel: "Fixed Return = full schedule · Fixed+RS = fixed leg only",
+          sublabel: "Fixed Return = full schedule · Fixed + Revenue Share = fixed leg only",
           showForSet: () => setHasFixedLeg,
           applicableForProject: (rt) => hasFixedLeg(rt),
           valueProposed: proposedFixedLeg,
@@ -836,7 +851,7 @@ function buildFieldSections(allTypes: ReturnType[]): FieldSection[] {
         {
           id: "term",
           label: "Term",
-          sublabel: "Months for Rev Share / Fixed · Days for Daily Interest",
+          sublabel: "Months for Revenue Share / Fixed · Days for Daily Interest",
           showForSet: () => true,
           applicableForProject: () => true,
           valueProposed: proposedTerm,
@@ -904,7 +919,7 @@ function buildFieldSections(allTypes: ReturnType[]): FieldSection[] {
         {
           id: "min-return",
           label: "Minimum return",
-          sublabel: "Gross Up (MOIC floor) or Continual Rev Share (minimum MOIC)",
+          sublabel: "Gross Up (MOIC floor) or Continual Revenue Share (minimum MOIC)",
           showForSet: () => setHasRevShare,
           applicableForProject: (rt) => isRevShare(rt),
           valueProposed: proposedMinReturn,
@@ -936,7 +951,7 @@ function buildFieldSections(allTypes: ReturnType[]): FieldSection[] {
         {
           id: "source-of-revenue",
           label: "Source of revenue accrued",
-          sublabel: "Definition used in rev share calculation — affects cross-project comparability",
+          sublabel: "Definition used in revenue share calculation — affects cross-project comparability",
           showForSet: () => setHasRevShare,
           applicableForProject: (rt) => isRevShare(rt),
           valueProposed: proposedSourceOfRevenue,
@@ -950,7 +965,7 @@ function buildFieldSections(allTypes: ReturnType[]): FieldSection[] {
         {
           id: "payment-frequency",
           label: "Payment frequency",
-          sublabel: "Rev Share: 3 sub-lines (rev share / fixed payment / carry) · Fixed: monthly only",
+          sublabel: "Revenue Share: 3 sub-lines (revenue share / fixed payment / carry) · Fixed: monthly only",
           showForSet: () => true,
           applicableForProject: () => true,
           valueProposed: proposedPaymentFreq,
@@ -960,7 +975,7 @@ function buildFieldSections(allTypes: ReturnType[]): FieldSection[] {
           id: "late-fee",
           label: "Late fee",
           sublabel: "Basis · Grace period · Rate to investor · Rate to ASN",
-          nuanceNote: "Basis: Rev Share & PO = Overdue Amount; Fixed Return = Outstanding Amount. Grace: Rev Share & PO = 5d; Fixed Return = 0d.",
+          nuanceNote: "Basis: Revenue Share & PO = Overdue Amount; Fixed Return = Outstanding Amount. Grace: Revenue Share & PO = 5d; Fixed Return = 0d.",
           showForSet: () => true,
           applicableForProject: () => true,
           valueProposed: proposedLateFee,

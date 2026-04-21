@@ -1797,7 +1797,7 @@ const projectMitraAgro: ICProject = {
     // ── Project 3: Fixed + Revenue Share ─────────────────────────────────
     {
       id: "pp-man3",
-      projectName: "Mitra Agro Nusantara (#3) — Working Capital III (Fixed + Rev Share)",
+      projectName: "Mitra Agro Nusantara (#3) — Working Capital III (Fixed + Revenue Share)",
       status: "Active",
       icApprovalDate: "2023-09-18",
       returnType: "Fixed + Revenue Share",

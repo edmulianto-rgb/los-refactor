@@ -40,7 +40,7 @@ export function formatInvestorCapExcCarry(s: RevShareTermsSnapshot): string {
 export function formatMinInvestorReturnPaymentType(s: RevShareTermsSnapshot): string {
   if (s.minReturn == null) return "—";
   if (s.minReturnMultiple != null) return "Grossed-Up";
-  return "Continual Rev Share";
+  return "Continual Revenue Share";
 }
 
 function fmtPctUpToTwoDecimals(n: number): string {
