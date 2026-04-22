@@ -30,6 +30,13 @@ function hasFixedLeg(rt: ReturnType): boolean {
 function hasFixedROIC(rt: ReturnType): boolean {
   return rt === "Fixed Return" || rt === "Daily Interest";
 }
+
+/** Labels for the two fixed-ROIC rows — must follow return type, not snapshot `roicPeriodLabel`. */
+function roicRatePeriodLabel(rt: ReturnType): string {
+  if (isDailyInterest(rt)) return "per 30 days";
+  if (isFixedReturn(rt)) return "per month";
+  return "per period";
+}
 function hasBEP(rt: ReturnType): boolean {
   return rt !== "Daily Interest";
 }
@@ -76,6 +83,15 @@ function irrClass(irr: number | null): string {
 
 function na(): React.ReactNode {
   return <span className="text-gray-300">—</span>;
+}
+
+/** e.g. " (40% of disbursed)" next to a fixed-amount / repayment line. */
+function pctOfDisbursed(numerator: number, disbursed: number): React.ReactNode {
+  if (disbursed <= 0 || !Number.isFinite(numerator) || !Number.isFinite(disbursed)) return null;
+  const p = (numerator / disbursed) * 100;
+  if (!Number.isFinite(p)) return null;
+  const pctText = Math.abs(p - Math.round(p)) < 0.05 ? `${Math.round(p)}%` : `${p.toFixed(1)}%`;
+  return <span className="text-gray-500 font-normal"> ({pctText} of disbursed)</span>;
 }
 
 function warn(msg: string): React.ReactNode {
@@ -160,7 +176,10 @@ function proposedFixedLeg(proj: ICProject): React.ReactNode {
     const frt = proj.fixedReturnTerms;
     return (
       <div className="space-y-0.5">
-        <div className="font-medium">{fmt(frt.totalRepayment)}</div>
+        <div className="font-medium">
+          {fmt(frt.totalRepayment)}
+          {pctOfDisbursed(frt.totalRepayment, proj.requestedAmount)}
+        </div>
         <div className="text-gray-500">total repayment</div>
         <div className="text-gray-500">{frt.repaymentSchedule.length} monthly installments</div>
       </div>
@@ -170,7 +189,10 @@ function proposedFixedLeg(proj: ICProject): React.ReactNode {
     const frt = proj.fixedReturnTerms;
     return (
       <div className="space-y-0.5">
-        <div className="font-medium">{fmt(frt.totalRepayment)}</div>
+        <div className="font-medium">
+          {fmt(frt.totalRepayment)}
+          {pctOfDisbursed(frt.totalRepayment, proj.requestedAmount)}
+        </div>
         <div className="text-gray-500">fixed leg repayment</div>
         <div className="text-gray-500">{frt.repaymentSchedule.length} monthly installments</div>
       </div>
@@ -179,10 +201,47 @@ function proposedFixedLeg(proj: ICProject): React.ReactNode {
   return na();
 }
 
+function revShareCarrySubLabel(carryType: string | null | undefined): "Revenue Share" | "Fixed" {
+  if (!carryType) return "Fixed";
+  return carryType.toLowerCase().includes("variable") ? "Revenue Share" : "Fixed";
+}
+
+/** Percentage for Target carry first line; keeps small basis-point-style rates readable. */
+function fmtTargetCarryPct(n: number): string {
+  if (!Number.isFinite(n)) return "—";
+  const abs = Math.abs(n);
+  if (abs < 1) return `${n.toFixed(2).replace(/\.?0+$/, "")}%`;
+  if (abs < 10) return `${n.toFixed(1).replace(/\.0$/, "")}%`;
+  return fmtPct(n);
+}
+
+function targetCarryTwoLine(line1: string, line2: string): React.ReactNode {
+  return (
+    <div className="space-y-0.5 text-left">
+      <div className="font-medium leading-snug">{line1}</div>
+      <div className="text-gray-600 text-[10px] leading-snug">{line2}</div>
+    </div>
+  );
+}
+
 function proposedCarry(proj: ICProject): React.ReactNode {
-  if (proj.revenueShareTerms) {
+  if (isRevShare(proj.returnType) && proj.revenueShareTerms) {
     const rst = proj.revenueShareTerms;
-    return `${fmtPct(rst.carryPct)} ${rst.carryType}`;
+    return targetCarryTwoLine(fmtTargetCarryPct(rst.carryPct), revShareCarrySubLabel(rst.carryType));
+  }
+  if (isFixedReturn(proj.returnType) && proj.fixedReturnTerms) {
+    const frt = proj.fixedReturnTerms;
+    const months = frt.repaymentSchedule.length;
+    if (months <= 0 || frt.totalPrincipal <= 0) return na();
+    const carryPerMonthOfPrincipal = (frt.carry / frt.totalPrincipal / months) * 100;
+    return targetCarryTwoLine(fmtTargetCarryPct(carryPerMonthOfPrincipal), "Fixed");
+  }
+  if (isDailyInterest(proj.returnType) && proj.dailyInterestTerms) {
+    const d = proj.dailyInterestTerms;
+    return targetCarryTwoLine(
+      `${fmtTargetCarryPct(d.serviceFee30DayPct)} per 30 days`,
+      "Fixed"
+    );
   }
   return na();
 }
@@ -447,7 +506,10 @@ function pastFixedLeg(p: PastProject): React.ReactNode {
   const label = isFixedReturn(p.returnType) ? "total repayment" : "fixed leg repayment";
   return (
     <div className="space-y-0.5">
-      <div className="font-medium">{fmt(ext.fixedLegTotalAmount)}</div>
+      <div className="font-medium">
+        {fmt(ext.fixedLegTotalAmount)}
+        {pctOfDisbursed(ext.fixedLegTotalAmount, p.amount)}
+      </div>
       <div className="text-gray-500">{label}</div>
       {ext.fixedLegInstallmentMonths && (
         <div className="text-gray-500">{ext.fixedLegInstallmentMonths} monthly installments</div>
@@ -458,8 +520,30 @@ function pastFixedLeg(p: PastProject): React.ReactNode {
 
 function pastCarry(p: PastProject): React.ReactNode {
   const s = p.revShareTermsSnapshot;
-  if (s?.carryPct != null) {
-    return `${fmtPct(s.carryPct)} ${s.carryType ?? ""}`.trim();
+  if (isRevShare(p.returnType) && s?.carryPct != null) {
+    return targetCarryTwoLine(
+      fmtTargetCarryPct(s.carryPct),
+      revShareCarrySubLabel(s.carryType)
+    );
+  }
+  if (isFixedReturn(p.returnType)) {
+    const ext = p.extendedTermsSnapshot;
+    const explicit = ext?.targetCarryPct;
+    const implied =
+      ext?.totalImpliedROICPerPeriod != null && ext?.investorROICPerPeriod != null
+        ? ext.totalImpliedROICPerPeriod - ext.investorROICPerPeriod
+        : null;
+    const v = explicit ?? implied;
+    if (v != null && Number.isFinite(v)) {
+      return targetCarryTwoLine(fmtTargetCarryPct(v), "Fixed");
+    }
+  }
+  if (isDailyInterest(p.returnType) && p.dailyInterestRecap) {
+    const d = p.dailyInterestRecap;
+    return targetCarryTwoLine(
+      `${fmtTargetCarryPct(d.serviceFee30DayPct)} per 30 days`,
+      "Fixed"
+    );
   }
   return na();
 }
@@ -470,7 +554,9 @@ function pastInvestorROIC(p: PastProject): React.ReactNode {
   if (ext?.investorROICPerPeriod != null) {
     return (
       <div className="space-y-0.5">
-        <div className="font-medium">{fmtPct(ext.investorROICPerPeriod)} {ext.roicPeriodLabel}</div>
+        <div className="font-medium">
+          {fmtPct(ext.investorROICPerPeriod)} {roicRatePeriodLabel(p.returnType)}
+        </div>
         <div className="text-gray-400 text-[10px]">to investors</div>
       </div>
     );
@@ -492,7 +578,9 @@ function pastTotalROIC(p: PastProject): React.ReactNode {
   if (ext?.totalImpliedROICPerPeriod != null) {
     return (
       <div className="space-y-0.5">
-        <div className="font-medium">{fmtPct(ext.totalImpliedROICPerPeriod)} {ext.roicPeriodLabel}</div>
+        <div className="font-medium">
+          {fmtPct(ext.totalImpliedROICPerPeriod)} {roicRatePeriodLabel(p.returnType)}
+        </div>
         <div className="text-gray-400 text-[10px]">investor + carry (total implied)</div>
       </div>
     );
@@ -818,7 +906,7 @@ function buildFieldSections(allTypes: ReturnType[]): FieldSection[] {
         {
           id: "carry",
           label: "Target carry",
-          sublabel: "Rate + type",
+          sublabel: "Rate + type — see Format-Dictionary.md",
           showForSet: () => true,
           applicableForProject: () => true,
           valueProposed: proposedCarry,

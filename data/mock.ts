@@ -534,6 +534,17 @@ const projectShushu: ICProject = {
       projectedBEPMonths: 6,
       currentDPD: 0,
       maxDPD: 0,
+      extendedTermsSnapshot: {
+        ptName: "PT. Mitra Mulia Manunggal",
+        /** Carry ≈ IDR 12.5M / (IDR 250M × 12) per month, aligned with `fixedReturnTerms` on the proposed tranche. */
+        targetCarryPct: 0.42,
+        fixedLegTotalAmount: 299_850_000,
+        fixedLegInstallmentMonths: 12,
+        investorROICPerPeriod: 1.2,
+        totalImpliedROICPerPeriod: 1.45,
+        roicPeriodLabel: "per month",
+        paymentFrequency: "Monthly installment on 15th",
+      },
     },
   ],
 

@@ -159,6 +159,11 @@ export interface ExtendedTermsSnapshot {
   totalImpliedROICPerPeriod?: number | null;
   /** Period label, e.g. "per month" or "per 30 days". */
   roicPeriodLabel?: string | null;
+  /**
+   * Target carry for the Target carry row when not derivable from revenue share snapshot
+   * (e.g. Fixed Return / PO): optional explicit % per period, else UI may infer from ROIC - investor.
+   */
+  targetCarryPct?: number | null;
 
   // ── Branch opening (Revenue Share) ───────────────────────────────────────
   branchOpeningScheduledDate?: string | null;
