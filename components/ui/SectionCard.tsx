@@ -9,6 +9,8 @@ interface SectionCardProps {
   badge?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
+  /** Optional id on the section root (e.g. deep link / field guide iframe hash). */
+  id?: string;
 }
 
 export function SectionCard({
@@ -17,11 +19,12 @@ export function SectionCard({
   badge,
   children,
   className = "",
+  id,
 }: SectionCardProps) {
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className={`border border-gray-200 rounded-lg bg-white shadow-sm ${className}`}>
+    <div id={id} className={`border border-gray-200 rounded-lg bg-white shadow-sm ${className}`}>
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-gray-50 transition-colors rounded-lg"

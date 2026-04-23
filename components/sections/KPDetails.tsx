@@ -13,18 +13,27 @@ function formatReferralLine(
   referrorBelongsToKP: string | null
 ): string {
   if (!specificReferror) return referralSource;
-  const kpPart = referrorBelongsToKP ? ` (${referrorBelongsToKP})` : "";
-  return `${referralSource}: ${specificReferror}${kpPart}`;
+  const kpPart = referrorBelongsToKP ? ` – ${referrorBelongsToKP}` : "";
+  return `${specificReferror} (${referralSource}${kpPart})`;
 }
 
 export function KPDetails({ project }: Props) {
-  const referralLine = (() => {
+  const effectiveReferral = (() => {
     if (project.referralSource === SECOND_PLUS_REFERRAL && project.firstProjectReferralOverride) {
-      const o = project.firstProjectReferralOverride;
-      return formatReferralLine(o.referralSource, o.specificReferror, o.referrorBelongsToKP);
+      return project.firstProjectReferralOverride;
     }
-    return formatReferralLine(project.referralSource, project.specificReferror, project.referrorBelongsToKP);
+    return {
+      referralSource: project.referralSource,
+      specificReferror: project.specificReferror,
+      referrorBelongsToKP: project.referrorBelongsToKP,
+    };
   })();
+
+  const referralLine = formatReferralLine(
+    effectiveReferral.referralSource,
+    effectiveReferral.specificReferror,
+    effectiveReferral.referrorBelongsToKP
+  );
 
   return (
     <SectionCard title="Karmapreneur Details">

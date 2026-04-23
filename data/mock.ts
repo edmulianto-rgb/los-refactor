@@ -117,8 +117,8 @@ const projectHolycow: ICProject = {
   referrorBelongsToKP: null,
   firstProjectReferralOverride: {
     referralSource: "Karmapreneur",
-    specificReferror: "Melisa Anggraini",
-    referrorBelongsToKP: null,
+    specificReferror: "Ahmed Tessario Ekanuramanta",
+    referrorBelongsToKP: "Sirtanio",
   },
   otherReferees: [],
 
@@ -131,8 +131,8 @@ const projectHolycow: ICProject = {
       role: "Direktur Utama / Co-Founder",
       notesOnPerson:
         "Co-founder Holycow sejak 2010. Background marketing — bertanggung jawab atas ekspansi brand dan hubungan investor. Sangat komunikatif dan responsif dalam proses due diligence. Menanggani operasional seluruh outlet.",
-      referredProjects: [],
-      associatedKPs: [],
+      referredProjects: ["Sirtanio", "Kohai Culinary Group"],
+      associatedKPs: ["Anomali Coffee"],
       isKeyPerson: true,
       slikFileUrl: "https://drive.google.com/file/slik-regina-tiffani",
       slikExecSummary:
@@ -145,7 +145,7 @@ const projectHolycow: ICProject = {
       role: "CFO / Direktur Keuangan",
       notesOnPerson:
         "Bergabung 2018. Ex-Deloitte (4 tahun), sebelumnya konsultan F&B di Jakarta. Penanggung jawab laporan keuangan, rekening koran, dan hubungan dengan perbankan. Sangat transparan dalam disclosure.",
-      referredProjects: [],
+      referredProjects: ["Cibo Bali"],
       associatedKPs: [],
       isKeyPerson: true,
       slikFileUrl: "https://drive.google.com/file/slik-syifa-sarini",
@@ -472,8 +472,8 @@ const projectShushu: ICProject = {
       role: "Founder / Direktur Utama",
       notesOnPerson:
         "Founder Shushu, 31 tahun. Background barista dan F&B ops — pernah bekerja di Kopi Kenangan sebagai area manager sebelum keluar dan build brand sendiri 2023. Sangat detail soal produk dan operasional. Handles semua aspek bisnis sendiri dengan 1 manajer operasional.",
-      referredProjects: [],
-      associatedKPs: [],
+      referredProjects: ["Catur Coffee Company"],
+      associatedKPs: ["Anomali Coffee"],
       isKeyPerson: true,
       slikFileUrl: "https://drive.google.com/file/slik-sandy-wiguna",
       slikExecSummary:
@@ -736,7 +736,7 @@ const projectCUM: ICProject = {
       role: "Direktur Utama",
       notesOnPerson:
         "Founder dan Direktur Utama CUM. Background di bidang HR outsourcing dan logistik sejak 2010. Sangat berpengalaman dalam mengelola kontrak korporat besar — klien utama termasuk Orang Tua Group, Indofood, dan Wings. Responsif dan profesional dalam semua komunikasi.",
-      referredProjects: [],
+      referredProjects: ["Citrus Dept Store", "Lesssalt"],
       associatedKPs: [],
       isKeyPerson: true,
       slikFileUrl: "https://drive.google.com/file/slik-dwi-wicaksono",
@@ -750,7 +750,7 @@ const projectCUM: ICProject = {
       role: "Direktur Operasional",
       notesOnPerson:
         "Co-founder. Penanggung jawab operasional lapangan — koordinasi tim workforce dan delivery. Memegang 35% saham.",
-      referredProjects: [],
+      referredProjects: ["Salvo.id"],
       associatedKPs: [],
       isKeyPerson: true,
       slikFileUrl: "https://drive.google.com/file/slik-nofriwan",
@@ -990,8 +990,10 @@ const projectCUM: ICProject = {
       accountholderName: "PT Cipta Usaha Media",
       slikFileUrl: "https://drive.google.com/file/slik-pt-cum",
       slikExecSummary:
-        "Rekening BCA aktif sejak 2019. Tidak ada pinjaman korporat di perbankan. SLIK bersih per Maret 2026. Cashflow rekening konsisten dengan volume PO yang dilaporkan (IDR 1.5-2B/bulan). Bank details match those for the last project by the same PT as of IC Review.",
-      warnings: [],
+        "Rekening BCA aktif sejak 2019. Tidak ada pinjaman korporat di perbankan. SLIK bersih per Maret 2026. Cashflow rekening konsisten dengan volume PO yang dilaporkan (IDR 1.5-2B/bulan).",
+      warnings: [
+        "Account number differs from previous project (CUM #25 — PO Financing: Wings): previous 0700441600 · current 0700441679",
+      ],
     },
   ],
 
@@ -1112,8 +1114,8 @@ const projectCEA: ICProject = {
   ],
 
   referralSource: "Karmapreneur",
-  specificReferror: null,
-  referrorBelongsToKP: null,
+  specificReferror: "Gregorius Magnus Arya Sena",
+  referrorBelongsToKP: "Kohai Culinary Group",
   otherReferees: [],
 
   kpContacts: [
@@ -1238,7 +1240,9 @@ const projectCEA: ICProject = {
       accountholderName: "PT Cahaya Energi Asia",
       slikFileUrl: null,
       slikExecSummary: "SLIK PT — performing (prototype summary).",
-      warnings: [],
+      warnings: [
+        "PT differs from previous project — Aztech #1 used: PT Energi Cahaya Nusantara",
+      ],
     },
   ],
 
@@ -1358,8 +1362,8 @@ const projectAssetDPlafond: ICProject = {
   referrorBelongsToKP: null,
   firstProjectReferralOverride: {
     referralSource: "Karmapreneur",
-    specificReferror: null,
-    referrorBelongsToKP: null,
+    specificReferror: "Andi Soegiarto",
+    referrorBelongsToKP: "Catur Coffee Company",
   },
   otherReferees: [],
 
@@ -1679,8 +1683,8 @@ const projectMitraAgro: ICProject = {
   referrorBelongsToKP: null,
   firstProjectReferralOverride: {
     referralSource: "Karmapreneur",
-    specificReferror: "Hendra Wijaya",
-    referrorBelongsToKP: null,
+    specificReferror: "Hendra Chiang",
+    referrorBelongsToKP: "Scuto",
   },
   otherReferees: [],
   submissionProjectedBEPMonths: 12,
@@ -1691,8 +1695,8 @@ const projectMitraAgro: ICProject = {
       name: "Agus Maulana",
       role: "Direktur Utama",
       notesOnPerson: "Founder dan pemegang saham mayoritas. Background procurement dan distribusi 15+ tahun.",
-      referredProjects: [],
-      associatedKPs: [],
+      referredProjects: ["Scuto", "Pet Pharma"],
+      associatedKPs: ["Twalen Spirits"],
       isKeyPerson: true,
       slikFileUrl: "https://example.com/slik-agus.pdf",
       slikExecSummary: "SLIK bersih. Tidak ada kredit bermasalah. Fasilitas bank konvensional aktif IDR 2B di BCA (collateralized).",
@@ -1704,7 +1708,7 @@ const projectMitraAgro: ICProject = {
       role: "Direktur Keuangan",
       notesOnPerson: "Istri Agus Maulana, terlibat aktif dalam manajemen keuangan. Akuntansi background.",
       referredProjects: [],
-      associatedKPs: [],
+      associatedKPs: ["Sirtanio"],
       isKeyPerson: true,
       slikFileUrl: "https://example.com/slik-sri.pdf",
       slikExecSummary: "SLIK bersih. Tidak ada kredit bermasalah.",

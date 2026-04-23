@@ -131,7 +131,7 @@ Display the most recent 2 reviews, sorted by `Submission Date` descending.
 
 | Display Label       | Source Table | Coda Column           | Type            | R/W      | Notes                                                                                           |
 | ------------------- | ------------ | --------------------- | --------------- | -------- | ----------------------------------------------------------------------------------------------- |
-| Referral Source     | Project      | `Referral Source`     | lookup          | WRITABLE | e.g. "Karmapreneur", "KarmaClub Member", "2nd+ project"                                         |
+| Referral Source     | Project      | `Referral Source`     | lookup          | WRITABLE | Values: Cold Calling · Karma.Club Website · Karma Staff · Karmapreneur · Ex-Karma Staff · Potential Karmapreneur · Karma Node · KarmaClub Member · 2nd+ project. Displayed as source name only (Cold Calling / Karma.Club Website) or "Name (Source)" / "Name (Source – Brand)" for person-based sources. If 2nd+ project, first project's referral is shown instead. |
 | Specific Referror   | Project      | `Specific Referror`   | lookup → People | WRITABLE |                                                                                                 |
 | Referror's KP/Brand | People       | `Belongs to KP/Brand` | text            | FORMULA  | Derived from referror's linked projects                                                         |
 | Other Referees      | People       | `Referred KP/Brand`   | lookup          | FORMULA  | Shows all other KPs the referror has referred; read from People row linked as Specific Referror |

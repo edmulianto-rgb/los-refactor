@@ -1,4 +1,12 @@
 <!DOCTYPE html>
+<!--
+  This file mirrors the IC overview in the Next app; you do not “maintain” it for its
+  own sake. When components/sections/*.tsx (header, PIC, KP details, project details,
+  plafond, etc.) change, whoever ships that change should update these <template
+  id="tpl-guide-…"> blocks in the same PR (or immediately after), then:
+  cp field-guide.html public/field-guide.html && npm run check:field-guide
+  Invariants: scripts/check-field-guide.mjs
+-->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -188,13 +196,6 @@ body {
 .logic-item:last-child { border-bottom: none; }
 .logic-icon { flex-shrink: 0; font-size: 13px; margin-top: 1px; }
 .logic-text { color: #334155; }
-.info-also-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #94a3b8; margin-bottom: 4px; }
-.also-chip {
-  display: inline-flex; font-size: 10px; color: #2563eb;
-  border: 1px solid #bfdbfe; border-radius: 4px; padding: 2px 7px;
-  cursor: pointer; margin: 2px; background: #eff6ff;
-}
-.also-chip:hover { background: #dbeafe; }
 
 /* Color classes */
 .c-h  { background: #1d4ed8; } .c-p  { background: #0369a1; }
@@ -308,6 +309,11 @@ body {
       Project cards are loaded from <a href="/api/field-guide-home" style="color:#4f46e5">/api/field-guide-home</a> (same <code style="font-size:10px;background:#f1f5f9;padding:1px 4px;border-radius:4px">mockProjects</code> as the IC Review home page). Open via the app
       (<a href="/field-guide" style="color:#4f46e5">/field-guide</a> or <a href="/" style="color:#4f46e5">pending reviews</a>) so the API is available; if the request fails, you will see a short notice instead of cards.
     </p>
+    <p class="ph-sub" style="font-size:11px;color:#334155;margin-top:-2px;margin-bottom:12px;line-height:1.45">
+      <strong>Past Projects Recap (1:1 with the app):</strong> the mock for <strong>Mitra Agro Nusantara (#5)</strong> is the only walkthrough with the full A–F matrix over <strong>all five return types</strong>. Other projects only explain how to <em>get</em> the recap; use
+      <a href="field-guide.html?p=mitra-agro" style="color:#4f46e5;font-weight:600">this link</a> or
+      <a href="/project/proj-mitra-agro#ic-past-projects-recap" style="color:#4f46e5;font-weight:600">the project page</a>.
+    </p>
     <div class="ph-grid" id="fieldGuideHomeGrid"></div>
   </div>
 </div>
@@ -367,26 +373,21 @@ body {
     <!-- HEADER -->
     <div class="card">
       <div class="proj-header">
-        <div class="proj-header-top">
-          <span class="proj-brand" id="f-H1">Steak Hotel by Holycow</span>
-          <b class="b c-h" onclick="select('H1')">H1</b>
-          <span class="tag tag-slate" id="f-H3">Asset Class A</span>
-          <b class="b c-h" onclick="select('H3')">H3</b>
-        </div>
-        <div class="proj-name" id="f-H2">
-          Steak Hotel by Holycow Medan
-          <b class="b c-h" onclick="select('H2')">H2</b>
-        </div>
-        <div style="margin-bottom:8px">
-          <span class="tag tag-blue" id="f-H4">Project</span>
-          <b class="b c-h" onclick="select('H4')">H4</b>
-        </div>
-        <div class="proj-meta">
-          <b style="color:#334155">Analyst:</b>
-          <span id="f-P2">Priska Ponggawa</span> <b class="b c-p" onclick="select('P2')">P2</b>
-          &nbsp;&nbsp;<b style="color:#334155">By:</b>
-          <span id="f-P1">Priska Ponggawa</span> <b class="b c-p" onclick="select('P1')">P1</b>
-          &nbsp;&nbsp;Submitted 19 Feb 2026
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+          <div>
+            <div style="margin-bottom:4px">
+              <span class="proj-brand" id="f-H1">Steak Hotel by Holycow</span>
+              <b class="b c-h" onclick="select('H1')">H1</b>
+            </div>
+            <div class="proj-name" id="f-H2">
+              Steak Hotel by Holycow Medan
+              <b class="b c-h" onclick="select('H2')">H2</b>
+            </div>
+          </div>
+          <div style="flex-shrink:0">
+            <span class="tag tag-green" id="f-H4">Project</span>
+            <b class="b c-h" onclick="select('H4')">H4</b>
+          </div>
         </div>
       </div>
     </div>
@@ -407,9 +408,19 @@ body {
       <div class="card">
         <div class="card-section-title">Karmapreneur Details</div>
         <div class="card-body">
+          <div id="f-D1" style="font-size:12px;line-height:1.5;color:#334155;margin-bottom:12px">
+            <span style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px">Project # <b class="b c-d" onclick="select('D1')">D1</b></span>
+            <span class="bold">Project #3 for the KP</span>
+            <div id="f-D2" style="font-size:11px;color:#64748b;margin-top:4px;line-height:1.55">
+              1 active<br/>
+              2 completed<br/>
+              0 before IC <b class="b c-d" onclick="select('D2')">D2</b><br/>
+              0 pending disbursement
+            </div>
+          </div>
           <div id="f-K1" style="font-size:12px;line-height:1.5;color:#334155">
             <span style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px">Referral Source <b class="b c-kd" onclick="select('K1')">K1</b></span>
-            <span>2nd+ project</span>
+            <span>Hendra Chiang (Karmapreneur – Scuto)</span>
           </div>
         </div>
       </div>
@@ -419,23 +430,19 @@ body {
     <div class="card">
       <div class="card-section-title">Project Details</div>
       <div class="card-body">
-        <div class="field-row" id="f-D1">
-          <span class="field-label">Project # <b class="b c-d" onclick="select('D1')">D1</b></span>
-          <span class="field-value">
-            <span class="bold">Project #3 for the KP</span>
-            <div id="f-D2" style="font-size:11px;color:#64748b;margin-top:4px;line-height:1.55">
-              1 active<br/>
-              2 completed<br/>
-              0 before IC <b class="b c-d" onclick="select('D2')">D2</b><br/>
-              0 pending disbursement
-            </div>
-          </span>
-        </div>
         <div class="field-row" id="f-D3">
           <span class="field-label">Sector <b class="b c-d" onclick="select('D3')">D3</b></span>
           <span class="field-value">
             <span class="tag tag-blue">F&amp;B: Full Service Resto</span>
           </span>
+        </div>
+        <div class="field-row" id="f-D8">
+          <span class="field-label">Financing Type <b class="b c-d" onclick="select('D8')">D8</b></span>
+          <span class="field-value">Revenue Share (Return-Capped)</span>
+        </div>
+        <div class="field-row" id="f-D5">
+          <span class="field-label">Syariah <b class="b c-d" onclick="select('D5')">D5</b></span>
+          <span class="field-value"><span class="tag" style="background:#ccfbf1;color:#0f766e">Syariah</span></span>
         </div>
         <div class="field-row" id="f-D4">
           <span class="field-label">Asset Class <b class="b c-d" onclick="select('D4')">D4</b></span>
@@ -456,11 +463,12 @@ body {
     <div class="card">
       <div class="card-section-title">Plafond</div>
       <div class="card-body">
+        <p style="font-size:11px;color:#64748b;line-height:1.5;margin-bottom:12px">On the <strong style="color:#475569">Proposed</strong> row, each limit shows the <strong>change</strong> versus current (with <strong style="color:#475569">+</strong> / <strong style="color:#475569">−</strong>) and the <strong>proposed ceiling</strong> on the line below as <em>(to Rp …)</em>. <strong style="color:#475569">Current</strong> and <strong style="color:#475569">Superseded</strong> rows show absolute limits. Red banners only if a stored remaining sub-limit is negative. For <strong style="color:#475569">Asset B &amp; Asset D</strong>, each limit cell also shows <strong style="color:#475569">Remaining after current proposed</strong> (remaining minus this submission's requested project amount).</p>
         <table class="tbl">
           <thead>
             <tr>
               <th>Limit Status <b class="b c-pl" onclick="select('L1')">L1</b></th>
-              <th>Requested Limit <b class="b c-pl" onclick="select('L2')">L2</b></th>
+              <th>Total Limit <b class="b c-pl" onclick="select('L2')">L2</b></th>
               <th>PO Sub Limit <b class="b c-pl" onclick="select('L3')">L3</b></th>
               <th>Working Capital Sub Limit <b class="b c-pl" onclick="select('L4')">L4</b></th>
             </tr>
@@ -470,7 +478,8 @@ body {
               <td class="row-label" id="f-L1">
                 <strong>Current</strong><br/>
                 <span style="font-size:9px;color:#059669;font-weight:600">Active</span><br/>
-                <span style="font-size:9px;color:#94a3b8">1 Jun 2024 – 1 Jun 2026</span>
+                <span style="font-size:9px;color:#94a3b8">1 Jun 2024 – 1 Jun 2026</span><br/>
+                <span style="font-size:9px;color:#64748b">(40 days from today)</span>
               </td>
               <td id="f-L2">
                 <div style="font-weight:600">Rp 5.000.000.000</div>
@@ -498,7 +507,18 @@ body {
     <!-- FINANCIAL REVIEWS -->
     <div class="card">
       <div class="card-section-title">Financial Reviews</div>
-      <div class="card-body" style="overflow-x:auto">
+      <div class="card-body">
+        <div style="padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid #f1f5f9">
+          <div style="font-size:11px;font-weight:700;color:#111827;margin-bottom:10px">Calculator (Google Sheets) <b class="b c-fr" onclick="select('K6')">K6</b></div>
+          <div style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:12px">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px">Calculator (Project table)</div>
+              <a href="#" style="font-size:13px;color:#2563eb;word-break:break-all">https://docs.google.com/spreadsheets/d/1sh7vI1nmolAwz-_jZ39tGKNU1NtZdfyv7aMwq42y_Q8</a>
+            </div>
+            <div style="flex-shrink:0"><span style="display:inline-flex;align-items:center;gap:6px;border:1px solid #e2e8f0;background:#fff;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:500;color:#374151">Open in new tab ↗</span></div>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
         <table class="tbl" style="min-width:720px">
           <thead>
             <tr>
@@ -517,7 +537,7 @@ body {
               <td id="f-F1">24 Feb 2026</td>
               <td id="f-F2">Management Accounts Jan–Dec 2025</td>
               <td id="f-F3">31 Dec 2025</td>
-              <td id="f-F4"><span class="tag tag-slate">Keep</span></td>
+              <td id="f-F4"><span style="font-size:11px;font-weight:500;color:#1f2937">Keep Rp 5.000.000.000</span></td>
               <td id="f-F5" style="max-width:200px;font-size:10px;color:#64748b;line-height:1.45">Revenue 2025 dari outlet existing Holycow Jakarta: IDR 28B total (3 outlet). Outlet Medan (baru dibuka Okt 2024) masih ramp-up — revenue per bulan IDR 580-620jt, gross margin ~68%. Tidak ada perubahan hutang. Plafond dipertahankan IDR 5B. Proyek #3 (Medan expansion) dalam proses IC review.</td>
               <td style="font-size:10px;color:#94a3b8">—</td>
             </tr>
@@ -526,12 +546,13 @@ body {
               <td>10 Mar 2025</td>
               <td>Audited 2024</td>
               <td>31 Dec 2024</td>
-              <td><span class="tag tag-green">Increase</span></td>
+              <td><span style="font-size:11px;font-weight:500;color:#065f46">Increase Rp 2.000.000.000 to Rp 5.000.000.000</span></td>
               <td style="max-width:200px;font-size:10px;color:#64748b;line-height:1.45">Revenue 2024: IDR 24B (+20% YoY) dari 2 outlet Jakarta. Laporan audit bersih. Outlet Medan dibuka Q4 2024 dengan investasi sendiri — performa awal kuat. Direkomendasikan kenaikan plafond dari IDR 2B ke IDR 5B untuk mendukung rencana full renovation Medan dan potensi outlet berikutnya.</td>
-              <td><span class="tag tag-amber" style="font-size:9px">Warning: More than 13 months ago</span></td>
+              <td><span class="tag tag-amber" style="font-size:9px">Warning: More than 14 months ago</span></td>
             </tr>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
 
@@ -559,7 +580,7 @@ body {
               <td id="f-C1"><b>Regina Tiffani</b></td>
               <td id="f-C2">Direktur Utama / Co-Founder</td>
               <td id="f-C3" style="max-width:160px">Co-founder Holycow sejak 2010. Background marketing — bertanggung jawab atas ekspansi brand dan hubungan investor. Sangat komunikatif dan responsif dalam proses due diligence. Menanggani operasional seluruh outlet.</td>
-              <td id="f-C5" style="color:#94a3b8">—</td>
+              <td id="f-C5"><div>Referror of Sirtanio, Kohai Culinary Group</div><div>Associated with other Karmapreneurs of Anomali Coffee</div></td>
               <td id="f-C4">Yes</td>
               <td id="f-C6"><a href="#" style="color:#2563eb">View ↗</a></td>
               <td id="f-C7" class="slik-y" style="max-width:200px">KTP Jakarta Selatan. KPR di BCA (aktif, performing). Tidak ada kredit konsumer lain. SLIK bersih per Februari 2026.</td>
@@ -570,7 +591,7 @@ body {
               <td><b>Syifa Sarini</b></td>
               <td>CFO / Direktur Keuangan</td>
               <td style="max-width:160px">Bergabung 2018. Ex-Deloitte (4 tahun), sebelumnya konsultan F&amp;B di Jakarta. Penanggung jawab laporan keuangan, rekening koran, dan hubungan dengan perbankan. Sangat transparan dalam disclosure.</td>
-              <td style="color:#94a3b8">—</td>
+              <td>Referror of Cibo Bali</td>
               <td>Yes</td>
               <td><a href="#" style="color:#2563eb">View ↗</a></td>
               <td class="slik-y" style="max-width:200px">KTP Jakarta Pusat. Kredit motor lunas 2022. Tidak ada catatan negatif. SLIK bersih per Februari 2026.</td>
@@ -603,196 +624,24 @@ body {
       </div>
     </div>
 
-    <!-- PAST PROJECTS -->
+    <!-- PAST PROJECTS: full transposed table → see Mitra Agro (all return types, 1:1 with app) -->
     <div class="card">
-      <div class="card-section-title">Proposed and Past Projects Recap Table</div>
-      <div class="card-body" style="overflow-x:auto">
-        <p style="font-size:11px;color:#64748b;line-height:1.45;margin-bottom:8px">
-          Includes the <strong>Proposed</strong> row for <em>this</em> submission alongside other projects for the KP. Rows are sorted by status
-          (Proposed, in-queue statuses, Active, then Completed), then by <strong>IC approval date</strong> newest first.
+      <div class="card-section-title">Proposed and Past Projects Recap</div>
+      <div class="card-body">
+        <p id="f-R1" style="font-size:11px;color:#64748b;line-height:1.5">
+          See <a href="field-guide.html?p=mitra-agro" style="color:#4f46e5;font-weight:600">Mitra Agro Nusantara</a> for the full Past Projects Recap reference.
         </p>
-        <table class="tbl" style="min-width:900px;font-size:10px">
-          <thead>
-            <tr>
-              <th class="right" style="width:28px">#</th>
-              <th>Project <b class="b c-pp" onclick="select('R1')">R1</b></th>
-              <th>Status <b class="b c-pp" onclick="select('R2')">R2</b></th>
-              <th>Financing Type <b class="b c-pp" onclick="select('R3')">R3</b></th>
-              <th class="right">Amount <b class="b c-pp" onclick="select('R4')">R4</b></th>
-              <th class="right">Outstanding <b class="b c-pp" onclick="select('R5')">R5</b></th>
-              <th class="right">Term <b class="b c-pp" onclick="select('R6')">R6</b></th>
-              <th class="right">PvA <b class="b c-pp" onclick="select('R7')">R7</b></th>
-              <th class="right">IRR <b class="b c-pp" onclick="select('R8')">R8</b></th>
-              <th class="right">MOIC <b class="b c-pp" onclick="select('R9')">R9</b></th>
-              <th class="right">DPD <b class="b c-pp" onclick="select('R10')">R10</b></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr style="background:#eff6ff">
-              <td class="right" style="color:#94a3b8">1</td>
-              <td id="f-R1" style="font-weight:500">Steak Hotel by Holycow (#3) — Branch Opening/Expansion: Medan [PROPOSED]</td>
-              <td id="f-R2"><span class="tag tag-blue" style="font-size:9px">Proposed</span></td>
-              <td id="f-R3">Revenue Share (Return-Capped)</td>
-              <td id="f-R4" class="right">Rp 3.100.000.000</td>
-              <td id="f-R5" class="right" style="color:#94a3b8">—</td>
-              <td id="f-R6" class="right">24 months</td>
-              <td id="f-R7" class="right" style="color:#94a3b8">N/A</td>
-              <td id="f-R8" class="right"><span class="irr-green">25.6% projected</span></td>
-              <td id="f-R9" class="right" style="line-height:1.35"><span style="color:#94a3b8;font-size:9px">OTF MOIC: N/A</span><br/>1.55x projected<br/><span style="font-size:9px;color:#64748b">BEP month 13</span></td>
-              <td id="f-R10" class="right" style="color:#94a3b8">—</td>
-            </tr>
-            <tr>
-              <td class="right" style="color:#94a3b8">2</td>
-              <td style="font-weight:500">Steak Hotel by Holycow (#2) — Working Capital, Fatmawati</td>
-              <td><span class="tag tag-green" style="font-size:9px">Active</span></td>
-              <td>Revenue Share (Return-Capped)</td>
-              <td class="right">Rp 2.000.000.000</td>
-              <td class="right" style="font-weight:600">Rp 1.340.000.000</td>
-              <td class="right">24 months</td>
-              <td class="right" style="color:#94a3b8">N/A</td>
-              <td class="right"><span class="irr-green">19.5% projected</span></td>
-              <td class="right" style="line-height:1.35"><span style="color:#94a3b8;font-size:9px">OTF MOIC: N/A</span><br/>1.40x projected<br/><span style="font-size:9px;color:#64748b">BEP month 14</span></td>
-              <td class="right" style="line-height:1.35"><span style="color:#94a3b8">—</span><br/><span class="irr-yellow">14 days max</span><br/><span style="font-size:9px;color:#64748b;text-align:left;display:inline-block;margin-top:4px">15 Apr 2024 — 14d overdue — Paid</span></td>
-            </tr>
-            <tr>
-              <td class="right" style="color:#94a3b8">3</td>
-              <td style="font-weight:500">Steak Hotel by Holycow (#1) — Renovasi &amp; Capex, Wolter Monginsidi</td>
-              <td><span class="tag tag-slate" style="font-size:9px">Completed</span></td>
-              <td>Revenue Share (Return-Capped)</td>
-              <td class="right">Rp 1.500.000.000</td>
-              <td class="right" style="color:#94a3b8">—</td>
-              <td class="right" style="line-height:1.35"><span style="font-weight:600">18 months OTF</span><br/><span style="color:#94a3b8">20 months original</span></td>
-              <td class="right" style="color:#94a3b8">N/A</td>
-              <td class="right" style="line-height:1.35"><span class="irr-green">22.1% OTF</span><br/><span style="font-weight:400;color:#94a3b8">19.5% original</span></td>
-              <td class="right" style="line-height:1.35"><span style="color:#94a3b8;font-size:9px">OTF MOIC: N/A</span><br/>1.38x projected<br/><span style="font-size:9px;color:#64748b">BEP month 12</span></td>
-              <td class="right" style="line-height:1.35"><span style="color:#94a3b8">—</span><br/><span style="color:#64748b">0 days max</span></td>
-            </tr>
-          </tbody>
-          <tfoot>
-            <tr style="font-size:10px;background:#f8fafc;font-weight:600;color:#64748b">
-              <td></td>
-              <td colspan="2">1 Proposed, 1 Active, 1 Completed</td>
-              <td>3× Revenue Share (Return-Capped)</td>
-              <td class="right" style="color:#334155">Rp 6.600.000.000</td>
-              <td class="right" style="line-height:1.3">
-                <div>Rp 1.340.000.000</div>
-                <div style="font-weight:400;font-size:9px;color:#94a3b8">excl. proposed</div>
-                <div style="color:#334155">Rp 4.440.000.000</div>
-                <div style="font-weight:400;font-size:9px;color:#94a3b8">incl. proposed</div>
-              </td>
-              <td class="right">23 mo avg</td>
-              <td class="right" style="font-size:9px">N/A from LMS</td>
-              <td class="right"><span class="irr-green">22.1% avg</span></td>
-              <td class="right" style="font-size:9px;line-height:1.3">OTF MOIC<br/>not from LMS</td>
-              <td class="right" style="color:#cbd5e1">—</td>
-            </tr>
-          </tfoot>
-        </table>
-        <div id="f-R11" style="margin-top:12px;border:1px solid #f1f5f9;border-radius:8px;overflow:hidden">
-          <div style="background:#f8fafc;padding:8px 10px;border-bottom:1px solid #f1f5f9">
-            <h4 style="font-size:11px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:0.04em;margin:0">
-              Revenue share terms — cross-project comparison
-              <b class="b c-pp" onclick="select('R11')">R11</b>
-            </h4>
-            <p style="font-size:10px;color:#64748b;margin:4px 0 0;line-height:1.45">
-              Same row order as above. The <strong>Proposed</strong> column uses this submission’s revenue-share terms; other columns use each row’s stored snapshot when available. Highlighted cells differ from the Proposed baseline.
-            </p>
-          </div>
-          <div style="overflow-x:auto">
-            <table class="tbl" style="min-width:720px;font-size:10px">
-              <thead>
-                <tr style="border-bottom:1px solid #e2e8f0;color:#64748b">
-                  <th style="position:sticky;left:0;z-index:2;background:#f8fafc;padding:8px 10px;text-align:left;font-weight:600;width:200px;border-right:1px solid #f1f5f9">Metric</th>
-                  <th style="padding:8px 10px;font-weight:600;vertical-align:top;min-width:150px;background:#f5f3ff">
-                    <div style="color:#1e293b;line-height:1.25;font-weight:500">Steak Hotel by Holycow (#3) — Medan [PROPOSED]</div>
-                    <div style="margin-top:4px"><span class="tag tag-blue" style="font-size:9px">Proposed</span></div>
-                  </th>
-                  <th style="padding:8px 10px;font-weight:600;vertical-align:top;min-width:150px;background:#f8fafc">
-                    <div style="color:#1e293b;line-height:1.25;font-weight:500">Steak Hotel by Holycow (#2) — Fatmawati</div>
-                    <div style="margin-top:4px"><span class="tag tag-green" style="font-size:9px">Active</span></div>
-                  </th>
-                  <th style="padding:8px 10px;font-weight:600;vertical-align:top;min-width:150px;background:#f8fafc">
-                    <div style="color:#1e293b;line-height:1.25;font-weight:500">Steak Hotel by Holycow (#1) — Wolter Monginsidi</div>
-                    <div style="margin-top:4px"><span class="tag tag-slate" style="font-size:9px">Completed</span></div>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr style="border-bottom:1px solid #f1f5f9">
-                  <td style="position:sticky;left:0;z-index:1;background:#fff;padding:8px 10px;border-right:1px solid #f1f5f9;vertical-align:top">
-                    <div style="font-weight:600;color:#334155">Pre-BEP Revenue share</div>
-                    <div style="font-size:9px;color:#94a3b8">percentage</div>
-                  </td>
-                  <td style="padding:8px 10px;background:#f5f3ff">8.0%</td>
-                  <td style="padding:8px 10px">8.0%</td>
-                  <td style="padding:8px 10px;background:#fffbeb;color:#78350f">7.5%</td>
-                </tr>
-                <tr style="border-bottom:1px solid #f1f5f9">
-                  <td style="position:sticky;left:0;z-index:1;background:#fff;padding:8px 10px;border-right:1px solid #f1f5f9;vertical-align:top">
-                    <div style="font-weight:600;color:#334155">Post-BEP Revenue share</div>
-                    <div style="font-size:9px;color:#94a3b8">percentage</div>
-                  </td>
-                  <td style="padding:8px 10px;background:#f5f3ff">8.0%</td>
-                  <td style="padding:8px 10px">8.0%</td>
-                  <td style="padding:8px 10px">8.0%</td>
-                </tr>
-                <tr style="border-bottom:1px solid #f1f5f9">
-                  <td style="position:sticky;left:0;z-index:1;background:#fff;padding:8px 10px;border-right:1px solid #f1f5f9;vertical-align:top">
-                    <div style="font-weight:600;color:#334155">Time Cap Period</div>
-                    <div style="font-size:9px;color:#94a3b8">(months)</div>
-                  </td>
-                  <td style="padding:8px 10px;background:#f5f3ff;color:#94a3b8">—</td>
-                  <td style="padding:8px 10px;color:#94a3b8">—</td>
-                  <td style="padding:8px 10px;color:#94a3b8">—</td>
-                </tr>
-                <tr style="border-bottom:1px solid #f1f5f9">
-                  <td style="position:sticky;left:0;z-index:1;background:#fff;padding:8px 10px;border-right:1px solid #f1f5f9;vertical-align:top">
-                    <div style="font-weight:600;color:#334155">Investor Cap</div>
-                    <div style="font-size:9px;color:#94a3b8">EXC. Carry</div>
-                  </td>
-                  <td style="padding:8px 10px;background:#f5f3ff">1.4x</td>
-                  <td style="padding:8px 10px">1.4x</td>
-                  <td style="padding:8px 10px;background:#fffbeb;color:#78350f">1.35x</td>
-                </tr>
-                <tr style="border-bottom:1px solid #f1f5f9">
-                  <td style="position:sticky;left:0;z-index:1;background:#fff;padding:8px 10px;border-right:1px solid #f1f5f9;vertical-align:top">
-                    <div style="font-weight:600;color:#334155">Minimum Investor Return</div>
-                    <div style="font-size:9px;color:#94a3b8">Payment Type*</div>
-                  </td>
-                  <td style="padding:8px 10px;background:#f5f3ff;color:#94a3b8">—</td>
-                  <td style="padding:8px 10px;background:#fffbeb;color:#78350f">Continual Rev Share</td>
-                  <td style="padding:8px 10px;color:#94a3b8">—</td>
-                </tr>
-                <tr style="border-bottom:1px solid #f1f5f9">
-                  <td style="position:sticky;left:0;z-index:1;background:#fff;padding:8px 10px;border-right:1px solid #f1f5f9;vertical-align:top">
-                    <div style="font-weight:600;color:#334155">Minimum Return</div>
-                    <div style="font-size:9px;color:#94a3b8">(multiple of invested fund)*</div>
-                  </td>
-                  <td style="padding:8px 10px;background:#f5f3ff;color:#94a3b8">—</td>
-                  <td style="padding:8px 10px;background:#fffbeb;color:#78350f">1.25%</td>
-                  <td style="padding:8px 10px;color:#94a3b8">—</td>
-                </tr>
-                <tr>
-                  <td style="position:sticky;left:0;z-index:1;background:#fff;padding:8px 10px;border-right:1px solid #f1f5f9;vertical-align:top">
-                    <div style="font-weight:600;color:#334155">Minimum Return Payable In</div>
-                    <div style="font-size:9px;color:#94a3b8">(mos)*</div>
-                  </td>
-                  <td style="padding:8px 10px;background:#f5f3ff;color:#94a3b8">—</td>
-                  <td style="padding:8px 10px;background:#fffbeb;color:#78350f">20 mo</td>
-                  <td style="padding:8px 10px;color:#94a3b8">—</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <p style="font-size:10px;color:#94a3b8;margin-top:8px;font-style:italic">⚠️ OTF MOIC and PvA are not currently available from the LMS Reporting Layer.</p>
+        <span id="f-R2"></span>
       </div>
     </div>
 
-    <!-- PROJECT TERMS -->
+    <!-- PROJECT TERMS (matches app: schedule + branch only; economics in Recap) -->
     <div class="card">
       <div class="card-section-title">Project Terms Details</div>
       <div class="card-body">
+        <p style="font-size:10px;color:#64748b;line-height:1.5;margin:0 0 12px">
+          Economics, caps, and payment terms are compared in <strong>Past Projects Recap</strong> (sections B–F). This card keeps schedule, branch grid, and amortization detail only.
+        </p>
         <div class="sub-h">Disbursement Schedule</div>
         <table class="tbl">
           <thead><tr>
@@ -808,54 +657,7 @@ body {
           </tfoot>
         </table>
 
-        <div class="sub-h" style="margin-top:14px">Revenue Share Terms</div>
-        <div class="field-row" id="f-T5">
-          <span class="field-label">Source of Revenue Accrued <b class="b c-tm" onclick="select('T5')">T5</b></span>
-          <span class="field-value" style="font-size:11px">Sales setelah dikurangi diskon, sebelum PB1/PPN, sebelum Service Charge, sebelum komisi online dan biaya EDC/QRIS</span>
-        </div>
-        <div class="field-row">
-          <span class="field-label">Branch Build-out Duration (months)</span>
-          <span class="field-value" style="font-size:11px">Per branch opening schedule</span>
-        </div>
-        <div class="field-row" id="f-T6">
-          <span class="field-label">Revenue Share Frequency <b class="b c-tm" onclick="select('T6')">T6</b></span>
-          <span class="field-value">Monthly</span>
-        </div>
-        <div class="field-row" id="f-T7">
-          <span class="field-label">Revenue Share Due Date <b class="b c-tm" onclick="select('T7')">T7</b></span>
-          <span class="field-value">Tanggal 15 setiap bulan</span>
-        </div>
-        <div class="field-row" id="f-T8">
-          <span class="field-label">Revenue Share Cap Type <b class="b c-tm" onclick="select('T8')">T8</b></span>
-          <span class="field-value">Return Cap</span>
-        </div>
-        <div class="field-row" id="f-T9">
-          <span class="field-label">Cap Multiple <b class="b c-tm" onclick="select('T9')">T9</b></span>
-          <span class="field-value bold">1.4x Investor Cap / 1.43x Total Cap</span>
-        </div>
-        <div class="field-row" id="f-T10">
-          <span class="field-label">Revenue Share Start Date <b class="b c-tm" onclick="select('T10')">T10</b></span>
-          <span class="field-value">Anchored to Branch Opening</span>
-        </div>
-        <div class="field-row" id="f-T11">
-          <span class="field-label">Revenue Share % <b class="b c-tm" onclick="select('T11')">T11</b></span>
-          <span class="field-value bold">8.0% Pre-BEP Revenue Share / 8.0% Post-BEP Revenue Share</span>
-        </div>
-        <div class="field-row" id="f-T12">
-          <span class="field-label">Carry <b class="b c-tm" onclick="select('T12')">T12</b></span>
-          <span class="field-value">2.2% Fixed Platform Fee</span>
-        </div>
-
-        <div style="margin-top:10px;padding:10px 12px;background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;font-size:11px;color:#334155">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#94a3b8;margin-bottom:6px">Projection summary <b class="b c-tm" onclick="select('T13')">T13</b></div>
-          <div id="f-T13" style="display:grid;grid-template-columns:1fr auto;gap:4px 16px;max-width:320px">
-            <span style="color:#94a3b8">Avg/month</span><span style="text-align:right;font-weight:600">Rp 600.740.842</span>
-            <span style="color:#94a3b8">Peak (Month 1)</span><span style="text-align:right">Rp 600.740.842</span>
-            <span style="color:#94a3b8">Floor (Month 1)</span><span style="text-align:right">Rp 600.740.842</span>
-            <span style="color:#94a3b8">Projection span</span><span style="text-align:right">6 months</span>
-          </div>
-        </div>
-        <div class="sub-h" style="margin-top:14px">Branch Details</div>
+        <div class="sub-h" id="f-T5" style="margin-top:14px">Branch Details <b class="b c-tm" onclick="select('T5')">T5</b></div>
         <table class="tbl" style="font-size:10px">
           <thead><tr>
             <th>Branch Name</th>
@@ -875,23 +677,7 @@ body {
           </tbody>
         </table>
 
-        <div class="sub-h" style="margin-top:14px">Late Fees</div>
-        <div class="field-row" id="f-T14">
-          <span class="field-label">Late Fee Basis <b class="b c-tm" onclick="select('T14')">T14</b></span>
-          <span class="field-value">Overdue Amount</span>
-        </div>
-        <div class="field-row" id="f-T15">
-          <span class="field-label">Late Fee Grace Period (days) <b class="b c-tm" onclick="select('T15')">T15</b></span>
-          <span class="field-value">5 days</span>
-        </div>
-        <div class="field-row" id="f-T16">
-          <span class="field-label">Daily Late Fee % <b class="b c-tm" onclick="select('T16')">T16</b></span>
-          <span class="field-value" style="line-height:1.45">
-            <div>0.0% per day (0.0% to Investors, 0.1% to ASN)</div>
-            <div style="font-size:10px;color:#d97706;margin-top:4px">Warning: different from default value 0.08% per day to Investors for this project type</div>
-            <div style="font-size:10px;color:#d97706">Warning: different from default value 0.02% per day to ASN for this project type</div>
-          </span>
-        </div>
+        <p style="font-size:10px;color:#94a3b8;margin-top:14px">Late fee terms (basis, grace, daily rates) — see <strong>Past Projects Recap (F)</strong> above. Revenue share %, cap, carry, revenue share start — <strong>Recap (B, E, …)</strong>.</p>
       </div>
     </div>
 
@@ -946,10 +732,10 @@ Proyek ke-3. Revenue Share return-capped 1.4x. Dana digunakan untuk full renovat
               <td id="f-E1"><b>PT AHARA BHADRANAYA INDONESIA</b></td>
               <td id="f-E2">Bank Maybank</td>
               <td id="f-E3" class="mono">2534000051</td>
-              <td id="f-E4">AHARA BHADRANAYA INDONESIA</td>
+              <td id="f-E4" style="color:#b45306;font-weight:500">AHARA BHADRANAYA INDONESIA</td>
               <td id="f-E5"><a href="#" style="color:#2563eb">View ↗</a></td>
               <td id="f-E6" class="slik-p" style="max-width:200px">PT aktif sejak 2018. Rekening Maybank digunakan untuk semua transaksi proyek Holycow bersama Karma. Tidak ada pinjaman korporat. Cashflow konsisten dengan revenue yang dilaporkan. SLIK bersih per Maret 2026.</td>
-              <td id="f-E7" style="color:#94a3b8">—</td>
+              <td id="f-E7" style="font-size:10px;color:#b45306;background:#fffbeb;border:1px solid #fde68a;border-radius:4px;padding:3px 6px;max-width:160px">Mismatch on accountholder and PT names</td>
             </tr>
           </tbody>
         </table>
@@ -1014,26 +800,21 @@ Proyek ke-3. Revenue Share return-capped 1.4x. Dana digunakan untuk full renovat
 
     <div class="card">
       <div class="proj-header">
-        <div class="proj-header-top">
-          <span class="proj-brand" id="f-H1">Cipta Usaha Media</span>
-          <b class="b c-h" onclick="select('H1')">H1</b>
-          <span class="tag tag-slate" id="f-H3">B - PO</span>
-          <b class="b c-h" onclick="select('H3')">H3</b>
-        </div>
-        <div class="proj-name" id="f-H2">
-          Cipta Usaha Media (#26) — PO Financing: Orang Tua
-          <b class="b c-h" onclick="select('H2')">H2</b>
-        </div>
-        <div style="margin-bottom:8px">
-          <span class="tag tag-blue" id="f-H4">PO/Invoice</span>
-          <b class="b c-h" onclick="select('H4')">H4</b>
-        </div>
-        <div class="proj-meta">
-          <b style="color:#334155">Analyst:</b>
-          <span id="f-P2">Nila Layla Melinda</span> <b class="b c-p" onclick="select('P2')">P2</b>
-          &nbsp;&nbsp;<b style="color:#334155">By:</b>
-          <span id="f-P1">Nila Layla Melinda</span> <b class="b c-p" onclick="select('P1')">P1</b>
-          &nbsp;&nbsp;Submitted 31 Mar 2026
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+          <div>
+            <div style="margin-bottom:4px">
+              <span class="proj-brand" id="f-H1">Cipta Usaha Media</span>
+              <b class="b c-h" onclick="select('H1')">H1</b>
+            </div>
+            <div class="proj-name" id="f-H2">
+              Cipta Usaha Media (#26) — PO Financing: Orang Tua
+              <b class="b c-h" onclick="select('H2')">H2</b>
+            </div>
+          </div>
+          <div style="flex-shrink:0">
+            <span class="tag tag-blue" id="f-H4">PO/Invoice</span>
+            <b class="b c-h" onclick="select('H4')">H4</b>
+          </div>
         </div>
       </div>
     </div>
@@ -1052,9 +833,19 @@ Proyek ke-3. Revenue Share return-capped 1.4x. Dana digunakan untuk full renovat
       <div class="card">
         <div class="card-section-title">Karmapreneur Details</div>
         <div class="card-body">
+          <div id="f-D1" style="font-size:12px;line-height:1.5;color:#334155;margin-bottom:12px">
+            <span style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px">Project # <b class="b c-d" onclick="select('D1')">D1</b></span>
+            <span class="bold">Project #26 for the KP</span>
+            <div id="f-D2" style="font-size:11px;color:#64748b;margin-top:4px;line-height:1.55">
+              3 active<br/>
+              22 completed<br/>
+              0 before IC <b class="b c-d" onclick="select('D2')">D2</b><br/>
+              1 pending disbursement
+            </div>
+          </div>
           <div id="f-K1" style="font-size:12px;line-height:1.5;color:#334155">
             <span style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px">Referral Source <b class="b c-kd" onclick="select('K1')">K1</b></span>
-            <span>2nd+ project</span>
+            <span>Cold Calling</span>
           </div>
         </div>
       </div>
@@ -1063,23 +854,19 @@ Proyek ke-3. Revenue Share return-capped 1.4x. Dana digunakan untuk full renovat
     <div class="card">
       <div class="card-section-title">Project Details</div>
       <div class="card-body">
-        <div class="field-row" id="f-D1">
-          <span class="field-label">Project # <b class="b c-d" onclick="select('D1')">D1</b></span>
-          <span class="field-value">
-            <span class="bold">Project #26 for the KP</span>
-            <div id="f-D2" style="font-size:11px;color:#64748b;margin-top:4px;line-height:1.55">
-              3 active<br/>
-              22 completed<br/>
-              0 before IC <b class="b c-d" onclick="select('D2')">D2</b><br/>
-              1 pending disbursement
-            </div>
-          </span>
-        </div>
         <div class="field-row" id="f-D3">
           <span class="field-label">Sector <b class="b c-d" onclick="select('D3')">D3</b></span>
           <span class="field-value">
             <span class="tag tag-blue">Agencies: Workforce Outsourcing</span>
           </span>
+        </div>
+        <div class="field-row" id="f-D8">
+          <span class="field-label">Financing Type <b class="b c-d" onclick="select('D8')">D8</b></span>
+          <span class="field-value">Daily Interest</span>
+        </div>
+        <div class="field-row" id="f-D5">
+          <span class="field-label">Syariah <b class="b c-d" onclick="select('D5')">D5</b></span>
+          <span class="field-value" style="color:#4b5563">No</span>
         </div>
         <div class="field-row" id="f-D4">
           <span class="field-label">Asset Class <b class="b c-d" onclick="select('D4')">D4</b></span>
@@ -1099,11 +886,12 @@ Proyek ke-3. Revenue Share return-capped 1.4x. Dana digunakan untuk full renovat
     <div class="card">
       <div class="card-section-title">Plafond</div>
       <div class="card-body">
+        <p style="font-size:11px;color:#64748b;line-height:1.5;margin-bottom:12px">On the <strong style="color:#475569">Proposed</strong> row, each limit shows the <strong>change</strong> versus current (with <strong style="color:#475569">+</strong> / <strong style="color:#475569">−</strong>) and the <strong>proposed ceiling</strong> on the line below as <em>(to Rp …)</em>. <strong style="color:#475569">Current</strong> and <strong style="color:#475569">Superseded</strong> rows show absolute limits. Red banners only if a stored remaining sub-limit is negative. For <strong style="color:#475569">Asset B &amp; Asset D</strong>, each limit cell also shows <strong style="color:#475569">Remaining after current proposed</strong> (remaining minus this submission's requested project amount).</p>
         <table class="tbl">
           <thead>
             <tr>
               <th>Limit Status <b class="b c-pl" onclick="select('L1')">L1</b></th>
-              <th>Requested Limit <b class="b c-pl" onclick="select('L2')">L2</b></th>
+              <th>Total Limit <b class="b c-pl" onclick="select('L2')">L2</b></th>
               <th>PO Sub Limit <b class="b c-pl" onclick="select('L3')">L3</b></th>
               <th>Working Capital Sub Limit <b class="b c-pl" onclick="select('L4')">L4</b></th>
               <th>Max review date <b class="b c-pl" onclick="select('L9')">L9</b> <span style="font-weight:400;color:#94a3b8">(B_MOD)</span></th>
@@ -1114,7 +902,8 @@ Proyek ke-3. Revenue Share return-capped 1.4x. Dana digunakan untuk full renovat
               <td class="row-label" id="f-L1">
                 <strong>Current</strong><br/>
                 <span style="font-size:9px;color:#059669;font-weight:600">Active</span><br/>
-                <span style="font-size:9px;color:#94a3b8">1 Jan 2025 – 1 Jan 2027</span>
+                <span style="font-size:9px;color:#94a3b8">1 Jan 2025 – 1 Jan 2027</span><br/>
+                <span style="font-size:9px;color:#64748b">(254 days from today)</span>
               </td>
               <td id="f-L2">
                 <div style="font-weight:600">Rp 4.000.000.000</div>
@@ -1147,7 +936,18 @@ Proyek ke-3. Revenue Share return-capped 1.4x. Dana digunakan untuk full renovat
 
     <div class="card">
       <div class="card-section-title">Financial Reviews</div>
-      <div class="card-body" style="overflow-x:auto">
+      <div class="card-body">
+        <div style="padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid #f1f5f9">
+          <div style="font-size:11px;font-weight:700;color:#111827;margin-bottom:10px">Calculator (Google Sheets) <b class="b c-fr" onclick="select('K6')">K6</b></div>
+          <div style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:12px">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px">Calculator (Project table)</div>
+              <a href="#" style="font-size:13px;color:#2563eb;word-break:break-all">https://docs.google.com/spreadsheets/d/1_duQQLPRU005JSsDGXUcaCs991JKjYi_2YveeROkucA</a>
+            </div>
+            <div style="flex-shrink:0"><span style="display:inline-flex;align-items:center;gap:6px;border:1px solid #e2e8f0;background:#fff;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:500;color:#374151">Open in new tab ↗</span></div>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
         <table class="tbl" style="min-width:720px">
           <thead>
             <tr>
@@ -1166,7 +966,7 @@ Proyek ke-3. Revenue Share return-capped 1.4x. Dana digunakan untuk full renovat
               <td id="f-F1">9 Apr 2026</td>
               <td id="f-F2">Bank Statements Jan–Mar 2026 (Proxy)</td>
               <td id="f-F3">31 Mar 2026</td>
-              <td id="f-F4"><span class="tag tag-slate">Keep</span></td>
+              <td id="f-F4"><span style="font-size:11px;font-weight:500;color:#1f2937">Keep Rp 4.000.000.000</span></td>
               <td id="f-F5" style="max-width:200px;font-size:10px;color:#64748b;line-height:1.45">CUM mengganti tim akuntan internal pada Mei 2025 — tidak dapat memproduksi neraca terbaru karena proses transisi. Rekening koran Jan–Mar 2026 digunakan sebagai proxy: cashflow masuk/keluar konsisten dengan volume PO historis (IDR 1.5-2B/bulan). Limit dipertahankan IDR 4B sambil menunggu laporan keuangan formal selesai dipersiapkan. ⚠️ Catatan: Balance sheet formal belum tersedia. KP diminta submit balance sheet terbaru sebelum disbursement berikutnya.</td>
               <td style="font-size:10px;color:#94a3b8">—</td>
             </tr>
@@ -1175,12 +975,13 @@ Proyek ke-3. Revenue Share return-capped 1.4x. Dana digunakan untuk full renovat
               <td>3 Mar 2025</td>
               <td>Management Accounts Jan–Dec 2024</td>
               <td>31 Dec 2024</td>
-              <td><span class="tag tag-green">Increase</span></td>
+              <td><span style="font-size:11px;font-weight:500;color:#065f46">Increase Rp 2.500.000.000 to Rp 4.000.000.000</span></td>
               <td style="max-width:200px;font-size:10px;color:#64748b;line-height:1.45">Revenue 2024: IDR 18B (workforce outsourcing + logistik). Pertumbuhan 35% YoY. Kontrak dengan Orang Tua Group diperbarui — volume PO meningkat signifikan. Direkomendasikan kenaikan plafond dari IDR 2.5B ke IDR 4B untuk mendukung volume PO yang lebih besar.</td>
-              <td><span class="tag tag-amber" style="font-size:9px">Warning: More than 13 months ago</span></td>
+              <td><span class="tag tag-amber" style="font-size:9px">Warning: More than 14 months ago</span></td>
             </tr>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
 
@@ -1207,7 +1008,7 @@ Proyek ke-3. Revenue Share return-capped 1.4x. Dana digunakan untuk full renovat
               <td id="f-C1"><b>Dwi Wicaksono Wibowo</b></td>
               <td id="f-C2">Direktur Utama</td>
               <td id="f-C3" style="max-width:160px">Founder dan Direktur Utama CUM. Background di bidang HR outsourcing dan logistik sejak 2010. Sangat berpengalaman dalam mengelola kontrak korporat besar — klien utama termasuk Orang Tua Group, Indofood, dan Wings. Responsif dan profesional dalam semua komunikasi.</td>
-              <td id="f-C5" style="color:#94a3b8">—</td>
+              <td id="f-C5"><div>Referror of Citrus Dept Store, Lesssalt</div></td>
               <td id="f-C4">Yes</td>
               <td id="f-C6"><a href="#" style="color:#2563eb">View ↗</a></td>
               <td id="f-C7" class="slik-y" style="max-width:200px">KTP Jakarta Timur. KPR di BNI (aktif, performing). Kredit kendaraan lunas 2021. Tidak ada catatan negatif. SLIK bersih per Maret 2026.</td>
@@ -1218,7 +1019,7 @@ Proyek ke-3. Revenue Share return-capped 1.4x. Dana digunakan untuk full renovat
               <td><b>Nofriwan</b></td>
               <td>Direktur Operasional</td>
               <td style="max-width:160px">Co-founder. Penanggung jawab operasional lapangan — koordinasi tim workforce dan delivery. Memegang 35% saham.</td>
-              <td style="color:#94a3b8">—</td>
+              <td>Referror of Salvo.id</td>
               <td>Yes</td>
               <td><a href="#" style="color:#2563eb">View ↗</a></td>
               <td class="slik-y" style="max-width:200px">KTP Bekasi. Tidak ada kredit aktif. SLIK bersih per Maret 2026.</td>
@@ -1229,67 +1030,14 @@ Proyek ke-3. Revenue Share return-capped 1.4x. Dana digunakan untuk full renovat
       </div>
     </div>
 
+    <!-- PAST PROJECTS: full transposed table → see Mitra Agro (all return types, 1:1 with app) -->
     <div class="card">
-      <div class="card-section-title">Proposed and Past Projects Recap Table</div>
-      <div class="card-body" style="overflow-x:auto">
-        <p style="font-size:11px;color:#64748b;line-height:1.45;margin-bottom:8px">
-          <strong>Asset B (B_MOD)</strong> — wide recap: project type, payors, daily-interest economics, late-fee checks, DPD, IRR, MOIC/BEP.
-          Rows sorted by status then IC approval date. Because project #27 is <strong>Pending IC submission</strong>, the Proposed row (#26) stays visible.
+      <div class="card-section-title">Proposed and Past Projects Recap</div>
+      <div class="card-body">
+        <p id="f-R1" style="font-size:11px;color:#64748b;line-height:1.5">
+          See <a href="field-guide.html?p=mitra-agro" style="color:#4f46e5;font-weight:600">Mitra Agro Nusantara</a> for the full Past Projects Recap reference.
         </p>
-        <table class="tbl" style="min-width:1180px;font-size:9px">
-          <thead>
-            <tr>
-              <th class="right">#</th>
-              <th>Project <b class="b c-pp" onclick="select('R1')">R1</b></th>
-              <th>Status <b class="b c-pp" onclick="select('R2')">R2</b></th>
-              <th>Fin. <b class="b c-pp" onclick="select('R3')">R3</b></th>
-              <th class="right">Amt</th>
-              <th class="right">Out</th>
-              <th>Type</th>
-              <th>Payor(s)</th>
-              <th class="right">Term</th>
-              <th class="right">Min d</th>
-              <th class="right">I30</th>
-              <th class="right">S30</th>
-              <th>Late</th>
-              <th class="right">Gr</th>
-              <th>Daily late</th>
-              <th class="right">DPD</th>
-              <th class="right">PvA</th>
-              <th class="right">IRR</th>
-              <th class="right">MOIC</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td class="right" style="color:#94a3b8">1</td><td>CUM (#22)</td><td><span class="tag tag-slate" style="font-size:8px">Done</span></td><td>Fixed</td><td class="right">375jt</td><td class="right" style="color:#94a3b8">—</td><td><span class="tag tag-slate" style="font-size:8px">B-PO</span></td><td>Orang Tua</td><td class="right">2 mo</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td>OutPrin</td><td class="right">0</td><td style="font-size:8px">0.1%/0%</td><td class="right" style="color:#94a3b8">—</td><td class="right" style="color:#94a3b8">N/A</td><td class="right"><span class="irr-green">21.8%</span></td><td class="right">1.03x</td></tr>
-            <tr><td class="right" style="color:#94a3b8">2</td><td>CUM (#23)</td><td><span class="tag tag-slate" style="font-size:8px">Done</span></td><td>Fixed</td><td class="right">300jt</td><td class="right" style="color:#94a3b8">—</td><td><span class="tag tag-slate" style="font-size:8px">B-PO</span></td><td>Orang Tua</td><td class="right">2 mo</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td>OutPrin</td><td class="right">0</td><td style="font-size:8px">0.1%/0%</td><td class="right" style="color:#94a3b8">—</td><td class="right" style="color:#94a3b8">N/A</td><td class="right"><span class="irr-green">21.2%</span></td><td class="right">1.03x</td></tr>
-            <tr><td class="right" style="color:#94a3b8">3</td><td>CUM (#24)</td><td><span class="tag tag-slate" style="font-size:8px">Done</span></td><td>Fixed</td><td class="right">249jt</td><td class="right" style="color:#94a3b8">—</td><td><span class="tag tag-slate" style="font-size:8px">B-PO</span></td><td>Orang Tua</td><td class="right">2 mo</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td>OutPrin</td><td class="right">0</td><td style="font-size:8px">0.1%/0%</td><td class="right" style="color:#94a3b8">—</td><td class="right" style="color:#94a3b8">N/A</td><td class="right"><span class="irr-green">21.1%</span></td><td class="right">1.03x</td></tr>
-            <tr><td class="right" style="color:#94a3b8">4</td><td>CUM (#25)</td><td><span class="tag tag-green" style="font-size:8px">Active</span></td><td>Fixed</td><td class="right">323jt</td><td class="right">323jt</td><td><span class="tag tag-slate" style="font-size:8px">B-PO</span></td><td>Orang Tua</td><td class="right">2 mo</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td>OutPrin</td><td class="right">0</td><td style="font-size:8px">0.1%/0%</td><td class="right" style="font-size:8px">3d</td><td class="right" style="color:#94a3b8">N/A</td><td class="right"><span class="irr-green">21.1%</span></td><td class="right">1.03x</td></tr>
-            <tr><td class="right" style="color:#94a3b8">5</td><td>CUM (#27)</td><td><span class="tag tag-blue" style="font-size:8px">Pending</span></td><td>Fixed</td><td class="right">180jt</td><td class="right" style="color:#94a3b8">—</td><td><span class="tag tag-slate" style="font-size:8px">B-PO</span></td><td>Orang Tua</td><td class="right">2 mo</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td class="right" style="color:#cbd5e1">—</td><td>OutPrin</td><td class="right">0</td><td style="font-size:8px">0.1%/0%</td><td class="right" style="color:#94a3b8">—</td><td class="right" style="color:#94a3b8">N/A</td><td class="right">21.0% proj</td><td class="right">1.03x</td></tr>
-            <tr style="background:#eff6ff">
-              <td class="right" style="color:#94a3b8">6</td>
-              <td id="f-R1" style="font-weight:600">CUM (#26) [PROPOSED]</td>
-              <td id="f-R2"><span class="tag tag-amber" style="font-size:8px">Proposed</span></td>
-              <td id="f-R3">Daily Int.</td>
-              <td id="f-R4" class="right">249jt</td>
-              <td id="f-R5" class="right" style="color:#94a3b8">—</td>
-              <td><span class="tag tag-slate" style="font-size:8px">B-PO</span></td>
-              <td>Orang Tua</td>
-              <td id="f-R6" class="right">60d</td>
-              <td class="right">30</td>
-              <td class="right">1.6%</td>
-              <td class="right">0.6%</td>
-              <td>OutPrin</td>
-              <td class="right">0</td>
-              <td style="font-size:8px">0.1%/0%</td>
-              <td id="f-R10" class="right" style="color:#94a3b8">—</td>
-              <td id="f-R7" class="right" style="color:#94a3b8">N/A</td>
-              <td id="f-R8" class="right"><span class="irr-green">21.1% proj</span></td>
-              <td id="f-R9" class="right" style="font-size:8px">1.032x · BEP 1</td>
-            </tr>
-          </tbody>
-        </table>
-        <p style="font-size:10px;color:#94a3b8;margin-top:8px;font-style:italic">⚠️ OTF MOIC and PvA are not currently available from the LMS Reporting Layer.</p>
+        <span id="f-R2"></span>
       </div>
     </div>
 
@@ -1319,6 +1067,9 @@ Proyek ke-3. Revenue Share return-capped 1.4x. Dana digunakan untuk full renovat
     <div class="card">
       <div class="card-section-title">Project Terms Details</div>
       <div class="card-body">
+        <p style="font-size:10px;color:#64748b;line-height:1.5;margin:0 0 12px">
+          Economics, caps, and payment terms are compared in <strong>Past Projects Recap</strong> (sections B–F). This card keeps schedule, branch grid, and amortization detail only.
+        </p>
         <div class="sub-h">Disbursement Schedule <span style="font-size:10px;color:#94a3b8">(B_MOD: project target)</span></div>
         <div style="font-size:11px;margin-bottom:8px;color:#334155"><strong>Project target amount:</strong> Rp 249.000.000 <span style="color:#94a3b8">(matches schedule)</span></div>
         <table class="tbl">
@@ -1334,23 +1085,9 @@ Proyek ke-3. Revenue Share return-capped 1.4x. Dana digunakan untuk full renovat
             <tr><td id="f-T4" colspan="2">Total Disbursements <b class="b c-tm" onclick="select('T4')">T4</b></td><td class="right" style="font-weight:600">Rp 249.000.000</td></tr>
           </tfoot>
         </table>
-        <div class="sub-h" style="margin-top:14px">Daily Interest Terms</div>
-        <div class="field-row" id="f-T5"><span class="field-label">Interest (30-day) <b class="b c-tm" onclick="select('T5')">T5</b></span><span class="field-value">1.6%</span></div>
-        <div class="field-row" id="f-T6"><span class="field-label">Service fee (30-day) <b class="b c-tm" onclick="select('T6')">T6</b></span><span class="field-value">0.6%</span></div>
-        <div class="field-row" id="f-T7"><span class="field-label">Tenor (days) <b class="b c-tm" onclick="select('T7')">T7</b></span><span class="field-value">60 days</span></div>
-        <div class="field-row" id="f-T8"><span class="field-label">Min interest period <b class="b c-tm" onclick="select('T8')">T8</b></span><span class="field-value">30 days (= tenor/2)</span></div>
-        <div class="field-row" id="f-T9"><span class="field-label">Service fee basis <b class="b c-tm" onclick="select('T9')">T9</b></span><span class="field-value">Outstanding Principal</span></div>
-        <div class="field-row" id="f-T10"><span class="field-label">MOIC <b class="b c-tm" onclick="select('T10')">T10</b></span><span class="field-value">1.032x projected</span></div>
-        <div class="field-row" id="f-T11"><span class="field-label">IRR <b class="b c-tm" onclick="select('T11')">T11</b></span><span class="field-value">21.1% projected</span></div>
-        <div class="field-row" id="f-T12"><span class="field-label">Structure <b class="b c-tm" onclick="select('T12')">T12</b></span><span class="field-value">Daily interest (KF/KCF) · 60-day tenor</span></div>
-        <div class="sub-h" style="margin-top:14px">Late Fees <span style="font-size:10px;color:#94a3b8">(Coda / IC card)</span></div>
-        <div class="field-row" id="f-T13"><span class="field-label">Late Fee Basis <b class="b c-tm" onclick="select('T13')">T13</b></span><span class="field-value">Outstanding Principal</span></div>
-        <div class="field-row" id="f-T14"><span class="field-label">Grace period (days) <b class="b c-tm" onclick="select('T14')">T14</b></span><span class="field-value">0 days</span></div>
-        <div class="field-row" id="f-T15"><span class="field-label">Daily late fee % <b class="b c-tm" onclick="select('T15')">T15</b></span><span class="field-value" style="line-height:1.45">0.1% per day (0.1% to Investors, 0.0% to ASN)<br/>
-          <span style="font-size:10px;color:#d97706;display:block;margin-top:4px">Warning: different from default value of daily interest rate to Investors for this project type</span>
-          <span style="font-size:10px;color:#d97706;display:block">Warning: different from default value of daily service fee rate to ASN for this project type</span>
-        </span></div>
-        <div class="field-row" id="f-T16"><span class="field-label">Notes <b class="b c-tm" onclick="select('T16')">T16</b></span><span class="field-value" style="font-size:11px">B_MOD compares stored daily late fees to 1.6%/30 (KF) and 0.6%/30 (KCF) when daily interest terms exist.</span></div>
+        <div class="sub-h" style="margin-top:14px">Daily Interest — Service Fee Basis</div>
+        <div class="field-row" id="f-T5"><span class="field-label">Service Fee Daily Interest Basis <b class="b c-tm" onclick="select('T5')">T5</b></span><span class="field-value">Outstanding Principal</span></div>
+        <p style="font-size:10px;color:#94a3b8;margin-top:10px">Interest and service-fee <strong>rates</strong>, tenor, min interest period, MOIC, IRR — <strong>Recap (B, C, …)</strong>. Coda/IC <strong>late-fee</strong> store (0.1%/0% vs 1.6%/30 &amp; 0.6%/30) — <strong>Recap (F)</strong>.</p>
       </div>
     </div>
 
@@ -1402,7 +1139,7 @@ Proyek ke-26 dengan struktur PO Financing yang sama seperti sebelumnya. Payor: O
               <td id="f-E4">PT Cipta Usaha Media</td>
               <td id="f-E5"><a href="#" style="color:#2563eb">View ↗</a></td>
               <td id="f-E6" class="slik-p" style="max-width:200px">Rekening BCA aktif sejak 2019. Tidak ada pinjaman korporat di perbankan. SLIK bersih per Maret 2026. Cashflow rekening konsisten dengan volume PO yang dilaporkan (IDR 1.5-2B/bulan).</td>
-              <td id="f-E7" style="color:#94a3b8">—</td>
+              <td id="f-E7" style="font-size:10px;color:#b45306;background:#fffbeb;border:1px solid #fde68a;border-radius:4px;padding:3px 6px;max-width:160px">Account number differs from previous project (CUM #25 — PO Financing: Wings): previous 0700441600 · current 0700441679</td>
             </tr>
           </tbody>
         </table>
@@ -1466,27 +1203,22 @@ Proyek ke-26 dengan struktur PO Financing yang sama seperti sebelumnya. Payor: O
 
     <div class="card">
       <div class="proj-header">
-        <div class="proj-header-top">
-          <span class="proj-brand" id="f-H1">Shushu</span>
-          <b class="b c-h" onclick="select('H1')">H1</b>
-          <span style="font-size:10px;font-weight:600;color:#b45306;background:#fffbeb;border:1px solid #fde68a;padding:2px 6px;border-radius:4px">New KP</span>
-          <span class="tag tag-slate" id="f-H3">A</span>
-          <b class="b c-h" onclick="select('H3')">H3</b>
-        </div>
-        <div class="proj-name" id="f-H2">
-          Shushu (#1) — Branch Renovation
-          <b class="b c-h" onclick="select('H2')">H2</b>
-        </div>
-        <div style="margin-bottom:8px">
-          <span class="tag tag-green" id="f-H4">Project</span>
-          <b class="b c-h" onclick="select('H4')">H4</b>
-        </div>
-        <div class="proj-meta">
-          <b style="color:#334155">Analyst:</b>
-          <span id="f-P2">Sharfina Nindita</span> <b class="b c-p" onclick="select('P2')">P2</b>
-          &nbsp;&nbsp;<b style="color:#334155">By:</b>
-          <span id="f-P1">Juang Angger Pamungkas</span> <b class="b c-p" onclick="select('P1')">P1</b>
-          &nbsp;&nbsp;Submitted 28 Mar 2026
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+          <div>
+            <div style="margin-bottom:4px">
+              <span class="proj-brand" id="f-H1">Shushu</span>
+              <b class="b c-h" onclick="select('H1')">H1</b>
+              <span style="font-size:10px;font-weight:600;color:#b45306;background:#fffbeb;border:1px solid #fde68a;padding:2px 6px;border-radius:4px">New KP</span>
+            </div>
+            <div class="proj-name" id="f-H2">
+              Shushu (#2) — Branch Renovation
+              <b class="b c-h" onclick="select('H2')">H2</b>
+            </div>
+          </div>
+          <div style="flex-shrink:0">
+            <span class="tag tag-green" id="f-H4">Project</span>
+            <b class="b c-h" onclick="select('H4')">H4</b>
+          </div>
         </div>
       </div>
     </div>
@@ -1505,9 +1237,19 @@ Proyek ke-26 dengan struktur PO Financing yang sama seperti sebelumnya. Payor: O
       <div class="card">
         <div class="card-section-title">Karmapreneur Details</div>
         <div class="card-body">
+          <div id="f-D1" style="font-size:12px;line-height:1.5;color:#334155;margin-bottom:12px">
+            <span style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px">Project # <b class="b c-d" onclick="select('D1')">D1</b></span>
+            <span class="bold">Project #2 for the KP</span>
+            <div id="f-D2" style="font-size:11px;color:#64748b;margin-top:4px;line-height:1.55">
+              1 active<br/>
+              1 completed<br/>
+              0 before IC <b class="b c-d" onclick="select('D2')">D2</b><br/>
+              0 pending disbursement
+            </div>
+          </div>
           <div id="f-K1" style="font-size:12px;line-height:1.5;color:#334155">
             <span style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px">Referral Source <b class="b c-kd" onclick="select('K1')">K1</b></span>
-            <span>Cold calling</span>
+            <span>Cold Calling</span>
           </div>
         </div>
       </div>
@@ -1516,23 +1258,19 @@ Proyek ke-26 dengan struktur PO Financing yang sama seperti sebelumnya. Payor: O
     <div class="card">
       <div class="card-section-title">Project Details</div>
       <div class="card-body">
-        <div class="field-row" id="f-D1">
-          <span class="field-label">Project # <b class="b c-d" onclick="select('D1')">D1</b></span>
-          <span class="field-value">
-            <span class="bold">Project #1 for the KP</span>
-            <div id="f-D2" style="font-size:11px;color:#64748b;margin-top:4px;line-height:1.55">
-              1 active<br/>
-              0 completed<br/>
-              0 before IC <b class="b c-d" onclick="select('D2')">D2</b><br/>
-              0 pending disbursement
-            </div>
-          </span>
-        </div>
         <div class="field-row" id="f-D3">
           <span class="field-label">Sector <b class="b c-d" onclick="select('D3')">D3</b></span>
           <span class="field-value">
             <span class="tag tag-blue">F&amp;B: Snacks, Drinks, &amp; Desserts</span>
           </span>
+        </div>
+        <div class="field-row" id="f-D8">
+          <span class="field-label">Financing Type <b class="b c-d" onclick="select('D8')">D8</b></span>
+          <span class="field-value">Fixed Return</span>
+        </div>
+        <div class="field-row" id="f-D5">
+          <span class="field-label">Syariah <b class="b c-d" onclick="select('D5')">D5</b></span>
+          <span class="field-value" style="color:#4b5563">No</span>
         </div>
         <div class="field-row" id="f-D4">
           <span class="field-label">Asset Class <b class="b c-d" onclick="select('D4')">D4</b></span>
@@ -1551,7 +1289,18 @@ Proyek ke-26 dengan struktur PO Financing yang sama seperti sebelumnya. Payor: O
 
     <div class="card">
       <div class="card-section-title">Financial Reviews</div>
-      <div class="card-body" style="overflow-x:auto">
+      <div class="card-body">
+        <div style="padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid #f1f5f9">
+          <div style="font-size:11px;font-weight:700;color:#111827;margin-bottom:10px">Calculator (Google Sheets) <b class="b c-fr" onclick="select('K6')">K6</b></div>
+          <div style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:12px">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px">Calculator (Project table)</div>
+              <a href="#" style="font-size:13px;color:#2563eb;word-break:break-all">https://docs.google.com/spreadsheets/d/1BFsWNVlrKsCkrYL52Vn8EZDpV6ixcewkNzLMmyQ8QoQ</a>
+            </div>
+            <div style="flex-shrink:0"><span style="display:inline-flex;align-items:center;gap:6px;border:1px solid #e2e8f0;background:#fff;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:500;color:#374151">Open in new tab ↗</span></div>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
         <table class="tbl" style="min-width:720px">
           <thead>
             <tr>
@@ -1570,12 +1319,13 @@ Proyek ke-26 dengan struktur PO Financing yang sama seperti sebelumnya. Payor: O
               <td id="f-F1">2 Apr 2026</td>
               <td id="f-F2">Management Accounts Jan–Dec 2025 + Bank Statements</td>
               <td id="f-F3">31 Dec 2025</td>
-              <td id="f-F4"><span class="tag tag-slate">Keep</span></td>
+              <td id="f-F4"><span style="font-size:11px;font-weight:500;color:#1f2937">Keep — no total brand limit on file at this review</span></td>
               <td id="f-F5" style="max-width:200px;font-size:10px;color:#64748b;line-height:1.45">Brand Shushu beroperasi sejak 2023 di PIK2. Revenue 2025: IDR 2.4B (1 outlet), GM 61%. Tidak ada hutang. Plafond tidak diminta saat ini.</td>
               <td style="font-size:10px;color:#94a3b8">—</td>
             </tr>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
 
@@ -1602,7 +1352,7 @@ Proyek ke-26 dengan struktur PO Financing yang sama seperti sebelumnya. Payor: O
               <td id="f-C1"><b>Sandy Wiguna</b></td>
               <td id="f-C2">Founder / Direktur Utama</td>
               <td id="f-C3" style="max-width:160px">Founder Shushu, 31 tahun. Background barista dan F&amp;B ops — ex–Kopi Kenangan area manager.</td>
-              <td id="f-C5" style="color:#94a3b8">—</td>
+              <td id="f-C5"><div>Referror of Catur Coffee Company</div><div>Associated with other Karmapreneurs of Anomali Coffee</div></td>
               <td id="f-C4">Yes</td>
               <td id="f-C6"><a href="#" style="color:#2563eb">View ↗</a></td>
               <td id="f-C7" class="slik-y" style="max-width:200px">KTP Tangerang Utara. Kredit motor lunas 2022. Tidak ada KPR. SLIK bersih per April 2026.</td>
@@ -1613,66 +1363,23 @@ Proyek ke-26 dengan struktur PO Financing yang sama seperti sebelumnya. Payor: O
       </div>
     </div>
 
+    <!-- PAST PROJECTS: full transposed table → see Mitra Agro (all return types, 1:1 with app) -->
     <div class="card">
-      <div class="card-section-title">Proposed and Past Projects Recap Table</div>
-      <div class="card-body" style="overflow-x:auto">
-        <p style="font-size:11px;color:#64748b;line-height:1.45;margin-bottom:8px">
-          Includes the <strong>Proposed</strong> row for <em>this</em> submission alongside other projects for the KP. Rows are sorted by status
-          (Proposed, in-queue statuses, Active, then Completed), then by <strong>IC approval date</strong> newest first.
+      <div class="card-section-title">Proposed and Past Projects Recap</div>
+      <div class="card-body">
+        <p id="f-R1" style="font-size:11px;color:#64748b;line-height:1.5">
+          See <a href="field-guide.html?p=mitra-agro" style="color:#4f46e5;font-weight:600">Mitra Agro Nusantara</a> for the full Past Projects Recap reference.
         </p>
-        <table class="tbl" style="min-width:900px;font-size:10px">
-          <thead>
-            <tr>
-              <th class="right" style="width:28px">#</th>
-              <th>Project <b class="b c-pp" onclick="select('R1')">R1</b></th>
-              <th>Status <b class="b c-pp" onclick="select('R2')">R2</b></th>
-              <th>Financing Type <b class="b c-pp" onclick="select('R3')">R3</b></th>
-              <th class="right">Amount <b class="b c-pp" onclick="select('R4')">R4</b></th>
-              <th class="right">Outstanding <b class="b c-pp" onclick="select('R5')">R5</b></th>
-              <th class="right">Term <b class="b c-pp" onclick="select('R6')">R6</b></th>
-              <th class="right">PvA <b class="b c-pp" onclick="select('R7')">R7</b></th>
-              <th class="right">IRR <b class="b c-pp" onclick="select('R8')">R8</b></th>
-              <th class="right">MOIC <b class="b c-pp" onclick="select('R9')">R9</b></th>
-              <th class="right">DPD <b class="b c-pp" onclick="select('R10')">R10</b></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr style="background:#eff6ff">
-              <td class="right" style="color:#94a3b8">1</td>
-              <td id="f-R1" style="font-weight:500">Shushu (#1) — Branch Renovation [PROPOSED]</td>
-              <td id="f-R2"><span class="tag tag-blue" style="font-size:9px">Proposed</span></td>
-              <td id="f-R3">Fixed Return</td>
-              <td id="f-R4" class="right">Rp 250.000.000</td>
-              <td id="f-R5" class="right" style="color:#94a3b8">—</td>
-              <td id="f-R6" class="right">12 months</td>
-              <td id="f-R7" class="right" style="color:#94a3b8">N/A</td>
-              <td id="f-R8" class="right"><span class="irr-green">24.3% projected</span></td>
-              <td id="f-R9" class="right" style="font-size:9px">1.20x projected · BEP month 6</td>
-              <td id="f-R10" class="right" style="color:#94a3b8">—</td>
-            </tr>
-          </tbody>
-          <tfoot>
-            <tr style="font-size:10px;background:#f8fafc;font-weight:600;color:#64748b">
-              <td></td>
-              <td colspan="2">1 Proposed</td>
-              <td>1× Fixed Return</td>
-              <td class="right" style="color:#334155">Rp 250.000.000</td>
-              <td class="right" style="font-size:9px;line-height:1.35">excl. proposed: —<br/>incl. proposed: Rp 250.000.000</td>
-              <td class="right">12 mo avg</td>
-              <td class="right" style="font-size:9px">N/A from LMS</td>
-              <td class="right"><span class="irr-green">24.3% avg</span></td>
-              <td class="right" style="font-size:9px">—</td>
-              <td class="right" style="color:#cbd5e1">—</td>
-            </tr>
-          </tfoot>
-        </table>
-        <p style="font-size:10px;color:#94a3b8;margin-top:8px;font-style:italic">⚠️ OTF MOIC and PvA are not currently available from the LMS Reporting Layer.</p>
+        <span id="f-R2"></span>
       </div>
     </div>
 
     <div class="card">
       <div class="card-section-title">Project Terms Details</div>
       <div class="card-body">
+        <p style="font-size:10px;color:#64748b;line-height:1.5;margin:0 0 12px">
+          Economics, caps, and payment terms are compared in <strong>Past Projects Recap</strong> (sections B–F). This card keeps schedule, branch grid, and amortization detail only.
+        </p>
         <div class="sub-h">Disbursement Schedule</div>
         <table class="tbl">
           <thead><tr>
@@ -1687,23 +1394,28 @@ Proyek ke-26 dengan struktur PO Financing yang sama seperti sebelumnya. Payor: O
             <tr><td id="f-T4" colspan="2">Total Disbursements <b class="b c-tm" onclick="select('T4')">T4</b></td><td class="right" style="font-weight:600">Rp 250.000.000</td></tr>
           </tfoot>
         </table>
-        <div class="sub-h" style="margin-top:14px">Fixed Return Terms</div>
-        <div class="field-row" id="f-T5"><span class="field-label">Repayment schedule <b class="b c-tm" onclick="select('T5')">T5</b></span><span class="field-value" style="font-size:11px">12 monthly rows (principal / interest / carry) — see app for full grid</span></div>
-        <div class="field-row" id="f-T6"><span class="field-label">Total repayment <b class="b c-tm" onclick="select('T6')">T6</b></span><span class="field-value">Rp 299.850.000</span></div>
-        <div class="field-row" id="f-T7"><span class="field-label">Principal + interest <b class="b c-tm" onclick="select('T7')">T7</b></span><span class="field-value">Rp 250.000.000 + Rp 37.350.000 · Carry Rp 12.500.000</span></div>
-        <div class="field-row" id="f-T8"><span class="field-label">Tenor <b class="b c-tm" onclick="select('T8')">T8</b></span><span class="field-value">12 months</span></div>
-        <div class="field-row" id="f-T9"><span class="field-label">MOIC <b class="b c-tm" onclick="select('T9')">T9</b></span><span class="field-value">1.20x projected</span></div>
-        <div class="field-row" id="f-T10"><span class="field-label">IRR <b class="b c-tm" onclick="select('T10')">T10</b></span><span class="field-value">24.3% projected</span></div>
-        <div class="sub-h" style="margin-top:14px">Late Fees</div>
-        <div class="field-row" id="f-T13"><span class="field-label">Late Fee Basis <b class="b c-tm" onclick="select('T13')">T13</b></span><span class="field-value">Overdue Amount</span></div>
-        <div class="field-row" id="f-T14"><span class="field-label">Late Fee Grace Period (days) <b class="b c-tm" onclick="select('T14')">T14</b></span><span class="field-value">5 days</span></div>
-        <div class="field-row" id="f-T16"><span class="field-label">Daily Late Fee % <b class="b c-tm" onclick="select('T16')">T16</b></span>
-          <span class="field-value" style="line-height:1.45">
-            <div>0.0% per day (0.0% to Investors, 0.1% to ASN)</div>
-            <div style="font-size:10px;color:#d97706;margin-top:4px">Warning: different from default value 0.08% per day to Investors for this project type</div>
-            <div style="font-size:10px;color:#d97706">Warning: different from default value 0.02% per day to ASN for this project type</div>
-          </span>
-        </div>
+        <div class="sub-h" id="f-T5" style="margin-top:14px">Fixed Repayment Schedule <b class="b c-tm" onclick="select('T5')">T5</b></div>
+        <p style="font-size:11px;color:#334155;line-height:1.55">The app renders the full <strong>month-by-month</strong> table plus <strong>Fixed Repayment Summary</strong> (total repayment, 1.20× of project amount, BEP when set). No separate “late fee” copy here — see <strong>Recap (F)</strong>.</p>
+        <div class="sub-h" style="margin-top:14px">Branch Details</div>
+        <table class="tbl" style="font-size:10px">
+          <thead><tr>
+            <th>Branch Name</th>
+            <th>Branch Area</th>
+            <th>GMaps Link</th>
+            <th>Notes</th>
+            <th>Type</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td>PIK2 — Sedayu City Mall</td>
+              <td>Jakarta Utara</td>
+              <td><a href="#" style="color:#2563eb">Maps ↗</a></td>
+              <td style="max-width:220px">Outlet pertama Shushu di PIK2 Sedayu City. Total area 45m² — konsep kiosk premium. Renovasi mencakup upgrade display case, LED signage, dan kitchen equipment.</td>
+              <td style="color:#64748b">Opening Branch</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size:10px;color:#94a3b8;margin-top:10px">Late fee store (0%/0% vs 0.1% ASN warnings in recap) — <strong>Recap (F)</strong>.</p>
       </div>
     </div>
 
@@ -1717,7 +1429,7 @@ KP baru. Brand Shushu berdiri 2023 di PIK2 dengan konsep minuman dan dessert pre
         <div class="sub-h" style="margin-top:10px">Project Credit Memo <b class="b c-m" onclick="select('K5')">K5</b></div>
         <div id="f-K5" style="font-size:11px;color:#334155;line-height:1.5;background:#f9fafb;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;max-height:160px;overflow-y:auto;white-space:pre-wrap"><strong>Project Credit Memo — Branch Renovation</strong>
 
-Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. MOIC proyeksi 1.20x, IRR 24.3%.</div>
+Proyek kedua bersama Karma (setelah WC #1). Fixed return 12 bulan, satu tranche disbursement. MOIC proyeksi 1.20x, IRR 24.3%.</div>
         <div class="sub-h" style="margin-top:10px">Financials <b class="b c-m" onclick="select('K6')">K6</b></div>
         <div id="f-K6"><a href="#" style="color:#2563eb;font-size:12px">Open financial documents ↗</a></div>
         <div class="sub-h" style="margin-top:10px">Notes Feed <b class="b c-m" onclick="select('K7')">K7</b></div>
@@ -1815,26 +1527,21 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
 
     <div class="card">
       <div class="proj-header">
-        <div class="proj-header-top">
-          <span class="proj-brand" id="f-H1">Cahaya Energi Asia</span>
-          <b class="b c-h" onclick="select('H1')">H1</b>
-          <span class="tag tag-slate" id="f-H3">B - PO</span>
-          <b class="b c-h" onclick="select('H3')">H3</b>
-        </div>
-        <div class="proj-name" id="f-H2">
-          Cahaya Energi Asia - Aztech #1
-          <b class="b c-h" onclick="select('H2')">H2</b>
-        </div>
-        <div style="margin-bottom:8px">
-          <span class="tag tag-purple" id="f-H4">PO/Invoice+Plafond</span>
-          <b class="b c-h" onclick="select('H4')">H4</b>
-        </div>
-        <div class="proj-meta">
-          <b style="color:#334155">Analyst:</b>
-          <span id="f-P2">Junaidi</span> <b class="b c-p" onclick="select('P2')">P2</b>
-          &nbsp;&nbsp;<b style="color:#334155">By:</b>
-          <span id="f-P1">Junaidi</span> <b class="b c-p" onclick="select('P1')">P1</b>
-          &nbsp;&nbsp;Submitted 23 Oct 2025
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+          <div>
+            <div style="margin-bottom:4px">
+              <span class="proj-brand" id="f-H1">Cahaya Energi Asia</span>
+              <b class="b c-h" onclick="select('H1')">H1</b>
+            </div>
+            <div class="proj-name" id="f-H2">
+              Cahaya Energi Asia - Aztech #1
+              <b class="b c-h" onclick="select('H2')">H2</b>
+            </div>
+          </div>
+          <div style="flex-shrink:0">
+            <span class="tag tag-purple" id="f-H4">PO/Invoice+Plafond</span>
+            <b class="b c-h" onclick="select('H4')">H4</b>
+          </div>
         </div>
       </div>
     </div>
@@ -1853,6 +1560,16 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
       <div class="card">
         <div class="card-section-title">Karmapreneur Details</div>
         <div class="card-body">
+          <div id="f-D1" style="font-size:12px;line-height:1.5;color:#334155;margin-bottom:12px">
+            <span style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px">Project # <b class="b c-d" onclick="select('D1')">D1</b></span>
+            <span class="bold">Project #1 for the KP</span>
+            <div id="f-D2" style="font-size:11px;color:#64748b;margin-top:4px;line-height:1.55">
+              1 active<br/>
+              0 completed<br/>
+              0 before IC <b class="b c-d" onclick="select('D2')">D2</b><br/>
+              0 pending disbursement
+            </div>
+          </div>
           <div id="f-K1" style="font-size:12px;line-height:1.5;color:#334155">
             <span style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px">Referral Source <b class="b c-kd" onclick="select('K1')">K1</b></span>
             <span>Karmapreneur</span>
@@ -1864,23 +1581,19 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
     <div class="card">
       <div class="card-section-title">Project Details</div>
       <div class="card-body">
-        <div class="field-row" id="f-D1">
-          <span class="field-label">Project # <b class="b c-d" onclick="select('D1')">D1</b></span>
-          <span class="field-value">
-            <span class="bold">Project #1 for the KP</span>
-            <div id="f-D2" style="font-size:11px;color:#64748b;margin-top:4px;line-height:1.55">
-              1 active<br/>
-              0 completed<br/>
-              0 before IC <b class="b c-d" onclick="select('D2')">D2</b><br/>
-              0 pending disbursement
-            </div>
-          </span>
-        </div>
         <div class="field-row" id="f-D3">
           <span class="field-label">Sector <b class="b c-d" onclick="select('D3')">D3</b></span>
           <span class="field-value">
             <span class="tag tag-blue">Assorted B2B Services and Manufacturing: Oil and Gas Services</span>
           </span>
+        </div>
+        <div class="field-row" id="f-D8">
+          <span class="field-label">Financing Type <b class="b c-d" onclick="select('D8')">D8</b></span>
+          <span class="field-value">Daily Interest</span>
+        </div>
+        <div class="field-row" id="f-D5">
+          <span class="field-label">Syariah <b class="b c-d" onclick="select('D5')">D5</b></span>
+          <span class="field-value" style="color:#4b5563">No</span>
         </div>
         <div class="field-row" id="f-D4">
           <span class="field-label">Asset Class <b class="b c-d" onclick="select('D4')">D4</b></span>
@@ -1900,11 +1613,12 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
     <div class="card">
       <div class="card-section-title">Plafond</div>
       <div class="card-body">
+        <p style="font-size:11px;color:#64748b;line-height:1.5;margin-bottom:12px">On the <strong style="color:#475569">Proposed</strong> row, each limit shows the <strong>change</strong> versus current (with <strong style="color:#475569">+</strong> / <strong style="color:#475569">−</strong>) and the <strong>proposed ceiling</strong> on the line below as <em>(to Rp …)</em>. <strong style="color:#475569">Current</strong> and <strong style="color:#475569">Superseded</strong> rows show absolute limits. Red banners only if a stored remaining sub-limit is negative. For <strong style="color:#475569">Asset B &amp; Asset D</strong>, each limit cell also shows <strong style="color:#475569">Remaining after current proposed</strong> (remaining minus this submission's requested project amount).</p>
         <table class="tbl">
           <thead>
             <tr>
               <th>Limit Status <b class="b c-pl" onclick="select('L1')">L1</b></th>
-              <th>Requested Limit <b class="b c-pl" onclick="select('L2')">L2</b></th>
+              <th>Total Limit <b class="b c-pl" onclick="select('L2')">L2</b></th>
               <th>PO Sub Limit <b class="b c-pl" onclick="select('L3')">L3</b></th>
               <th>Working Capital Sub Limit <b class="b c-pl" onclick="select('L4')">L4</b></th>
               <th>Max review date <b class="b c-pl" onclick="select('L9')">L9</b> <span style="font-weight:400;color:#94a3b8">(B_MOD)</span></th>
@@ -1922,7 +1636,8 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
               <td class="row-label" id="f-L1">
                 <strong>Current</strong><br/>
                 <span style="font-size:9px;color:#059669;font-weight:600">Active</span><br/>
-                <span style="font-size:9px;color:#94a3b8">1 Apr 2024 – 1 Apr 2027</span>
+                <span style="font-size:9px;color:#94a3b8">1 Apr 2024 – 1 Apr 2027</span><br/>
+                <span style="font-size:9px;color:#64748b">(344 days from today)</span>
               </td>
               <td id="f-L2">
                 <div style="font-weight:600">Rp 12.000.000.000</div>
@@ -1951,7 +1666,18 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
 
     <div class="card">
       <div class="card-section-title">Financial Reviews</div>
-      <div class="card-body" style="overflow-x:auto">
+      <div class="card-body">
+        <div style="padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid #f1f5f9">
+          <div style="font-size:11px;font-weight:700;color:#111827;margin-bottom:10px">Calculator (Google Sheets) <b class="b c-fr" onclick="select('K6')">K6</b></div>
+          <div style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:12px">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px">Calculator (Project table)</div>
+              <a href="#" style="font-size:13px;color:#2563eb;word-break:break-all">https://docs.google.com/spreadsheets/d/example-cea-aztech-calc</a>
+            </div>
+            <div style="flex-shrink:0"><span style="display:inline-flex;align-items:center;gap:6px;border:1px solid #e2e8f0;background:#fff;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:500;color:#374151">Open in new tab ↗</span></div>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
         <table class="tbl" style="min-width:720px">
           <thead>
             <tr>
@@ -1970,12 +1696,13 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
               <td id="f-F1">20 Oct 2025</td>
               <td id="f-F2">Management accounts + rekening koran Q3 2025</td>
               <td id="f-F3">30 Sep 2025</td>
-              <td id="f-F4"><span class="tag tag-green">Increase</span></td>
+              <td id="f-F4"><span style="font-size:11px;font-weight:500;color:#065f46">Increase Rp 12.000.000.000 to Rp 15.000.000.000</span></td>
               <td id="f-F5" style="max-width:200px;font-size:10px;color:#64748b;line-height:1.45">Oil &amp; gas services vendor to Aztech. Volume PO naik — rekomendasi menyesuaikan plafond PO agar sesuai dengan pipeline kontrak 12 bulan ke depan. Tranche pertama Aztech #1 sebesar IDR 6B dengan tenor 90 hari.</td>
               <td><span class="tag tag-amber" style="font-size:9px">Warning: More than 6 months ago</span></td>
             </tr>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
 
@@ -2013,60 +1740,14 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
       </div>
     </div>
 
+    <!-- PAST PROJECTS: full transposed table → see Mitra Agro (all return types, 1:1 with app) -->
     <div class="card">
-      <div class="card-section-title">Proposed and Past Projects Recap Table</div>
-      <div class="card-body" style="overflow-x:auto">
-        <p style="font-size:11px;color:#64748b;line-height:1.45;margin-bottom:8px">
-          <strong>Asset B (B_MOD)</strong> — same wide recap as CUM: the Proposed tranche row is always included for this KP.
+      <div class="card-section-title">Proposed and Past Projects Recap</div>
+      <div class="card-body">
+        <p id="f-R1" style="font-size:11px;color:#64748b;line-height:1.5">
+          See <a href="field-guide.html?p=mitra-agro" style="color:#4f46e5;font-weight:600">Mitra Agro Nusantara</a> for the full Past Projects Recap reference.
         </p>
-        <table class="tbl" style="min-width:920px;font-size:9px">
-          <thead>
-            <tr>
-              <th class="right">#</th>
-              <th>Project</th>
-              <th>Status</th>
-              <th>Fin.</th>
-              <th class="right">Amt</th>
-              <th class="right">Out</th>
-              <th>Type</th>
-              <th>Payor</th>
-              <th class="right">Term</th>
-              <th class="right">Min d</th>
-              <th class="right">I30</th>
-              <th class="right">S30</th>
-              <th>Late</th>
-              <th class="right">Gr</th>
-              <th>Daily</th>
-              <th class="right">DPD</th>
-              <th class="right">PvA</th>
-              <th class="right">IRR</th>
-              <th class="right">MOIC</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr style="background:#eff6ff">
-              <td class="right">1</td>
-              <td id="f-R1" style="font-weight:600">CEA — Aztech #1</td>
-              <td id="f-R2"><span class="tag tag-amber" style="font-size:8px">Proposed</span></td>
-              <td id="f-R3">Daily</td>
-              <td id="f-R4" class="right">6B</td>
-              <td id="f-R5" class="right" style="color:#94a3b8">—</td>
-              <td><span class="tag tag-slate" style="font-size:8px">B-PO</span></td>
-              <td>Aztech</td>
-              <td id="f-R6" class="right">90d</td>
-              <td class="right">45</td>
-              <td class="right">1.6%</td>
-              <td class="right">0.6%</td>
-              <td>OutPrin</td>
-              <td class="right">0</td>
-              <td style="font-size:8px">0.08%/0.02%</td>
-              <td id="f-R10" class="right" style="color:#94a3b8">—</td>
-              <td id="f-R7" class="right" style="color:#94a3b8">N/A</td>
-              <td id="f-R8" class="right">18.5% proj</td>
-              <td id="f-R9" class="right">1.05x · BEP 2</td>
-            </tr>
-          </tbody>
-        </table>
+        <span id="f-R2"></span>
       </div>
     </div>
 
@@ -2095,8 +1776,11 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
     <div class="card">
       <div class="card-section-title">Project Terms Details</div>
       <div class="card-body">
+        <p style="font-size:10px;color:#64748b;line-height:1.5;margin:0 0 12px">
+          Economics, caps, and payment terms are compared in <strong>Past Projects Recap</strong> (sections B–F). This card keeps schedule, branch grid, and amortization detail only.
+        </p>
         <div class="sub-h">Disbursement Schedule <span style="font-size:10px;color:#94a3b8">(B_MOD)</span></div>
-        <div style="font-size:11px;margin-bottom:8px;color:#334155"><strong>Project target amount:</strong> Rp 6.000.000.000</div>
+        <div style="font-size:11px;margin-bottom:8px;color:#334155"><strong>Project target amount:</strong> Rp 6.000.000.000 <span style="color:#94a3b8">(matches schedule)</span></div>
         <table class="tbl">
           <thead><tr>
             <th>Disbursement # <b class="b c-tm" onclick="select('T1')">T1</b></th>
@@ -2110,20 +1794,9 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
             <tr><td id="f-T4" colspan="2">Total Disbursements <b class="b c-tm" onclick="select('T4')">T4</b></td><td class="right" style="font-weight:600">Rp 6.000.000.000</td></tr>
           </tfoot>
         </table>
-        <div class="sub-h" style="margin-top:14px">Daily Interest Terms</div>
-        <div class="field-row" id="f-T5"><span class="field-label">Interest (30-day) <b class="b c-tm" onclick="select('T5')">T5</b></span><span class="field-value">1.6%</span></div>
-        <div class="field-row" id="f-T6"><span class="field-label">Service fee (30-day) <b class="b c-tm" onclick="select('T6')">T6</b></span><span class="field-value">0.6%</span></div>
-        <div class="field-row" id="f-T7"><span class="field-label">Tenor (days) <b class="b c-tm" onclick="select('T7')">T7</b></span><span class="field-value">90 days</span></div>
-        <div class="field-row" id="f-T8"><span class="field-label">Min interest period <b class="b c-tm" onclick="select('T8')">T8</b></span><span class="field-value">45 days</span></div>
-        <div class="field-row" id="f-T9"><span class="field-label">Service fee basis <b class="b c-tm" onclick="select('T9')">T9</b></span><span class="field-value">Outstanding Principal</span></div>
-        <div class="field-row" id="f-T10"><span class="field-label">MOIC <b class="b c-tm" onclick="select('T10')">T10</b></span><span class="field-value">1.05x projected</span></div>
-        <div class="field-row" id="f-T11"><span class="field-label">IRR <b class="b c-tm" onclick="select('T11')">T11</b></span><span class="field-value">18.5% projected</span></div>
-        <div class="field-row" id="f-T12"><span class="field-label">BEP <b class="b c-tm" onclick="select('T12')">T12</b></span><span class="field-value">Month 2 projected</span></div>
-        <div class="sub-h" style="margin-top:14px">Late Fees</div>
-        <div class="field-row" id="f-T13"><span class="field-label">Late Fee Basis <b class="b c-tm" onclick="select('T13')">T13</b></span><span class="field-value">Overdue Amount <span style="font-size:10px;color:#64748b">(per Coda)</span></span></div>
-        <div class="field-row" id="f-T14"><span class="field-label">Grace period (days) <b class="b c-tm" onclick="select('T14')">T14</b></span><span class="field-value">5 days</span></div>
-        <div class="field-row" id="f-T15"><span class="field-label">Daily late fee % <b class="b c-tm" onclick="select('T15')">T15</b></span><span class="field-value">0.08% to Investors · 0.02% to ASN per day <span style="font-size:10px;color:#64748b">(Coda; not 1.6%/30 &amp; 0.6%/30)</span></span></div>
-        <div class="field-row" id="f-T16"><span class="field-label">Notes <b class="b c-tm" onclick="select('T16')">T16</b></span><span class="field-value" style="font-size:11px">Daily interest PO structure per term sheet.</span></div>
+        <div class="sub-h" style="margin-top:14px">Daily Interest — Service Fee Basis</div>
+        <div class="field-row" id="f-T5"><span class="field-label">Service Fee Daily Interest Basis <b class="b c-tm" onclick="select('T5')">T5</b></span><span class="field-value">Outstanding Principal</span></div>
+        <p style="font-size:10px;color:#94a3b8;margin-top:10px">I30/S30, tenor, min period, MOIC, IRR, BEP, and Coda vs default late-fee comparison — <strong>Recap (B, C, F)</strong>.</p>
       </div>
     </div>
 
@@ -2167,7 +1840,7 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
               <td id="f-E4">PT Cahaya Energi Asia</td>
               <td id="f-E5"><span style="color:#94a3b8">—</span></td>
               <td id="f-E6" class="slik-p" style="max-width:200px">SLIK PT — performing (prototype summary).</td>
-              <td id="f-E7" style="color:#94a3b8">—</td>
+              <td id="f-E7" style="font-size:10px;color:#b45306;background:#fffbeb;border:1px solid #fde68a;border-radius:4px;padding:3px 6px;max-width:160px">PT differs from previous project — Aztech #1 used: PT Energi Cahaya Nusantara</td>
             </tr>
           </tbody>
         </table>
@@ -2229,26 +1902,21 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
 
     <div class="card">
       <div class="proj-header">
-        <div class="proj-header-top">
-          <span class="proj-brand" id="f-H1">Maju</span>
-          <b class="b c-h" onclick="select('H1')">H1</b>
-          <span class="tag tag-slate" id="f-H3">D</span>
-          <b class="b c-h" onclick="select('H3')">H3</b>
-        </div>
-        <div class="proj-name" id="f-H2">
-          Maju #4 - Working Capital
-          <b class="b c-h" onclick="select('H2')">H2</b>
-        </div>
-        <div style="margin-bottom:8px">
-          <span class="tag tag-purple" id="f-H4">Project+Plafond</span>
-          <b class="b c-h" onclick="select('H4')">H4</b>
-        </div>
-        <div class="proj-meta">
-          <b style="color:#334155">Analyst:</b>
-          <span id="f-P2">Armeno Devan</span> <b class="b c-p" onclick="select('P2')">P2</b>
-          &nbsp;&nbsp;<b style="color:#334155">By:</b>
-          <span id="f-P1">Junaidi</span> <b class="b c-p" onclick="select('P1')">P1</b>
-          &nbsp;&nbsp;Submitted 2 Jun 2026
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+          <div>
+            <div style="margin-bottom:4px">
+              <span class="proj-brand" id="f-H1">Maju</span>
+              <b class="b c-h" onclick="select('H1')">H1</b>
+            </div>
+            <div class="proj-name" id="f-H2">
+              Maju #4 - Working Capital
+              <b class="b c-h" onclick="select('H2')">H2</b>
+            </div>
+          </div>
+          <div style="flex-shrink:0">
+            <span class="tag tag-purple" id="f-H4">Project+Plafond</span>
+            <b class="b c-h" onclick="select('H4')">H4</b>
+          </div>
         </div>
       </div>
     </div>
@@ -2267,9 +1935,19 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
       <div class="card">
         <div class="card-section-title">Karmapreneur Details</div>
         <div class="card-body">
+          <div id="f-D1" style="font-size:12px;line-height:1.5;color:#334155;margin-bottom:12px">
+            <span style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px">Project # <b class="b c-d" onclick="select('D1')">D1</b></span>
+            <span class="bold">Project #4 for the KP</span>
+            <div id="f-D2" style="font-size:11px;color:#64748b;margin-top:4px;line-height:1.55">
+              1 active<br/>
+              2 completed<br/>
+              0 before IC <b class="b c-d" onclick="select('D2')">D2</b><br/>
+              0 pending disbursement
+            </div>
+          </div>
           <div id="f-K1" style="font-size:12px;line-height:1.5;color:#334155">
             <span style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px">Referral Source <b class="b c-kd" onclick="select('K1')">K1</b></span>
-            <span>2nd+ project</span>
+            <span>Karmapreneur</span>
           </div>
         </div>
       </div>
@@ -2278,23 +1956,19 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
     <div class="card">
       <div class="card-section-title">Project Details</div>
       <div class="card-body">
-        <div class="field-row" id="f-D1">
-          <span class="field-label">Project # <b class="b c-d" onclick="select('D1')">D1</b></span>
-          <span class="field-value">
-            <span class="bold">Project #4 for the KP</span>
-            <div id="f-D2" style="font-size:11px;color:#64748b;margin-top:4px;line-height:1.55">
-              1 active<br/>
-              2 completed<br/>
-              0 before IC <b class="b c-d" onclick="select('D2')">D2</b><br/>
-              0 pending disbursement
-            </div>
-          </span>
-        </div>
         <div class="field-row" id="f-D3">
           <span class="field-label">Sector <b class="b c-d" onclick="select('D3')">D3</b></span>
           <span class="field-value">
             <span class="tag tag-blue">Consumer Goods</span>
           </span>
+        </div>
+        <div class="field-row" id="f-D8">
+          <span class="field-label">Financing Type <b class="b c-d" onclick="select('D8')">D8</b></span>
+          <span class="field-value">Revenue Share (Return-Capped)</span>
+        </div>
+        <div class="field-row" id="f-D5">
+          <span class="field-label">Syariah <b class="b c-d" onclick="select('D5')">D5</b></span>
+          <span class="field-value" style="color:#4b5563">No</span>
         </div>
         <div class="field-row" id="f-D4">
           <span class="field-label">Asset Class <b class="b c-d" onclick="select('D4')">D4</b></span>
@@ -2314,6 +1988,7 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
     <div class="card">
       <div class="card-section-title">Plafond</div>
       <div class="card-body">
+        <p style="font-size:11px;color:#64748b;line-height:1.5;margin-bottom:12px">On the <strong style="color:#475569">Proposed</strong> row, each limit shows the <strong>change</strong> versus current (with <strong style="color:#475569">+</strong> / <strong style="color:#475569">−</strong>) and the <strong>proposed ceiling</strong> on the line below as <em>(to Rp …)</em>. <strong style="color:#475569">Current</strong> and <strong style="color:#475569">Superseded</strong> rows show absolute limits. Red banners only if a stored remaining sub-limit is negative. For <strong style="color:#475569">Asset B &amp; Asset D</strong>, each limit cell also shows <strong style="color:#475569">Remaining after current proposed</strong> (remaining minus this submission's requested project amount).</p>
         <table class="tbl">
           <thead>
             <tr>
@@ -2331,7 +2006,7 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
               <td><div style="font-weight:600;color:#059669">+Rp 1.500.000.000</div><div style="font-size:9px;color:#94a3b8">(to Rp 4.000.000.000)</div></td>
             </tr>
             <tr>
-              <td class="row-label" id="f-L1"><strong>Current</strong><br/><span style="font-size:9px;color:#059669;font-weight:600">Active</span><br/><span style="font-size:9px;color:#94a3b8">1 Feb 2024 – 1 Feb 2027</span></td>
+              <td class="row-label" id="f-L1"><strong>Current</strong><br/><span style="font-size:9px;color:#059669;font-weight:600">Active</span><br/><span style="font-size:9px;color:#94a3b8">1 Feb 2024 – 1 Feb 2027</span><br/><span style="font-size:9px;color:#64748b">(285 days from today)</span></td>
               <td id="f-L2"><div style="font-weight:600">Rp 2.500.000.000</div><div style="font-size:9px;color:#94a3b8">Outstanding: Rp 900.000.000</div><div style="font-size:9px">Remaining: Rp 1.600.000.000</div></td>
               <td id="f-L3"><span style="color:#94a3b8">Rp 0</span></td>
               <td id="f-L4"><div style="font-weight:600">Rp 2.500.000.000</div><div style="font-size:9px;color:#94a3b8">Outstanding: Rp 0</div><div style="font-size:9px">Remaining: Rp 1.600.000.000</div></td>
@@ -2350,7 +2025,18 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
 
     <div class="card">
       <div class="card-section-title">Financial Reviews</div>
-      <div class="card-body" style="overflow-x:auto">
+      <div class="card-body">
+        <div style="padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid #f1f5f9">
+          <div style="font-size:11px;font-weight:700;color:#111827;margin-bottom:10px">Calculator (Google Sheets) <b class="b c-fr" onclick="select('K6')">K6</b></div>
+          <div style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:12px">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px">Calculator (Project table)</div>
+              <a href="#" style="font-size:13px;color:#2563eb;word-break:break-all">https://docs.google.com/spreadsheets/d/example-maju-wc-calc</a>
+            </div>
+            <div style="flex-shrink:0"><span style="display:inline-flex;align-items:center;gap:6px;border:1px solid #e2e8f0;background:#fff;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:500;color:#374151">Open in new tab ↗</span></div>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
         <table class="tbl" style="min-width:640px;font-size:10px">
           <thead><tr><th></th><th>Submitted</th><th>Reports reviewed</th><th>Period end</th><th>Limit rec.</th><th>Notes</th></tr></thead>
           <tbody>
@@ -2359,11 +2045,12 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
               <td id="f-F1">28 May 2026</td>
               <td id="f-F2">Mgmt accounts + bank Q1–Q2 2026</td>
               <td id="f-F3">30 Apr 2026</td>
-              <td id="f-F4"><span class="tag tag-green">Increase</span></td>
+              <td id="f-F4"><span style="font-size:11px;font-weight:500;color:#065f46">Increase Rp 2.500.000.000 to Rp 4.000.000.000</span></td>
               <td id="f-F5" style="max-width:220px">Working-capital cycle supports higher WC ceiling alongside project #4; align limit with latest management accounts.</td>
             </tr>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
 
@@ -2385,23 +2072,23 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
       </div>
     </div>
 
+    <!-- PAST PROJECTS: full transposed table → see Mitra Agro (all return types, 1:1 with app) -->
     <div class="card">
-      <div class="card-section-title">Proposed and Past Projects Recap Table</div>
-      <div class="card-body" style="overflow-x:auto">
-        <p style="font-size:11px;color:#64748b">Asset A/D layout: financing type, term, PvA, IRR, MOIC — plus revenue-share comparison table when terms exist.</p>
-        <table class="tbl" style="min-width:720px;font-size:10px">
-          <thead><tr><th>#</th><th>Project</th><th>Status</th><th>Type</th><th class="right">Amount</th><th class="right">IRR</th></tr></thead>
-          <tbody>
-            <tr><td>1</td><td>Maju (#3) — Prior facility</td><td><span class="tag tag-slate" style="font-size:9px">Completed</span></td><td>Rev share</td><td class="right">Rp 1.2B</td><td class="right">19.2% OTF</td></tr>
-            <tr><td>2</td><td id="f-R1">Maju #4 - Working Capital <b class="b c-pp" onclick="select('R1')">R1</b></td><td><span class="tag tag-amber" style="font-size:9px">Proposed</span></td><td>Rev share</td><td class="right">Rp 1.8B</td><td class="right">22.4% proj</td></tr>
-          </tbody>
-        </table>
+      <div class="card-section-title">Proposed and Past Projects Recap</div>
+      <div class="card-body">
+        <p id="f-R1" style="font-size:11px;color:#64748b;line-height:1.5">
+          See <a href="field-guide.html?p=mitra-agro" style="color:#4f46e5;font-weight:600">Mitra Agro Nusantara</a> for the full Past Projects Recap reference.
+        </p>
+        <span id="f-R2"></span>
       </div>
     </div>
 
     <div class="card">
       <div class="card-section-title">Project Terms Details</div>
       <div class="card-body">
+        <p style="font-size:10px;color:#64748b;line-height:1.5;margin:0 0 12px">
+          Economics, caps, and payment terms are compared in <strong>Past Projects Recap</strong> (sections B–F). This card keeps schedule, branch grid, and amortization detail only.
+        </p>
         <div class="sub-h">Disbursement Schedule</div>
         <table class="tbl">
           <thead><tr>
@@ -2416,65 +2103,7 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
             <tr><td id="f-T4" colspan="2">Total Disbursements <b class="b c-tm" onclick="select('T4')">T4</b></td><td class="right" style="font-weight:600">Rp 1.800.000.000</td></tr>
           </tfoot>
         </table>
-
-        <div class="sub-h" style="margin-top:14px">Revenue Share Terms</div>
-        <div class="field-row" id="f-T5">
-          <span class="field-label">Source of Revenue Accrued <b class="b c-tm" onclick="select('T5')">T5</b></span>
-          <span class="field-value" style="font-size:11px">KP net sales (after discounts, before VAT) per management accounts — WC facility.</span>
-        </div>
-        <div class="field-row" id="f-T6">
-          <span class="field-label">Revenue Share Frequency <b class="b c-tm" onclick="select('T6')">T6</b></span>
-          <span class="field-value">Monthly</span>
-        </div>
-        <div class="field-row" id="f-T7">
-          <span class="field-label">Revenue Share Due Date <b class="b c-tm" onclick="select('T7')">T7</b></span>
-          <span class="field-value">10th calendar day</span>
-        </div>
-        <div class="field-row" id="f-T8">
-          <span class="field-label">Revenue Share Cap Type <b class="b c-tm" onclick="select('T8')">T8</b></span>
-          <span class="field-value">Return Cap</span>
-        </div>
-        <div class="field-row" id="f-T9">
-          <span class="field-label">Cap Multiple <b class="b c-tm" onclick="select('T9')">T9</b></span>
-          <span class="field-value bold">1.35x Investor Cap / 1.38x Total Cap</span>
-        </div>
-        <div class="field-row" id="f-T10">
-          <span class="field-label">Revenue Share Start Date <b class="b c-tm" onclick="select('T10')">T10</b></span>
-          <span class="field-value">Fixed Revenue Share Start Date on 1 Jul 2026</span>
-        </div>
-        <div class="field-row" id="f-T11">
-          <span class="field-label">Revenue Share % <b class="b c-tm" onclick="select('T11')">T11</b></span>
-          <span class="field-value bold">7.5% Pre-BEP Revenue Share / 8.0% Post-BEP Revenue Share</span>
-        </div>
-        <div class="field-row" id="f-T12">
-          <span class="field-label">Carry <b class="b c-tm" onclick="select('T12')">T12</b></span>
-          <span class="field-value">Variable Platform Fee: 2.0%</span>
-        </div>
-
-        <div style="margin-top:10px;padding:10px 12px;background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;font-size:11px;color:#334155">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#94a3b8;margin-bottom:6px">Projection summary <b class="b c-tm" onclick="select('T13')">T13</b></div>
-          <div id="f-T13" style="display:grid;grid-template-columns:1fr auto;gap:4px 16px;max-width:320px">
-            <span style="color:#94a3b8">Avg/month</span><span style="text-align:right;font-weight:600">Rp 420.000.000</span>
-            <span style="color:#94a3b8">Peak (Month 1)</span><span style="text-align:right">Rp 420.000.000</span>
-            <span style="color:#94a3b8">Floor (Month 1)</span><span style="text-align:right">Rp 420.000.000</span>
-            <span style="color:#94a3b8">Projection span</span><span style="text-align:right">48 months</span>
-          </div>
-        </div>
-        <p style="font-size:10px;color:#94a3b8;margin-top:8px;font-style:italic">Branch Details block omitted when <code style="font-size:9px">branches</code> is empty (typical WC).</p>
-
-        <div class="sub-h" style="margin-top:14px">Late Fees</div>
-        <div class="field-row" id="f-T14">
-          <span class="field-label">Late Fee Basis <b class="b c-tm" onclick="select('T14')">T14</b></span>
-          <span class="field-value">Overdue Amount</span>
-        </div>
-        <div class="field-row" id="f-T15">
-          <span class="field-label">Late Fee Grace Period (days) <b class="b c-tm" onclick="select('T15')">T15</b></span>
-          <span class="field-value">5 days</span>
-        </div>
-        <div class="field-row" id="f-T16">
-          <span class="field-label">Daily Late Fee % <b class="b c-tm" onclick="select('T16')">T16</b></span>
-          <span class="field-value">0.08% (Investors) · 0.02% (ASN)</span>
-        </div>
+        <p id="f-T5" style="font-size:11px;color:#64748b;line-height:1.5;margin:14px 0 0">This project has <strong>no</strong> branch rows and <strong>no</strong> <code style="font-size:9px">fixedReturnTerms</code> in the mock — the app shows only the schedule, optional fixed-repayment + branch blocks when present, daily-interest service-fee basis when set, and the closing pointers. <strong>Revenue share</strong> %, cap, carry, due date, projection grid, and <strong>late fees</strong> — <b class="b c-tm" onclick="select('T5')">T5</b> = see <strong>Recap (B–F)</strong>.</p>
       </div>
     </div>
 
@@ -2540,7 +2169,891 @@ Proyek pertama bersama Karma. Fixed return 12 bulan, satu tranche disbursement. 
   </div>
 </template>
 
+<template id="tpl-guide-mitra-agro">
+  <div id="guideMount" class="card-wrap">
+<div class="page-chrome">
+      <a class="page-back" href="field-guide.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+        All pending reviews
+      </a>
+      <div class="banner-stack" id="globalErrors" aria-label="Alerts"></div>
+      <div class="banner-stack" id="globalWarns" aria-label="Warnings"></div>
+    </div>
 
+    <!-- HEADER -->
+    <div class="card">
+      <div class="proj-header">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+          <div>
+            <div style="margin-bottom:4px">
+              <span class="proj-brand" id="f-H1">Mitra Agro Nusantara</span>
+              <b class="b c-h" onclick="select('H1')">H1</b>
+            </div>
+            <div class="proj-name" id="f-H2">
+              Mitra Agro Nusantara (#5) — Working Capital V
+              <b class="b c-h" onclick="select('H2')">H2</b>
+            </div>
+          </div>
+          <div style="flex-shrink:0">
+            <span class="tag tag-green" id="f-H4">Project</span>
+            <b class="b c-h" onclick="select('H4')">H4</b>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-section-title">PIC</div>
+        <div class="card-body">
+          <div style="font-size:12px;line-height:2;color:#334155">
+            Submitter: &nbsp;<b id="f-P1b">Rina Sartika</b> <b class="b c-p" onclick="select('P1')">P1</b><br/>
+            Primary Analyst: &nbsp;<b id="f-P2b">Rina Sartika</b> <b class="b c-p" onclick="select('P2')">P2</b><br/>
+            Secondary Analyst: &nbsp;<b id="f-P3">Budi Santoso</b> <b class="b c-p" onclick="select('P3')">P3</b>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-section-title">Karmapreneur Details</div>
+        <div class="card-body">
+          <div id="f-D1" style="font-size:12px;line-height:1.5;color:#334155;margin-bottom:12px">
+            <span style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px">Project # <b class="b c-d" onclick="select('D1')">D1</b></span>
+            <span class="bold">Project #5 for the KP</span>
+            <div id="f-D2" style="font-size:11px;color:#64748b;margin-top:4px;line-height:1.55">
+              2 active<br/>
+              2 completed<br/>
+              0 before IC <b class="b c-d" onclick="select('D2')">D2</b><br/>
+              0 pending disbursement
+            </div>
+          </div>
+          <div id="f-K1" style="font-size:12px;line-height:1.5;color:#334155">
+            <span style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px">Referral Source <b class="b c-kd" onclick="select('K1')">K1</b></span>
+            <span>Hendra Wijaya (Karmapreneur)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECT DETAILS -->
+    <div class="card">
+      <div class="card-section-title">Project Details</div>
+      <div class="card-body">
+        <div class="field-row" id="f-D3">
+          <span class="field-label">Sector <b class="b c-d" onclick="select('D3')">D3</b></span>
+          <span class="field-value"><span class="tag tag-blue">F&amp;B: Food Distribution &amp; Trading</span></span>
+        </div>
+        <div class="field-row" id="f-D8">
+          <span class="field-label">Financing Type <b class="b c-d" onclick="select('D8')">D8</b></span>
+          <span class="field-value">Revenue Share (Return-Capped)</span>
+        </div>
+        <div class="field-row" id="f-D5">
+          <span class="field-label">Syariah <b class="b c-d" onclick="select('D5')">D5</b></span>
+          <span class="field-value" style="color:#4b5563">No</span>
+        </div>
+        <div class="field-row" id="f-D4">
+          <span class="field-label">Asset Class <b class="b c-d" onclick="select('D4')">D4</b></span>
+          <span class="field-value"><span class="tag tag-slate">Asset Class A</span></span>
+        </div>
+        <div class="field-row" id="f-D7">
+          <span class="field-label">Financing Use <b class="b c-d" onclick="select('D7')">D7</b></span>
+          <span class="field-value"><span class="tag tag-blue">Working Capital — Inventory Expansion</span></span>
+        </div>
+        <div class="field-row" id="f-D6">
+          <span class="field-label">Requested Project Amount <b class="b c-d" onclick="select('D6')">D6</b></span>
+          <span class="field-value bold">Rp 3.500.000.000</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAFOND -->
+    <div class="card">
+      <div class="card-section-title">Plafond</div>
+      <div class="card-body">
+        <p style="font-size:11px;color:#64748b;line-height:1.5;margin-bottom:12px">On the <strong style="color:#475569">Proposed</strong> row, each limit shows the <strong>change</strong> versus current (with <strong style="color:#475569">+</strong> / <strong style="color:#475569">−</strong>) and the <strong>proposed ceiling</strong> on the line below as <em>(to Rp …)</em>. <strong style="color:#475569">Current</strong> and <strong style="color:#475569">Superseded</strong> rows show absolute limits. Red banners only if a stored remaining sub-limit is negative. For <strong style="color:#475569">Asset B &amp; Asset D</strong>, each limit cell also shows <strong style="color:#475569">Remaining after current proposed</strong> (remaining minus this submission's requested project amount).</p>
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Limit Status <b class="b c-pl" onclick="select('L1')">L1</b></th>
+              <th>Total Limit <b class="b c-pl" onclick="select('L2')">L2</b></th>
+              <th>PO Sub Limit <b class="b c-pl" onclick="select('L3')">L3</b></th>
+              <th>Working Capital Sub Limit <b class="b c-pl" onclick="select('L4')">L4</b></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="row-label" id="f-L1">
+                <strong>Current</strong><br/>
+                <span style="font-size:9px;color:#059669;font-weight:600">Active</span><br/>
+                <span style="font-size:9px;color:#94a3b8">1 Jun 2024 – 1 Jun 2027</span><br/>
+                <span style="font-size:9px;color:#64748b">(405 days from today)</span>
+              </td>
+              <td id="f-L2">
+                <div style="font-weight:600">Rp 8.000.000.000</div>
+                <div style="font-size:9px;color:#94a3b8" id="f-L6">Outstanding: Rp 4.200.000.000 <b class="b c-pl" onclick="select('L6')">L6</b></div>
+                <div style="font-size:9px" id="f-L7">Remaining: Rp 3.800.000.000 <b class="b c-pl" onclick="select('L7')">L7</b></div>
+              </td>
+              <td id="f-L3"><div style="font-weight:600">Rp 2.000.000.000</div><div style="font-size:9px;color:#94a3b8">Remaining: Rp 2.000.000.000</div></td>
+              <td id="f-L4"><div style="font-weight:600">Rp 6.000.000.000</div><div style="font-size:9px;color:#94a3b8">Remaining: Rp 1.800.000.000</div></td>
+            </tr>
+            <tr>
+              <td class="row-label" id="f-L8">Superseded <b class="b c-pl" onclick="select('L8')">L8</b></td>
+              <td style="color:#94a3b8">Rp 4.000.000.000</td>
+              <td style="color:#94a3b8">Rp 1.000.000.000</td>
+              <td style="color:#94a3b8">Rp 3.000.000.000</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FINANCIAL REVIEWS -->
+    <div class="card">
+      <div class="card-section-title">Financial Reviews</div>
+      <div class="card-body">
+        <div style="padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid #f1f5f9">
+          <div style="font-size:11px;font-weight:700;color:#111827;margin-bottom:10px">Calculator (Google Sheets) <b class="b c-fr" onclick="select('K6')">K6</b></div>
+          <div style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:12px">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px">Calculator (Project table)</div>
+              <a href="#" style="font-size:13px;color:#2563eb;word-break:break-all">https://docs.google.com/spreadsheets/d/example-mitra-agro-financials</a>
+            </div>
+            <div style="flex-shrink:0"><span style="display:inline-flex;align-items:center;gap:6px;border:1px solid #e2e8f0;background:#fff;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:500;color:#374151">Open in new tab ↗</span></div>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+        <table class="tbl" style="min-width:720px">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Submitted <b class="b c-fr" onclick="select('F1')">F1</b></th>
+              <th>Financial Reports Reviewed <b class="b c-fr" onclick="select('F2')">F2</b></th>
+              <th>Reports' Period Ending Date <b class="b c-fr" onclick="select('F3')">F3</b></th>
+              <th>Limit Recommendation <b class="b c-fr" onclick="select('F4')">F4</b></th>
+              <th>Notes <b class="b c-fr" onclick="select('F5')">F5</b></th>
+              <th>Warnings</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:600;color:#64748b;white-space:nowrap">Review 1</td>
+              <td id="f-F1">15 Mar 2026</td>
+              <td id="f-F2">Management Accounts Jan–Dec 2025</td>
+              <td id="f-F3">31 Dec 2025</td>
+              <td id="f-F4"><span style="font-size:11px;font-weight:500;color:#1f2937">Keep Rp 8.000.000.000</span></td>
+              <td id="f-F5" style="max-width:220px;font-size:10px;color:#64748b;line-height:1.45">Revenue 2025: IDR 47B (+18% YoY). Gross margin distribusi stabil di 12–14%. Tidak ada hutang bank baru. KP mengelola 3 gudang distribusi pangan di Jabodetabek. Plafond IDR 8B dipertahankan. WC V diusulkan untuk ekspansi gudang Bekasi.</td>
+              <td style="font-size:10px;color:#94a3b8">—</td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;color:#64748b;white-space:nowrap">Review 2</td>
+              <td>20 Aug 2024</td>
+              <td>Audited 2023</td>
+              <td>31 Dec 2023</td>
+              <td><span style="font-size:11px;font-weight:500;color:#065f46">Increase Rp 4.000.000.000 to Rp 8.000.000.000</span></td>
+              <td style="max-width:220px;font-size:10px;color:#64748b;line-height:1.45">Revenue 2023: IDR 38B. Kenaikan volume signifikan setelah perluasan distribusi ke Bekasi. Auditor independen — laporan bersih. Direkomendasikan kenaikan plafond ke IDR 8B untuk mendukung rencana ekspansi cold chain dan PO besar dari retailer modern.</td>
+              <td><span class="tag tag-amber" style="font-size:9px">Warning: More than 20 months ago</span></td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- KP CONTACTS -->
+    <div class="card">
+      <div class="card-section-title">Karmapreneur Contacts</div>
+      <div class="card-body" style="overflow-x:auto">
+        <table class="tbl" style="min-width:920px;font-size:10px">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name <b class="b c-kc" onclick="select('C1')">C1</b></th>
+              <th>Role <b class="b c-kc" onclick="select('C2')">C2</b></th>
+              <th>Notes <b class="b c-kc" onclick="select('C3')">C3</b></th>
+              <th>Connections <b class="b c-kc" onclick="select('C5')">C5</b></th>
+              <th>Key Person? <b class="b c-kc" onclick="select('C4')">C4</b></th>
+              <th>SLIK-Key Person File URL <b class="b c-kc" onclick="select('C6')">C6</b></th>
+              <th>SLIK-Key Person Exec Summary <b class="b c-kc" onclick="select('C7')">C7</b></th>
+              <th>UBO Exposure <b class="b c-kc" onclick="select('C8')">C8</b></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td id="f-C1"><b>Agus Maulana</b></td>
+              <td id="f-C2">Direktur Utama</td>
+              <td id="f-C3" style="max-width:160px">Founder dan pemegang saham mayoritas. Background procurement dan distribusi 15+ tahun.</td>
+              <td id="f-C5"><div>Referror of Scuto, Pet Pharma</div><div>Associated with other Karmapreneurs of Twalen Spirits</div></td>
+              <td id="f-C4">Yes</td>
+              <td id="f-C6"><a href="#" style="color:#2563eb">View ↗</a></td>
+              <td id="f-C7" class="slik-y" style="max-width:200px">SLIK bersih. Tidak ada kredit bermasalah. Fasilitas bank konvensional aktif IDR 2B di BCA (collateralized).</td>
+              <td id="f-C8" style="font-weight:600">Rp 3.500.000.000</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><b>Sri Dewi Maulana</b></td>
+              <td>Direktur Keuangan</td>
+              <td style="max-width:160px">Istri Agus Maulana, terlibat aktif dalam manajemen keuangan. Akuntansi background.</td>
+              <td>Associated with other Karmapreneurs of Sirtanio</td>
+              <td>Yes</td>
+              <td><a href="#" style="color:#2563eb">View ↗</a></td>
+              <td class="slik-y" style="max-width:200px">SLIK bersih. Tidak ada kredit bermasalah.</td>
+              <td style="color:#94a3b8">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PAST PROJECTS RECAP — full A–F matrix, all 5 return types, every row -->
+    <div class="card">
+      <div class="card-section-title">Proposed and Past Projects Recap</div>
+      <div class="card-body">
+        <p id="f-R1" style="font-size:11px;color:#64748b;line-height:1.5;margin-bottom:10px">
+          <strong>Mitra Agro Nusantara has one project for each of the five return types</strong> — making this the most complete recap table in the demo data. This is the <strong>canonical reference</strong> for the A–F row structure; other field-guide walkthroughs point here. Sort order: Proposed first, then IC approval date (newest first). Columns: <code style="font-size:9px;background:#f1f5f9;padding:1px 4px;border-radius:4px">Revenue Share (Return-Cap)</code> · <code style="font-size:9px;background:#f1f5f9;padding:1px 4px;border-radius:4px">Fixed Return</code> · <code style="font-size:9px;background:#f1f5f9;padding:1px 4px;border-radius:4px">Fixed + Revenue Share</code> · <code style="font-size:9px;background:#f1f5f9;padding:1px 4px;border-radius:4px">Daily Interest</code> · <code style="font-size:9px;background:#f1f5f9;padding:1px 4px;border-radius:4px">Revenue Share (Time-Cap)</code>.
+        </p>
+        <!-- full transposed comparison table -->
+        <div style="overflow-x:auto;border:1px solid #e2e8f0;border-radius:8px">
+          <table class="tbl" style="margin:0;min-width:1100px;font-size:9.5px">
+            <thead>
+              <tr style="background:#fafafa">
+                <th class="row-label" style="text-align:left;padding:8px 10px;width:200px;min-width:200px;position:sticky;left:0;background:#fafafa;border-right:1px solid #e2e8f0">Field</th>
+                <!-- Proposed first -->
+                <th style="text-align:left;padding:8px 10px;min-width:190px;background:#eff6ff;border-bottom:2px solid #93c5fd">
+                  <div style="font-weight:600;color:#1e40af">#5 — Working Capital V</div>
+                  <div style="margin-top:4px"><span class="tag tag-amber" style="font-size:8px">Proposed</span></div>
+                </th>
+                <!-- IC 2024-08-22 newest first -->
+                <th style="text-align:left;padding:8px 10px;min-width:190px;background:#fafafa">
+                  <div style="font-weight:600;color:#374151">#4 — Cold Chain Equipment</div>
+                  <div style="margin-top:4px"><span class="tag tag-amber" style="font-size:8px;background:#d1fae5;color:#065f46">Active</span></div>
+                </th>
+                <!-- IC 2023-09-18 -->
+                <th style="text-align:left;padding:8px 10px;min-width:190px;background:#fafafa">
+                  <div style="font-weight:600;color:#374151">#3 — WC III (Fixed + RS)</div>
+                  <div style="margin-top:4px"><span class="tag tag-amber" style="font-size:8px;background:#d1fae5;color:#065f46">Active</span></div>
+                </th>
+                <!-- IC 2022-11-05 -->
+                <th style="text-align:left;padding:8px 10px;min-width:190px;background:#fafafa">
+                  <div style="font-weight:600;color:#374151">#2 — PO Financing Round 1</div>
+                  <div style="margin-top:4px"><span class="tag tag-slate" style="font-size:8px">Completed</span></div>
+                </th>
+                <!-- IC 2021-06-10 oldest -->
+                <th style="text-align:left;padding:8px 10px;min-width:190px;background:#fafafa">
+                  <div style="font-weight:600;color:#374151">#1 — Working Capital I</div>
+                  <div style="margin-top:4px"><span class="tag tag-slate" style="font-size:8px">Completed</span></div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- ── A — Identity & Structure ───────────────────────────────── -->
+              <tr><td colspan="6" style="background:#e2e8f0;padding:4px 10px;font-size:8.5px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.04em;position:sticky;left:0">A — Identity &amp; Structure</td></tr>
+              <!-- Financing type -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  Financing type <b class="b c-pp" onclick="select('R2')">R2</b>
+                </td>
+                <td id="f-R2" style="padding:6px 10px;vertical-align:top;background:#f0f9ff">
+                  <span style="display:inline-flex;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:600;background:#ede9fe;color:#5b21b6">Revenue Share (Return-Cap)</span>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <span class="tag tag-blue" style="font-size:9px">Fixed Return</span>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <span style="display:inline-flex;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:600;background:#e0e7ff;color:#3730a3">Fixed + Revenue Share (Return-Cap)</span>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <span style="display:inline-flex;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:600;background:#ffedd5;color:#9a3412">Daily Interest</span>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <span style="display:inline-flex;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:600;background:#f3e8ff;color:#6b21a8">Revenue Share (Time-Cap)</span>
+                </td>
+              </tr>
+              <!-- PT (legal entity) -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  PT (legal entity)
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">Same PT = shared liability</div>
+                </td>
+                <td style="padding:6px 10px;background:#f0f9ff">PT Mitra Agro Nusantara</td>
+                <td style="padding:6px 10px">PT Mitra Agro Nusantara</td>
+                <td style="padding:6px 10px">PT Mitra Agro Nusantara</td>
+                <td style="padding:6px 10px">PT Mitra Agro Nusantara</td>
+                <td style="padding:6px 10px">PT Mitra Agro Nusantara</td>
+              </tr>
+              <!-- Amount -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">Amount</td>
+                <td style="padding:6px 10px;font-weight:600;background:#f0f9ff">Rp 3.500.000.000</td>
+                <td style="padding:6px 10px;font-weight:600">Rp 2.000.000.000</td>
+                <td style="padding:6px 10px;font-weight:600">Rp 2.500.000.000</td>
+                <td style="padding:6px 10px;font-weight:600">Rp 800.000.000</td>
+                <td style="padding:6px 10px;font-weight:600">Rp 1.500.000.000</td>
+              </tr>
+              <!-- Principal outstanding -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  Principal outstanding
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">N/A if not yet disbursed or fully repaid</div>
+                </td>
+                <td style="padding:6px 10px;color:#94a3b8;background:#f0f9ff">N/A — not yet disbursed</td>
+                <td style="padding:6px 10px;font-weight:600">Rp 1.166.666.667</td>
+                <td style="padding:6px 10px;font-weight:600">Rp 1.400.000.000</td>
+                <td style="padding:6px 10px;color:#94a3b8">—</td>
+                <td style="padding:6px 10px;color:#94a3b8">—</td>
+              </tr>
+
+              <!-- ── B — Return Structure ────────────────────────────────────── -->
+              <tr><td colspan="6" style="background:#e2e8f0;padding:4px 10px;font-size:8.5px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.04em;position:sticky;left:0">B — Return Structure</td></tr>
+              <!-- Revenue share % -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  Revenue share %
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">Pre-BEP and Post-BEP separately</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top;background:#f0f9ff">
+                  <div>8,00% Pre-BEP</div><div>8,00% Post-BEP</div>
+                </td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div>6,50% Pre-BEP</div><div>7,00% Post-BEP</div>
+                </td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div>7,50% Pre-BEP</div><div>7,50% Post-BEP</div>
+                </td>
+              </tr>
+              <!-- Cap -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  Cap
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">Return Cap = MOIC cap · Time Cap = month cap</div>
+                  <div style="font-size:8.5px;color:#d97706;margin-top:2px">⚠ Different cap types = different risk profiles — label explicitly</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top;background:#f0f9ff"><span style="font-weight:600">1,45x</span> investor return cap</td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;vertical-align:top"><span style="font-weight:600">1,4x</span> investor return cap</td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;vertical-align:top"><span style="font-weight:600">36 months</span> time cap</td>
+              </tr>
+              <!-- Rev share start -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  Revenue share start
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">Fixed date vs anchored to branch opening</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top;background:#f0f9ff">
+                  <div style="font-weight:600">Fixed start date</div><div>15 May 2026</div>
+                </td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-weight:600">Fixed start date</div><div>1 Oct 2023</div>
+                </td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;vertical-align:top">Anchored to Branch Opening</td>
+              </tr>
+              <!-- Fixed amount / repayment -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  Fixed amount / repayment
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">Fixed Return = full schedule · Fixed + RS = fixed leg only</div>
+                </td>
+                <td style="padding:6px 10px;color:#d1d5db;background:#f0f9ff">—</td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-weight:600">Rp 2.640.000.000 <span style="font-weight:400;color:#94a3b8;font-size:8.5px">(132% of disbursed)</span></div>
+                  <div style="color:#64748b">total repayment</div>
+                  <div style="color:#64748b">24 monthly installments</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-weight:600">Rp 1.200.000.000 <span style="font-weight:400;color:#94a3b8;font-size:8.5px">(48% of disbursed)</span></div>
+                  <div style="color:#64748b">fixed leg repayment</div>
+                  <div style="color:#64748b">12 monthly installments</div>
+                </td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+              </tr>
+              <!-- Target carry -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  Target carry
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">Rate + type — see Format-Dictionary.md</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top;background:#f0f9ff">
+                  <div style="font-weight:600">2,16%</div><div style="font-size:8.5px;color:#64748b">Fixed Platform Fee</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-weight:600">0,46% per month</div><div style="font-size:8.5px;color:#64748b">Fixed</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-weight:600">2,16%</div><div style="font-size:8.5px;color:#64748b">Fixed Platform Fee</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-weight:600">0,40% per 30 days</div><div style="font-size:8.5px;color:#64748b">Fixed</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-weight:600">2,00%</div><div style="font-size:8.5px;color:#64748b">Fixed Platform Fee</div>
+                </td>
+              </tr>
+              <!-- Fixed payment investor ROIC -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  Fixed payment investor ROIC
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">Per month (Fixed Return) · Per 30 days (Daily Interest)</div>
+                  <div style="font-size:8.5px;color:#d97706;margin-top:2px">⚠ Unit differs by type — label when comparing across Fixed Return and Daily Interest</div>
+                </td>
+                <td style="padding:6px 10px;color:#d1d5db;background:#f0f9ff">—</td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-weight:600">1,125% per month</div><div style="font-size:8.5px;color:#94a3b8">to investors</div>
+                </td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-weight:600">0,70% per 30 days</div><div style="font-size:8.5px;color:#94a3b8">to investors</div>
+                </td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+              </tr>
+              <!-- Fixed payment total implied ROIC -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  Fixed payment total implied ROIC
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">Investor rate + carry · Same unit caveat</div>
+                </td>
+                <td style="padding:6px 10px;color:#d1d5db;background:#f0f9ff">—</td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-weight:600">1,58% per month</div><div style="font-size:8.5px;color:#94a3b8">investor + carry (total implied)</div>
+                </td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-weight:600">1,10% per 30 days</div><div style="font-size:8.5px;color:#94a3b8">investor + service fee (total)</div>
+                </td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+              </tr>
+
+              <!-- ── C — Timeline & Operations ──────────────────────────────── -->
+              <tr><td colspan="6" style="background:#e2e8f0;padding:4px 10px;font-size:8.5px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.04em;position:sticky;left:0">C — Timeline &amp; Operations</td></tr>
+              <!-- Term -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  Term
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">Months for RS / Fixed · Days for Daily Interest</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top;background:#f0f9ff">
+                  <div style="font-weight:600">24 months</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-weight:600">24 months projected</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-weight:600">24 months projected</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-weight:600">60 days</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-weight:600">34 months OTF</div>
+                  <div style="font-size:8.5px;color:#94a3b8">36 months original</div>
+                </td>
+              </tr>
+              <!-- Branch opening -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  Branch opening
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">Scheduled vs actual</div>
+                </td>
+                <td style="padding:6px 10px;color:#94a3b8;background:#f0f9ff">N/A — no branch opening</td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;color:#94a3b8">N/A — no branch opening</td>
+              </tr>
+              <!-- Minimum payment period -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  Minimum payment period
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">Shown if any project is Daily Interest</div>
+                </td>
+                <td style="padding:6px 10px;color:#d1d5db;background:#f0f9ff">—</td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;font-weight:600">30 days</td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+              </tr>
+
+              <!-- ── D — Performance Metrics ────────────────────────────────── -->
+              <tr><td colspan="6" style="background:#e2e8f0;padding:4px 10px;font-size:8.5px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.04em;position:sticky;left:0">D — Performance Metrics</td></tr>
+              <!-- PvA -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  PvA
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">Plan vs actual revenue %</div>
+                </td>
+                <td style="padding:6px 10px;color:#94a3b8;background:#f0f9ff">N/A — not yet started</td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;font-weight:600;color:#d97706">95,0%</td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;font-weight:600;color:#059669">108,0%</td>
+              </tr>
+              <!-- IRR -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  IRR
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">OTF and original projected</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top;background:#f0f9ff">
+                  <div style="font-size:8.5px;color:#94a3b8">OTF N/A — not yet started</div>
+                  <div style="font-weight:600;color:#059669">23,5% projected</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-size:8.5px;color:#94a3b8">OTF N/A — active</div>
+                  <div style="font-weight:600;color:#dc2626">14,5% projected</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-size:8.5px;color:#94a3b8">OTF N/A — active</div>
+                  <div style="font-weight:600;color:#059669">21,0% projected</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-weight:600;color:#dc2626">12,8% OTF</div>
+                  <div style="font-size:8.5px;color:#94a3b8">12,5% original proj.</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-weight:600;color:#d97706">19,8% OTF</div>
+                  <div style="font-size:8.5px;color:#94a3b8">18,5% original proj.</div>
+                </td>
+              </tr>
+              <!-- MOIC -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  MOIC
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">OTF and original projected · OTF not available from LMS</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top;background:#f0f9ff">
+                  <div style="font-size:8.5px;color:#94a3b8">OTF N/A</div>
+                  <div style="color:#64748b">1,48x projected</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-size:8.5px;color:#94a3b8">OTF N/A from LMS</div>
+                  <div style="color:#64748b">1,32x projected</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-size:8.5px;color:#94a3b8">OTF N/A from LMS</div>
+                  <div style="color:#64748b">1,42x projected</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-size:8.5px;color:#94a3b8">OTF N/A from LMS</div>
+                  <div style="color:#64748b">1,025x projected</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-size:8.5px;color:#94a3b8">OTF N/A from LMS</div>
+                  <div style="color:#64748b">1,32x projected</div>
+                </td>
+              </tr>
+              <!-- BEP -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  BEP
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">N/A for Daily Interest instruments</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top;background:#f0f9ff">
+                  <div style="font-size:8.5px;color:#94a3b8">OTF N/A</div>
+                  <div style="color:#64748b">Month 12 projected</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-size:8.5px;color:#94a3b8">OTF N/A from LMS</div>
+                  <div style="color:#64748b">Month 15 projected</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-size:8.5px;color:#94a3b8">OTF N/A from LMS</div>
+                  <div style="color:#64748b">Month 14 projected</div>
+                </td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-size:8.5px;color:#94a3b8">OTF N/A from LMS</div>
+                  <div style="color:#64748b">Month 11 projected</div>
+                </td>
+              </tr>
+              <!-- Minimum return -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  Minimum return
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">Gross Up (MOIC floor) or Continual RS</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top;background:#f0f9ff">
+                  <div style="font-weight:600">Gross up to 1,25x</div>
+                  <div style="color:#64748b">at month 18</div>
+                </td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;color:#94a3b8">None</td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="font-weight:600">Gross up to 1,2x</div>
+                  <div style="color:#64748b">at month 18</div>
+                </td>
+              </tr>
+              <!-- DPD -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  DPD
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">Max days ever past due + incident history</div>
+                </td>
+                <td style="padding:6px 10px;color:#94a3b8;background:#f0f9ff">N/A — not yet disbursed</td>
+                <td style="padding:6px 10px;color:#059669;font-weight:600">Clean</td>
+                <td style="padding:6px 10px;color:#059669;font-weight:600">Clean</td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div style="color:#d97706;font-weight:600">5d max ever</div>
+                  <div style="font-size:8.5px;color:#94a3b8">20 Jan 2023 — 5d — Paid</div>
+                </td>
+                <td style="padding:6px 10px;color:#059669;font-weight:600">Clean</td>
+              </tr>
+
+              <!-- ── E — Revenue Model ──────────────────────────────────────── -->
+              <tr><td colspan="6" style="background:#e2e8f0;padding:4px 10px;font-size:8.5px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.04em;position:sticky;left:0">E — Revenue Model</td></tr>
+              <!-- Revenue projections -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  Revenue projections
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">Avg / Peak / Floor per month + projection span</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top;background:#f0f9ff">
+                  <div><span style="color:#94a3b8">Avg</span> Rp 4.200.000.000/mo</div>
+                  <div><span style="color:#94a3b8">Peak</span> Rp 4.200.000.000</div>
+                  <div><span style="color:#94a3b8">Floor</span> Rp 4.200.000.000</div>
+                  <div style="font-size:8.5px;color:#94a3b8">24 month projection</div>
+                </td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div><span style="color:#94a3b8">Avg</span> Rp 3.800.000.000/mo</div>
+                  <div><span style="color:#94a3b8">Peak</span> Rp 4.600.000.000</div>
+                  <div><span style="color:#94a3b8">Floor</span> Rp 2.900.000.000</div>
+                  <div style="font-size:8.5px;color:#94a3b8">24 month projection</div>
+                </td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div><span style="color:#94a3b8">Avg</span> Rp 3.200.000.000/mo</div>
+                  <div><span style="color:#94a3b8">Peak</span> Rp 4.100.000.000</div>
+                  <div><span style="color:#94a3b8">Floor</span> Rp 2.400.000.000</div>
+                  <div style="font-size:8.5px;color:#94a3b8">36 month projection</div>
+                </td>
+              </tr>
+              <!-- Source of revenue accrued -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  Source of revenue accrued
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">Definition used in rev share calc — affects cross-project comparability</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top;font-size:9px;line-height:1.4;background:#f0f9ff">Gross penjualan distribusi setelah dikurangi diskon, sebelum PPN, sebelum biaya EDC/QRIS</td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;vertical-align:top;font-size:9px;line-height:1.4">Gross penjualan distribusi setelah dikurangi diskon, sebelum PPN</td>
+                <td style="padding:6px 10px;color:#d1d5db">—</td>
+                <td style="padding:6px 10px;vertical-align:top;font-size:9px;line-height:1.4">Gross penjualan distribusi setelah dikurangi diskon, sebelum PPN</td>
+              </tr>
+
+              <!-- ── F — Payment Mechanics ─────────────────────────────────── -->
+              <tr><td colspan="6" style="background:#e2e8f0;padding:4px 10px;font-size:8.5px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.04em;position:sticky;left:0">F — Payment Mechanics</td></tr>
+              <!-- Payment frequency -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  Payment frequency
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">RS: rev share / fixed payment / carry · Fixed: monthly only</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top;background:#f0f9ff">
+                  <div>Revenue share: Monthly, Tanggal 15 setiap bulan</div>
+                  <div style="font-size:8.5px;color:#94a3b8">Carry: same schedule</div>
+                </td>
+                <td style="padding:6px 10px">Monthly — installment on 15th</td>
+                <td style="padding:6px 10px">Monthly — fixed installment + revenue share on 15th</td>
+                <td style="padding:6px 10px">At maturity (bullet)</td>
+                <td style="padding:6px 10px">Monthly — revenue share on 15th</td>
+              </tr>
+              <!-- Late fee -->
+              <tr>
+                <td class="row-label" style="padding:6px 10px;vertical-align:top;position:sticky;left:0;background:#fff;border-right:1px solid #f1f5f9">
+                  Late fee
+                  <div style="font-size:8.5px;color:#94a3b8;margin-top:2px">Basis · Grace period · Rate to investor · Rate to ASN</div>
+                  <div style="font-size:8.5px;color:#d97706;margin-top:2px">⚠ RS &amp; DI = Overdue Amount + 5d · Fixed Return = Outstanding Amount + 0d</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top;background:#f0f9ff">
+                  <div><span style="color:#94a3b8">Basis:</span> Overdue Amount</div>
+                  <div><span style="color:#94a3b8">Grace:</span> 5 days</div>
+                  <div><span style="color:#94a3b8">To investors:</span> 0,08%/day</div>
+                  <div><span style="color:#94a3b8">To ASN:</span> 0,02%/day</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div><span style="color:#94a3b8">Basis:</span> Outstanding Amount</div>
+                  <div><span style="color:#94a3b8">Grace:</span> 0 days</div>
+                  <div><span style="color:#94a3b8">To investors:</span> 0,08%/day</div>
+                  <div><span style="color:#94a3b8">To ASN:</span> 0,02%/day</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div><span style="color:#94a3b8">Basis:</span> Overdue Amount</div>
+                  <div><span style="color:#94a3b8">Grace:</span> 5 days</div>
+                  <div><span style="color:#94a3b8">To investors:</span> 0,08%/day</div>
+                  <div><span style="color:#94a3b8">To ASN:</span> 0,02%/day</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div><span style="color:#94a3b8">Basis:</span> Overdue Amount</div>
+                  <div><span style="color:#94a3b8">Grace:</span> 5 days</div>
+                  <div><span style="color:#94a3b8">To investors:</span> 0,08%/day</div>
+                  <div><span style="color:#94a3b8">To ASN:</span> 0,02%/day</div>
+                </td>
+                <td style="padding:6px 10px;vertical-align:top">
+                  <div><span style="color:#94a3b8">Basis:</span> Overdue Amount</div>
+                  <div><span style="color:#94a3b8">Grace:</span> 5 days</div>
+                  <div><span style="color:#94a3b8">To investors:</span> 0,08%/day</div>
+                  <div><span style="color:#94a3b8">To ASN:</span> 0,02%/day</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Summary bar -->
+        <div style="margin-top:12px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px">
+            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em">Total amount incl. proposed</div>
+            <div style="font-weight:700;color:#111827;margin-top:2px;font-size:13px">Rp 10.300.000.000</div>
+          </div>
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px">
+            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em">Outstanding (excl. proposed)</div>
+            <div style="font-weight:700;color:#111827;margin-top:2px;font-size:13px">Rp 2.566.666.667</div>
+            <div style="font-size:9px;color:#64748b">Rp 6.066.666.667 incl. proposed</div>
+          </div>
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px">
+            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em">Avg OTF IRR (completed)</div>
+            <div style="font-weight:700;color:#d97706;margin-top:2px;font-size:13px">16,3%</div>
+            <div style="font-size:9px;color:#64748b">2 project(s) with OTF IRR</div>
+          </div>
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px">
+            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em">Project mix</div>
+            <div style="margin-top:4px;font-size:10px;color:#475569;line-height:1.7">
+              <div>1× Proposed</div><div>2× Active</div><div>2× Completed</div>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:10px;color:#94a3b8;margin-top:10px;font-style:italic">⚠ OTF MOIC and PvA are not currently available from the LMS Reporting Layer. Rows sorted: Proposed first, then by IC approval date (newest first).</p>
+      </div>
+    </div>
+
+    <!-- PROJECT TERMS -->
+    <div class="card">
+      <div class="card-section-title">Project Terms Details</div>
+      <div class="card-body">
+        <p style="font-size:10px;color:#64748b;line-height:1.5;margin:0 0 12px">
+          Economics, caps, and payment terms are compared in <strong>Past Projects Recap</strong> (sections B–F). This card keeps schedule and structure-specific blocks only.
+        </p>
+        <div class="sub-h">Disbursement Schedule</div>
+        <table class="tbl">
+          <thead><tr>
+            <th>Disbursement # <b class="b c-tm" onclick="select('T1')">T1</b></th>
+            <th>Planned Disbursement Date <b class="b c-tm" onclick="select('T2')">T2</b></th>
+            <th class="right">Planned Disbursement Amount <b class="b c-tm" onclick="select('T3')">T3</b></th>
+          </tr></thead>
+          <tbody>
+            <tr><td id="f-T1">Disbursement 1</td><td id="f-T2">1 May 2026</td><td class="right" id="f-T3" style="font-weight:600">Rp 2.000.000.000</td></tr>
+            <tr><td>Disbursement 2</td><td>1 Jun 2026</td><td class="right" style="font-weight:600">Rp 1.500.000.000</td></tr>
+          </tbody>
+          <tfoot>
+            <tr><td id="f-T4" colspan="2">Total Disbursements <b class="b c-tm" onclick="select('T4')">T4</b></td><td class="right" style="font-weight:600">Rp 3.500.000.000</td></tr>
+          </tfoot>
+        </table>
+        <div id="f-T5" style="margin-top:14px;font-size:11px;color:#64748b;line-height:1.55">
+          <strong>Revenue share terms (summarised here; economics in Recap B–F):</strong><br/>
+          Source: Gross penjualan distribusi setelah dikurangi diskon, sebelum PPN, sebelum biaya EDC/QRIS<br/>
+          Frequency: Monthly · Due date: Tanggal 15 setiap bulan · RS start: 15 May 2026 (Fixed)<br/>
+          Cap: 1,45× return cap · Pre/Post-BEP: 8,0% / 8,0% · Min return: 1,25× gross-up at month 18
+        </div>
+        <p style="font-size:10px;color:#94a3b8;margin-top:10px">Rev share %, carry, cap, late fees — <strong>Recap (B–F)</strong>. No fixed repayment schedule (rev share structure); no branch details (no branch opening in this project). <b class="b c-tm" onclick="select('T5')">T5</b></p>
+      </div>
+    </div>
+
+    <!-- CREDIT MEMO & NOTES -->
+    <div class="card">
+      <div class="card-section-title">Credit Memo &amp; Notes</div>
+      <div class="card-body">
+        <div class="sub-h">KP Credit Memo <b class="b c-m" onclick="select('K4')">K4</b></div>
+        <div id="f-K4" style="font-size:11px;color:#334155;line-height:1.5;background:#f9fafb;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;max-height:160px;overflow-y:auto;white-space:pre-wrap"><strong>KP Credit Memo — Mitra Agro Nusantara</strong>
+
+KP existing dengan 4 proyek sebelumnya. Dua proyek completed (WC I dan PO Financing) — keduanya dengan performa di atas proyeksi. Dua proyek active (WC III dan Cold Chain Equipment) — keduanya on track, tidak ada DPD.
+
+Brand distribusi pangan dengan volume IDR 47B/tahun. Manajemen stabil, laporan keuangan transparan, tidak ada hutang bank bermasalah. Risiko: ketergantungan pada 2-3 retailer besar sebagai offtaker.</div>
+        <div class="sub-h" style="margin-top:10px">Project Credit Memo <b class="b c-m" onclick="select('K5')">K5</b></div>
+        <div id="f-K5" style="font-size:11px;color:#334155;line-height:1.5;background:#f9fafb;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;max-height:160px;overflow-y:auto;white-space:pre-wrap"><strong>Project Credit Memo — Working Capital V</strong>
+
+Proyek ke-5 untuk KP ini. Revenue Share return-capped 1.45x. Dana digunakan untuk ekspansi persediaan distribusi Bekasi dan Jakarta Timur. Proyeksi revenue IDR 4.2B/bulan. IRR proyeksi 23.5% dengan MOIC 1.48x.
+
+Dua tranche disbursement: IDR 2B (Mei 2026) dan IDR 1.5B (Jun 2026).</div>
+        <div class="sub-h" style="margin-top:10px">Financials <b class="b c-m" onclick="select('K6')">K6</b></div>
+        <div id="f-K6"><a href="#" style="color:#2563eb;font-size:12px">Open financial documents ↗</a></div>
+        <div class="sub-h" style="margin-top:10px">Notes Feed <b class="b c-m" onclick="select('K7')">K7</b></div>
+        <div class="notes-feed" id="f-K7">
+          <div class="note-card">
+            <div class="note-meta">Rina Sartika · 28 Mar 2026</div>
+            Verified offtaker concentration — top 3 buyers represent 72% of revenue. Acceptable given long-term supply agreements in place.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PT DETAILS -->
+    <div class="card">
+      <div class="card-section-title">PT Details</div>
+      <div class="card-body" style="overflow-x:auto">
+        <table class="tbl" style="min-width:760px;font-size:10px">
+          <thead><tr>
+            <th>PT Record <b class="b c-pt" onclick="select('E1')">E1</b></th>
+            <th>Bank <b class="b c-pt" onclick="select('E2')">E2</b></th>
+            <th>Account Number <b class="b c-pt" onclick="select('E3')">E3</b></th>
+            <th>Accountholder Name <b class="b c-pt" onclick="select('E4')">E4</b></th>
+            <th>SLIK-PT File URL <b class="b c-pt" onclick="select('E5')">E5</b></th>
+            <th>SLIK-PT Exec Summary <b class="b c-pt" onclick="select('E6')">E6</b></th>
+            <th>Warnings <b class="b c-pt" onclick="select('E7')">E7</b></th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td id="f-E1"><b>PT Mitra Agro Nusantara</b></td>
+              <td id="f-E2">BCA</td>
+              <td id="f-E3" class="mono">0881234567</td>
+              <td id="f-E4" style="color:#b45306;font-weight:500">PT MITRA AGRO NUSANTARA</td>
+              <td id="f-E5" style="color:#dc2626;font-weight:500">Missing ⚠️</td>
+              <td id="f-E6" style="color:#dc2626;font-weight:500">Missing ⚠️</td>
+              <td id="f-E7" style="font-size:10px;color:#b45306;background:#fffbeb;border:1px solid #fde68a;border-radius:4px;padding:3px 6px;max-width:160px">Mismatch on accountholder and PT names</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- OTHER + APPROVAL -->
+    <div class="card">
+      <div class="card-section-title">Other</div>
+      <div class="card-body">
+        <div class="field-row" id="f-O1">
+          <span class="field-label">Funding Source <b class="b c-ot" onclick="select('O1')">O1</b></span>
+          <span class="field-value">KarmaFund (KF)</span>
+        </div>
+        <div class="field-row" id="f-O3">
+          <span class="field-label">Tax Withholdings <b class="b c-ot" onclick="select('O3')">O3</b></span>
+          <span class="field-value">Karmapreneur will withhold</span>
+        </div>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid #f1f5f9">
+          <div class="sub-h" style="margin-top:0">Approval</div>
+          <div style="font-size:11px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;color:#475569">
+            <span style="font-weight:700;color:#334155">Rule:</span>
+            <span>≤ IDR 4B — Principal approval only required</span>
+            <span style="margin-left:auto;font-size:10px;color:#94a3b8">0/3 voted</span>
+          </div>
+          <div id="f-A1" style="font-size:12px">
+            <div class="vote-row"><span class="vote-name">Alvin Cahyadi <span style="font-size:9px;color:#7c3aed;border:1px solid #e9d5ff;background:#faf5ff;padding:1px 5px;border-radius:4px">Principal</span></span><span class="vote-btn vote-pending">Pending</span></div>
+            <div class="vote-row"><span class="vote-name">Clarissa Putri <span style="font-size:9px;color:#7c3aed;border:1px solid #e9d5ff;background:#faf5ff;padding:1px 5px;border-radius:4px">Principal</span></span><span class="vote-btn vote-pending">Pending</span></div>
+            <div class="vote-row"><span class="vote-name">Reza Firmansyah <span style="font-size:9px;color:#94a3b8;font-style:italic">optional</span></span><span class="vote-btn vote-pending">Pending</span></div>
+          </div>
+        </div>
+        <div class="sub-h" style="margin-top:14px">Approval Notes <b class="b c-ap" onclick="select('A2')">A2</b></div>
+        <div id="f-A2" style="font-size:11px;color:#94a3b8;font-style:italic">(empty)</div>
+        <div class="sub-h" style="margin-top:10px">Conditions Subsequent <b class="b c-ap" onclick="select('A3')">A3</b></div>
+        <div id="f-A3" style="font-size:11px;color:#94a3b8;font-style:italic">(none)</div>
+      </div>
+    </div>
+
+  </div>
+</template>
 
 <script>
 // ── Field database ─────────────────────────────────────────────────────────
@@ -2552,7 +3065,7 @@ const SECTIONS = {
   L:  { name: "Plafond",               color: "#0d9488", cls: "c-pl", dotCls: "dot-pl" },
   F:  { name: "Financial Reviews",     color: "#b45309", cls: "c-fr", dotCls: "dot-fr" },
   C:  { name: "KP Contacts",           color: "#dc2626", cls: "c-kc", dotCls: "dot-kc" },
-  R:  { name: "Past Projects",         color: "#16a34a", cls: "c-pp", dotCls: "dot-pp" },
+  R:  { name: "Past Projects Recap",  color: "#16a34a", cls: "c-pp", dotCls: "dot-pp" },
   T:  { name: "Project Terms",         color: "#0369a1", cls: "c-tm", dotCls: "dot-tm" },
   M:  { name: "Credit Memo & Notes",   color: "#86198f", cls: "c-m",  dotCls: "dot-m" },
   E:  { name: "PT Details",            color: "#ea580c", cls: "c-pt", dotCls: "dot-pt" },
@@ -2572,28 +3085,30 @@ function fieldSection(fid) {
 const FIELDS = {
   H1: { label: "Brand",              desc: "The Karmapreneur's business brand name — not the PT legal entity. A brand can use multiple PTs over time.", logic: [{type:"info",  text:'Prepends "(New)" if brand has no prior unapproved projects'}] },
   H2: { label: "Project Name",       desc: "Auto-derived descriptive name for this specific project. Format: Brand (#N) — Financing Use: Location.", logic: [] },
-  H3: { label: "Asset Class",        desc: "Karma's internal risk/category classification for this project. Values: A, B-PO, B-I, C, D.", logic: [] },
+  H3: { label: "Asset Class (header — removed)", desc: "Previously shown as a chip in the project header. Now represented only in Project Details (D4) and the header overview badge in the project listing.", logic: [] },
   H4: { label: "Approval Type",      desc: "What IC is being asked to approve in this submission.", logic: [{type:"info", text:"Values: Project · Plafond · Project+Plafond · PO/Invoice · PO/Invoice+Plafond"}] },
 
   P1: { label: "Submitter",          desc: "The Karma analyst who created the Coda row and formally submitted this project to IC. May differ from Primary Analyst.", logic: [] },
   P2: { label: "Primary Analyst",    desc: "The lead analyst responsible for underwriting this project — running financial models, conducting due diligence, writing credit memos.", logic: [] },
   P3: { label: "Secondary Analyst",  desc: "Supporting analyst who reviewed the work.", logic: [], skip: "PIC row omitted when secondary analyst is blank (null / empty)." },
 
-  D1: { label: "Project # (ordinal + counts)", desc: "Ordinal number of this project for the brand plus the four brand-level counts (active, completed, before IC excl. this row, pending disbursement) as rendered in ProjectDetails.", logic: [] },
-  D2: { label: "Brand counts",        desc: "The four count lines nested under Project # in the UI (same Coda fields as the overview stats).", logic: [] },
+  D1: { label: "Project # (ordinal + counts)", desc: "Ordinal number of this project for the brand plus the four brand-level counts (active, completed, before IC excl. this row, pending disbursement). Rendered in the Karmapreneur Details card (not Project Details).", logic: [] },
+  D2: { label: "Brand counts",        desc: "The four count lines nested under Project # in the UI (same Coda fields as the overview stats). Displayed inside the Karmapreneur Details card.", logic: [] },
   D3: { label: "Sector", desc: "Main sector and optional sub-sector, rendered as a single tag \"Main: Sub\" when sub-sector exists.", logic: [{type:"warn", text:"Banner above rows when sectorWarning is set on the project"}] },
   D4: { label: "Asset Class",        desc: "Risk category tag in the Project Details card.", logic: [] },
-  D5: { label: "Syariah",            desc: "Sharia-compliant flag.", logic: [], skip: "Row not rendered when syariah is false." },
+  D5: { label: "Syariah",            desc: "Sharia-compliant flag. Always rendered — shows a teal 'Syariah' tag when true, or plain 'No' text when false.", logic: [] },
   D6: { label: "Requested Project Amount", desc: "Financing amount for this submission (uses trancheTargetAmount when set, else requestedAmount) with currency formatting.", logic: [{type:"warn", text:"Banner when computed amount exceeds current plafond (non-plafond approval types) or proposed plafond (plafond types)"}] },
   D7: { label: "Financing Use",      desc: "Use-of-funds tag from the project.", logic: [] },
+  D8: { label: "Financing Type",     desc: "Return structure type for this project (e.g. Revenue Share (Return-Capped), Fixed Return, Daily Interest). Rendered as plain text in Project Details.", logic: [] },
 
   L1: { label: "Limit Status (row label)", desc: "Proposed / Current / Superseded row label in the plafond table, plus Active/Expired badge and effective–expiry dates in the first column for Current.", logic: [], skip: "Entire Plafond card omitted when the project is not a plafond-type approval and there is no current limit on file." },
-  L2: { label: "Requested Limit (Current cell)", desc: "On Current and Superseded rows: absolute total limit with optional outstanding/remaining lines. On Proposed row (when proposed and current both exist): signed change vs current, then proposed ceiling as (to Rp …).", logic: [{type:"error", text:"Red issue badge on section when any stored remaining (total / PO / WC) is negative"}] },
+  L2: { label: "Total Limit", desc: "On Current and Superseded rows: absolute total limit with optional outstanding/remaining lines. On Proposed row (when proposed and current both exist): signed change vs current, then proposed ceiling as (to Rp …).", logic: [{type:"error", text:"Red issue badge on section when any stored remaining (total / PO / WC) is negative"}] },
   L3: { label: "PO Sub Limit",       desc: "PO sub-limit column — same delta rules as L2 when Proposed row is shown.", logic: [] },
   L4: { label: "Working Capital Sub Limit", desc: "WC sub-limit column — same delta rules as L2 when Proposed row is shown.", logic: [] },
   L6: { label: "Outstanding (in Current total cell)", desc: "Outstanding line under total limit on Current row when shown.", logic: [], skip: "Outstanding/remaining lines hidden on Current row when Proposed deltas row is visible (remaining shown in footnote instead)." },
   L7: { label: "Limit Remaining (in Current total cell)", desc: "Remaining line under total limit for Current row.", logic: [], skip: "Same as L6 — omitted from Current cells when Proposed row is present." },
   L8: { label: "Superseded row",         desc: "Each historical tier: absolute limits plus effective–expiry dates in the first column.", logic: [], skip: "No superseded rows when there is no prior limit history." },
+  L9: { label: "Max review date (B_MOD)", desc: "Deadline by which the next financial review must be submitted for Asset B plafond lines. Shown as an extra column only when the project is Asset B (B_MOD).", logic: [], skip: "Column hidden for non-Asset-B projects." },
 
   F1: { label: "Submitted",          desc: "The date the analyst submitted this financial review in Coda. The most recent review determines whether the stale-review warning fires.", logic: [{type:"warn", text:"Stale banner in Warnings column when that row is >2 months old (per row, not only the latest)"}], skip: "If there are zero financial reviews, the table is replaced by 'No financial reviews on record.'" },
   F2: { label: "Financial Reports Reviewed", desc: "Exactly which documents were reviewed for this financial review cycle (e.g. 'Audited 2024', 'Management Accounts Jan–Sep 2025', 'Bank Statements + Proxy').", logic: [] },
@@ -2601,7 +3116,7 @@ const FIELDS = {
   F4: { label: "Limit Recommendation", desc: "Analyst recommendation for the plafond after the review.", logic: [{type:"info", text:"Values: Keep · Increase · Decrease"}] },
   F5: { label: "Notes",              desc: "The analyst's full written assessment from that review cycle: revenue trends, risk observations, rationale for the recommendation.", logic: [] },
 
-  K1: { label: "Referral Source",    desc: "How this KP/brand was first introduced to Karma (KPDetails card in overview).", logic: [{type:"info", text:"Values: Karmapreneur · KarmaClub Member · Cold calling · 2nd+ project · Other"}] },
+  K1: { label: "Referral Source",    desc: "How this KP/brand was first introduced to Karma (KPDetails card in overview).", logic: [{type:"info", text:"Values: Cold Calling · Karma.Club Website · Karma Staff · Karmapreneur · Ex-Karma Staff · Potential Karmapreneur · Karma Node · KarmaClub Member"},{type:"info", text:"Display: Cold Calling and Karma.Club Website show source name only. All others show 'Name (Source)' or 'Name (Source – Brand)'. Karmapreneur always includes the brand name."}] },
   K2: { label: "Specific Referror",  desc: "Referring individual when applicable.", logic: [], skip: "Not shown when empty." },
   K3: { label: "Referror's KP/Brand", desc: "Referror's brand when applicable.", logic: [], skip: "Not shown when empty." },
   K4: { label: "KP Credit Memo",     desc: "Brand-level credit memo (scrollable block).", logic: [] },
@@ -2618,34 +3133,14 @@ const FIELDS = {
   C7: { label: "SLIK-Key Person Exec Summary",  desc: "Analyst summary of the SLIK.", logic: [{type:"warn", text:"Yellow highlight box when present"}], skip: "Non–key persons or empty summary shows —." },
   C8: { label: "UBO Exposure",       desc: "Total current outstanding Karma financing for which this person is an Ultimate Beneficial Owner (across all brands/PTs they control).", logic: [] },
 
-  R1: { label: "Project Name",       desc: "Name of each project. The 'Proposed' entry = this IC submission. Past entries = all previously disbursed projects for this brand.", logic: [] },
-  R2: { label: "Status",             desc: "Project lifecycle tag. Includes Proposed, Active, Completed, Rescheduled, Rejected, plus pipeline tags IC Review and Pending IC submission for other in-flight proposals in the same recap list.", logic: [], skip: "The current submission’s Proposed row is always included in the recap." },
-  R3: { label: "Financing Type",     desc: "The return structure of that project: Revenue Share (Time-Capped), Revenue Share (Return-Capped), Fixed Return, or Daily Interest.", logic: [{type:"warn", text:"Warning if Fixed Return > 36 months"}, {type:"warn", text:"Warning if any type > 60 months (considered long)"}] },
-  R4: { label: "Amount",             desc: "Amount disbursed (or to be disbursed for the Proposed project).", logic: [] },
-  R5: { label: "Outstanding (O/S)",  desc: "Remaining unpaid principal as of today. Zero for Completed projects.", logic: [] },
-  R6: { label: "Term",               desc: "For Proposed/Active: the projected term in months. For Completed: OTF (on-the-fly, actual) months vs. the original projected months.", logic: [] },
-  R7: { label: "PvA",                desc: "Projected vs Actual revenue ratio. Actual monthly revenue ÷ projected revenue. Only relevant for Active / Completed revenue-share projects.", logic: [{type:"error", text:"Highlighted red if < 70%"}, {type:"warn", text:"Highlighted yellow if 70–90%"}, {type:"info", text:"Highlighted green if ≥ 90%"}] },
-  R8: { label: "IRR",                desc: "Internal Rate of Return. For Completed: OTF IRR (actual achieved). For Proposed/Active: projected IRR from underwriting model.", logic: [{type:"error", text:"Highlighted red if < 15%"}, {type:"warn", text:"Highlighted yellow if 15–20%"}, {type:"info", text:"Highlighted green if ≥ 20%"}] },
-  R9: { label: "MOIC",               desc: "Multiple on Invested Capital = total repayment ÷ amount invested. Shows projected BEP (break-even point) in months.", logic: [{type:"warn", text:"Warning if projected BEP > 30 months"}] },
-  R10:{ label: "DPD",                desc: "Days Past Due. Shows current DPD, max DPD ever recorded, and for Completed projects — a list of every overdue event with date, days late, and whether it was eventually paid.", logic: [] },
-  R11:{ label: "Revenue share terms — cross-project comparison", desc: "Second table under the Past Projects recap for Asset A and Asset D when this submission has revenue share terms. Columns follow the same sort order as the recap. Proposed uses live revenueShareTerms; Completed/Active use optional revShareTermsSnapshot on each past row (— if missing). Rows: Pre-BEP %, Post-BEP %, Time Cap Period (months), Investor Cap EXC. Carry (Return Cap multiple), Minimum Investor Return Payment Type (Grossed-Up vs Continual Rev Share), Minimum Return (multiple for gross-up, otherwise % floor), Minimum Return Payable In (months). Amber cells differ from Proposed; Proposed column uses a light violet tint.", logic: [{type:"warn", text:"Amber when value ≠ Proposed baseline"}, {type:"info", text:"Interactive highlight #f-R11 only on Holycow template in this guide"}], skip: "Omitted in the app unless asset class is A or D and revenueShareTerms is set. CUM/CEA tabs in this guide have no #f-R11 mount." },
+  R1: { label: "Past Projects Recap — overview", desc: "The paragraph(s) above the table on the project page, or in a non-reference field guide, the blurb that points to the Mitra Agro walkthrough. The app renders one wide, transposed comparison: rows = fields A–F, columns = one per project, Proposed first, then by IC approval date. No second revenue-share table under the recap.", logic: [] },
+  R2: { label: "Financing type / recap anchor", desc: "Section A — per-project return-structure column (badges, labels). In the non-Mitra static guides, R2 is a small dashed box; for the 1:1 live matrix see `field-guide.html?p=mitra-agro` (iframe) or the Mitra project page. The app still fills all rows A–F.", logic: [] },
 
   T1: { label: "Disbursement #",     desc: "Tranche number for each planned disbursement. Some projects release all funds at once (1 tranche); others stagger release over months.", logic: [] },
   T2: { label: "Planned Date",       desc: "Target calendar date for each tranche to be released to the KP. Used for cash flow planning.", logic: [] },
   T3: { label: "Amount per Tranche", desc: "Amount to be released in each tranche, in the project's denomination currency (IDR or USD).", logic: [] },
   T4: { label: "Total Disbursements", desc: "Sum of tranches vs project target amount.", logic: [{type:"warn", text:"Red banner when sum of planned tranches ≠ trancheTargetAmount ?? requestedAmount"}] },
-  T5: { label: "Source of Revenue Accrued",  desc: "Revenue definition text for revenue share.", logic: [], skip: "Entire Revenue Share Terms block omitted when this project is not on revenue share terms." },
-  T6: { label: "Revenue Share Frequency", desc: "Payment cadence (almost always Monthly).", logic: [{type:"warn", text:"Inline warning when not Monthly"}], skip: "Hidden when no revenue share terms." },
-  T7: { label: "Revenue Share Due Date", desc: "Calendar rule for payment due date.", logic: [], skip: "Hidden when no revenue share terms." },
-  T8: { label: "Revenue Share Cap Type",           desc: "Return Cap vs Time Cap.", logic: [], skip: "Hidden when no revenue share terms." },
-  T9: { label: "Cap Multiple",       desc: "Shown for Return Cap: investor cap multiple and total cap including carry.", logic: [], skip: "Hidden unless cap type is Return Cap and capMultiple is set." },
-  T10:{ label: "Revenue Share Start Date",    desc: "Anchored to branch opening vs fixed calendar date.", logic: [], skip: "Hidden when no revenue share terms." },
-  T11:{ label: "Revenue Share %",    desc: "Pre-BEP and post-BEP percentages.", logic: [{type:"warn", text:"Policy warnings when pre ≠ post"}], skip: "Hidden when no revenue share terms." },
-  T12:{ label: "Carry",              desc: "Platform fee line (variable or fixed platform fee).", logic: [{type:"warn", text:"Policy carry minimum warnings in production"}], skip: "Hidden when no revenue share terms." },
-  T13:{ label: "Revenue projection summary", desc: "Summary grid: average monthly revenue, peak month, floor month, and projection span.", logic: [], skip: "Omitted when there is no revenue projection data." },
-  T14:{ label: "Late Fee Basis",     desc: "Basis label for late fee.", logic: [{type:"warn", text:"Inline warning when basis differs from default Overdue Amount"}] },
-  T15:{ label: "Late Fee Grace Period (days)", desc: "Grace days before late fees accrue.", logic: [{type:"warn", text:"Inline warning when ≠ 5 days"}] },
-  T16:{ label: "Daily Late Fee %",   desc: "fmtPct lines for investors + ASN. For Asset A / Asset D only: amber warnings when rates differ from 0.08% (Investors) or 0.02% (ASN) per day.", logic: [{type:"warn", text:"Shown only when asset class is A or D and the stored rate ≠ default"}] },
+  T5: { label: "After schedule: structure-specific blocks", desc: "What appears after the disbursement table in the app, depending on the project: **Fixed Repayment Schedule** and summary (when `fixedReturnTerms` is set), **Branch Details** (when `branches.length > 0`), **Daily Interest — Service Fee Daily Interest Basis** (when `dailyInterestTerms` is set). Economics, rev-share %, cap, carry, late-fee diffs, and projections are **not** duplicated here; they are in **Past Projects Recap** (B–F), as the intro line on the card states.", logic: [] },
 
   E1: { label: "PT Record",            desc: "Legal PT name column.", logic: [] },
   E2: { label: "Bank",               desc: "Disbursement bank name.", logic: [] },
@@ -2667,15 +3162,15 @@ const FIELDS = {
 // ── Build left nav ─────────────────────────────────────────────────────────
 const sectionOrder = ["H","P","KD","D","L","F","C","R","T","M","E","O","A"];
 const sectionFieldMap = {
-  H: ["H1","H2","H3","H4"],
+  H: ["H1","H2","H4"],
   P: ["P1","P2","P3"],
   KD:["K1","K2","K3"],
-  D: ["D1","D2","D3","D4","D5","D6","D7"],
-  L: ["L1","L2","L3","L4","L6","L7","L8"],
+  D: ["D1","D2","D3","D4","D5","D6","D7","D8"],
+  L: ["L1","L2","L3","L4","L6","L7","L8","L9"],
   F: ["F1","F2","F3","F4","F5"],
   C: ["C1","C2","C3","C4","C5","C6","C7","C8"],
-  R: ["R1","R2","R3","R4","R5","R6","R7","R8","R9","R10","R11"],
-  T: ["T1","T2","T3","T4","T5","T6","T7","T8","T9","T10","T11","T12","T13","T14","T15","T16"],
+  R: ["R1","R2"],
+  T: ["T1","T2","T3","T4","T5"],
   M: ["K4","K5","K6","K7"],
   E: ["E1","E2","E3","E4","E5","E6","E7"],
   O: ["O1","O2","O3"],
@@ -2708,10 +3203,11 @@ sectionOrder.forEach(sec => {
 // ── Multi-project: home vs guide + mount template ───────────────────────────
 const TOPBAR_LINES = {
   holycow: "Steak Hotel by Holycow Medan · Pending IC Review",
-  shushu: "Shushu (#1) — Branch Renovation",
+  shushu: "Shushu (#2) — Branch Renovation",
   cum: "Cipta Usaha Media (#26) — PO Financing: Orang Tua",
   cea: "Cahaya Energi Asia — Aztech #1 · PO/Invoice + Plafond",
   assetd: "Maju #4 · Working Capital · Asset D · Project+Plafond",
+  "mitra-agro": "Mitra Agro Nusantara (#5) — Recap reference (all return types)",
 };
 const DOC_TITLES = {
   holycow: "IC Field guide — Holycow Medan",
@@ -2719,6 +3215,7 @@ const DOC_TITLES = {
   cum: "IC Field guide — Cipta Usaha Media",
   cea: "IC Field guide — Cahaya Energi Asia",
   assetd: "IC Field guide — Maju #4 (Working Capital)",
+  "mitra-agro": "IC Field guide — Mitra Agro (Past Projects Recap ref)",
 };
 
 // Declared before mountProject → deselect() (used when swapping project DOM).
@@ -2727,7 +3224,7 @@ let currentId = null;
 function parseProjectKey() {
   const q = new URLSearchParams(location.search);
   const p = q.get("p") || q.get("project");
-  if (p === "holycow" || p === "shushu" || p === "cum" || p === "cea" || p === "assetd") return p;
+  if (p === "holycow" || p === "shushu" || p === "cum" || p === "cea" || p === "assetd" || p === "mitra-agro") return p;
   return null;
 }
 
@@ -2850,6 +3347,7 @@ function fieldGuideOfflineTopbar() {
     '<a class="topbar-switch-a" href="field-guide.html?p=cum">Cipta Usaha Media</a>' +
     '<a class="topbar-switch-a" href="field-guide.html?p=cea">Cahaya Energi Asia</a>' +
     '<a class="topbar-switch-a" href="field-guide.html?p=assetd">Maju (#4)</a>' +
+    '<a class="topbar-switch-a" href="field-guide.html?p=mitra-agro">Mitra Agro — recap ref</a>' +
     '<a class="topbar-switch-home" href="field-guide.html">All projects</a>'
   );
 }
@@ -2943,8 +3441,6 @@ function renderInfo(id) {
   const S = SECTIONS[secKey] || {};
   const logic = f.logic || [];
 
-  let relatedSame = (sectionFieldMap[secKey] || []).filter(x => x !== id);
-
   const html = `
     <div class="info-badge-row">
       <div class="info-badge-large ${S.cls || ""}" style="background:${S.color || "#64748b"}">${id}</div>
@@ -2968,11 +3464,6 @@ function renderInfo(id) {
           <span class="logic-icon">${logicIcon[l.type] || "·"}</span>
           <span class="logic-text">${l.text}</span>
         </div>`).join("")}
-    ` : ""}
-    ${relatedSame.length ? `
-      <div class="info-divider"></div>
-      <div class="info-also-label">Other fields in ${S.name}</div>
-      <div>${relatedSame.map(r => `<span class="also-chip" onclick="select('${r}')">${r}: ${FIELDS[r]?.label||r}</span>`).join("")}</div>
     ` : ""}
   `;
 

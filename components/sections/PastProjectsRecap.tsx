@@ -1233,7 +1233,7 @@ export function PastProjectsRecap({ project }: Props) {
   }
 
   return (
-    <SectionCard title="Proposed and Past Projects Recap">
+    <SectionCard id="ic-past-projects-recap" title="Proposed and Past Projects Recap">
       <div className="mt-2 space-y-2">
         <ProjectComparisonTable project={project} projects={projects} />
         <SummaryBar projects={projects} />

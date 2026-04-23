@@ -1,0 +1,63 @@
+Field ID,Section,UI Label (Field Guide),Coda Table,Coda Field Name (best guess),Field Type,Relation From (if applicable),Confidence,Notes / Open Questions
+H1,Header,Brand,Projects,KP/Brand,Relation,Brand table,High,Confirmed by you
+H2,Header,Project Name,Projects,Project Name,Native,,High,Display column — confirmed by you
+H4,Header,Approval Type,Projects,Approval Type,Relation,Approval Type enum table,High,
+P1,PIC,Submitter,Projects,?,Unknown,,Low,"Not found in Projects column list. Options: (a) Coda system 'Created by' field, (b) same as Primary Analyst, (c) a field I missed — please confirm"
+P2,PIC,Primary Analyst,Projects,Primary Analyst,Relation,People / Analyst table,High,
+P3,PIC,Secondary Analyst,Projects,Secondary Analyst,Relation,People / Analyst table,High,
+K1,KP Details,Referral Source,Projects,Referral Source,Relation,Referral Source enum table,High,
+K2,KP Details,Specific Referror,Projects,Specific Referror,Relation,Contacts table,High,Same table ID as Karmapreneur Contacts
+K3,KP Details,Referror's KP/Brand,Projects,N/A,New (formula),,Low,Not found in Projects column list — field does not exist yet
+D1,Project Details,Project # (ordinal),Projects,N/A,New (formula),,High,Confirmed by you — doesn't exist yet in Coda
+D2,Project Details,Brand counts (4 lines),Projects,N/A,New (formula),,High,Confirmed by you — new computed fields
+D3,Project Details,Sector,Projects,Main Sector + Sub-Sector,Relation x2,Main Sector enum + Sub-Sector enum,High,"Confirmed by you: rendered as [Main Sector]: [Sub Sector]"
+D4,Project Details,Asset Class,Projects,Asset Class,Relation,Asset Class enum table,High,Same Coda field as H3
+D5,Project Details,Syariah flag,Projects,?,Unknown,,Low,"'Syariah' not found in Projects column list. Does this field exist in Coda? If yes — what is it called?"
+D6,Project Details,Requested Project Amount,Projects,IDR/ USD Project Target Amount,Native,,High,
+D7,Project Details,Financing Use,Projects,Financing Use,Relation,Financing Use enum table,High,
+D8,Project Details,Financing Type,Projects,Return Type*,Native,,High,Same underlying field as R2; displayed as plain text in Project Details card
+L1,Plafond,Limit Status row label,Brand,Limit Status,Native (formula),,Medium,Found on Brand table as a formula/display field
+L2,Plafond,Total Limit,Brand,"IDR Total Limit [#] / IDR Total Limit / IDR Requested Total Limit",Native,,Medium,Multiple candidate fields — which one drives the Proposed row vs Current row?
+L3,Plafond,PO Sub Limit,Brand,"IDR Sub-Limit for PO [#] / IDR Sub-Limit for PO",Native,,Medium,
+L4,Plafond,Working Capital Sub Limit,Brand,"IDR Sub-Limit for Working Capital [#] / IDR Sub-Limit for Working Capital",Native,,Medium,
+L6,Plafond,Outstanding (in Current total cell),Brand,Total Outstanding Exposure,Native,,Low,"Multiple candidates: 'Total Outstanding Exposure', 'Used Sub-Limit for PO', 'KP Principal Outstanding'"
+L7,Plafond,Limit Remaining,Brand,IDR Remaining Total Limit,Native,,Medium,
+L8,Plafond,Superseded rows,Brand,Historical limit rows?,Unknown,,Low,"May require a plafond history / changelog table — not clearly a single field"
+L9,Plafond,Max review date (B_MOD),Brand or Financial Review table,N/A,New (formula),,Low,"Not found in either table's column list. Possibly derived from Submission Date + Review Interval (mos) on Financial Review table. Only shown for Asset B projects."
+F1,Financial Reviews,Submitted (date),Financial Review table,Submission Date,Native,,Medium,Financial Review table linked from Brand (lookup grid-qmcaBUzMOc)
+F2,Financial Reviews,Financial Reports Reviewed,Financial Review table,?,Unknown,,Low,Column name not confirmed — what is it called in Coda?
+F3,Financial Reviews,Reports' Period Ending Date,Financial Review table,?,Unknown,,Low,Column name not confirmed — what is it called in Coda?
+F4,Financial Reviews,Limit Recommendation,Financial Review table,?,Unknown,,Low,"Values: Keep / Increase / Decrease — what is the column name in Coda?"
+F5,Financial Reviews,Notes (financial review),Financial Review table,IC Principal Review Notes [td]?,Native (canvas),,Low,Is this 'IC Principal Review Notes [td]' or a different notes field?
+C1,KP Contacts,Name,Contacts table,Name?,Native,,Medium,From Contacts table linked via 'Karmapreneur Contacts' on Project
+C2,KP Contacts,Role,Contacts table,Role?,Native,,Low,Column name not confirmed in Contacts table
+C3,KP Contacts,Notes on Person,Contacts table,Notes?,Native,,Low,Column name not confirmed
+C4,KP Contacts,Key Person?,Contacts table or Projects,Key Person?,Native,,Low,Is this a column on the Contacts table or a Project-level flag?
+C5,KP Contacts,Connections,Contacts table,Connections?,Native,,Low,Column name not confirmed
+C6,KP Contacts,SLIK-Key Person File URL,Contacts table,SLIK File URL?,Native (link),,Low,Column name not confirmed
+C7,KP Contacts,SLIK-Key Person Exec Summary,Contacts table,SLIK Exec Summary?,Native,,Low,Column name not confirmed
+C8,KP Contacts,UBO Exposure,Projects,Max UOB Exposure for Any Key Person,Native (formula),,Medium,Found on Projects table as a formula field
+R1,Past Projects Recap,Past Projects Recap — overview,Projects,N/A,New (formula),,High,Cross-project comparison — new field/computation
+R2,Past Projects Recap,Financing type / recap anchor,Projects,Return Type*,Native,,High,Same underlying field as D8
+T1,Project Terms,Disbursement #,Disbursements,Title (auto/formula),Formula,,Medium,"'Title' formula column on Disbursements table — is this the tranche number field?"
+T2,Project Terms,Planned Disbursement Date,Disbursements,Planned Disbursement Date - Analyst (editable),Native,,High,
+T3,Project Terms,Amount per Tranche,Disbursements,Planned Disbursement Amount - Analyst (editable),Native,,High,
+T4,Project Terms,Total Disbursements,Projects,Formula across Disbursements rows,Formula,,High,
+T5,Project Terms,Branch Details + structure-specific blocks,Projects + Branches,Multiple fields,Formula,,Medium,"Pulls from Branches table and project-level term fields (fixedReturnTerms, dailyInterestTerms, etc.)"
+K4,Credit Memo & Notes,KP Credit Memo,Projects,KP Credit Memo,Native (canvas),,High,
+K5,Credit Memo & Notes,Project Credit Memo,Projects,Project Credit Memo,Native (canvas),,High,
+K6,Credit Memo & Notes,Financials link,Projects,Calculator GSheet Link,Native (link),,High,
+K7,Credit Memo & Notes,Notes feed,Notes table,Notes (canvas field),Native (canvas),,High,"'Notes' column on the Notes table, linked to Project"
+E1,PT Details,PT Record (name),PT,Name,Native,,High,Display column on PT table
+E2,PT Details,Bank,PT,Bank,Relation,Bank enum table,High,
+E3,PT Details,Account Number,PT,Account Number,Native,,High,
+E4,PT Details,Accountholder Name,PT,Accountholder Name,Native,,High,
+E5,PT Details,SLIK-PT File URL,PT,SLIK-PT File URL,Native (link),,High,
+E6,PT Details,SLIK-PT Exec Summary,PT,SLIK-PT Exec Summary,Native,,High,
+E7,PT Details,PT Warnings,Projects,Warning on Entered Bank Details,Native (formula),,Medium,"'Warning on Entered Bank Details' on Projects — or is this on the PT table?"
+O1,Other,Funding Source,Projects,Funding Source,Relation,Funding Source enum table,High,
+O2,Other,Bank Details for PT (Members),Projects,N/A,New (formula),,Low,Not found in Projects columns — field does not exist yet
+O3,Other,Tax Withholdings,Projects,Is KP going to withhold taxes on behalf of investors?,Native (select list),,High,
+A1,Approval,IC vote rows + rule banner,Projects,"IC Principal to Approve Credit Review, IC Member to Vote and Approve Credit Review",Formula,,Medium,Derived display — multiple IC fields combined
+A2,Approval,Approval Notes,Projects,Special Notes for IC,Native,,Medium,"Could also be 'Approval Notes' — confirm field name"
+A3,Approval,Conditions Subsequent,Projects,N/A,New (formula),,Low,Not found in Projects column list — field does not exist yet

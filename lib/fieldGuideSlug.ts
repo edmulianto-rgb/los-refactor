@@ -5,6 +5,8 @@ const PROJECT_ID_TO_FIELD_GUIDE_SLUG: Record<string, string> = {
   "proj-cum": "cum",
   "proj-cea-aztech": "cea",
   "proj-assetd-plafond": "assetd",
+  /** Full multi–return-type Past Projects Recap (canonical reference in the static field guide). */
+  "proj-mitra-agro": "mitra-agro",
 };
 
 export function fieldGuideSlugForProjectId(projectId: string): string {
@@ -22,4 +24,5 @@ export const FIELD_GUIDE_TOPBAR_LABEL: Record<string, string> = {
   cum: "Cipta Usaha Media",
   cea: "Cahaya Energi Asia",
   assetd: "Maju (#4)",
+  "mitra-agro": "Mitra Agro (#5) · recap ref",
 };

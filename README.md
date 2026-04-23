@@ -46,6 +46,17 @@ npm run dev
 # → http://localhost:3000
 ```
 
+### Interactive field guide (`field-guide.html`)
+
+This is a **static mirror** of the IC overview for training / deep links (`?p=…`). It is not a second product you edit on its own: when you change overview UI in [`components/sections/`](components/sections/), whoever merges that work should **update the matching `<template id="tpl-guide-…">` blocks** in the same PR (or right after), then keep the two copies identical:
+
+```bash
+cp field-guide.html public/field-guide.html
+npm run check:field-guide
+```
+
+`npm run check:field-guide` only enforces sync plus a few invariants ([`scripts/check-field-guide.mjs`](scripts/check-field-guide.mjs)). To never touch HTML at all, the long-term fix is generating this from the React app (single source of truth).
+
 ## Deploy to Vercel
 
 ### Option A — Vercel CLI (fastest)
