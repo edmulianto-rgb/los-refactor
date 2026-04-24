@@ -380,8 +380,8 @@ const projectHolycow: ICProject = {
     },
   ],
 
-  fundingSource: "KF & KCF",
-  bankDetailsReviewed: true,
+  fundingSource: "KF, KCF & Members",
+  bankDetailsReviewed: false,
   taxWithholdings: "Yes",
   icVotes: [
     { memberId: "ic-1", memberName: "Ben Elberger", isPrincipal: true, vote: "Approve", votedAt: "2026-04-07T09:15:00Z" },
@@ -1012,8 +1012,8 @@ const projectCUM: ICProject = {
     },
   ],
 
-  fundingSource: "KF & KCF",
-  bankDetailsReviewed: true,
+  fundingSource: "KF, KCF & Members",
+  bankDetailsReviewed: false,
   taxWithholdings: "Yes",
   icVotes: [
     { memberId: "ic-1", memberName: "Ben Elberger", isPrincipal: true, vote: "Approve", votedAt: "2026-04-07T09:30:00Z" },
