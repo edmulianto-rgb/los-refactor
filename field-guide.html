@@ -204,6 +204,7 @@ body {
 .c-kc { background: #dc2626; } .c-pp { background: #16a34a; }
 .c-tm { background: #0369a1; } .c-pt { background: #ea580c; }
 .c-ot { background: #6d28d9; } .c-ap { background: #0f172a; }
+.c-v  { background: #0891b2; }
 
 /* Nav dot / section colors */
 .dot-h  { background: #1d4ed8; } .dot-p  { background: #0369a1; }
@@ -212,6 +213,7 @@ body {
 .dot-kc { background: #dc2626; } .dot-pp { background: #16a34a; }
 .dot-tm { background: #0369a1; } .dot-pt { background: #ea580c; }
 .dot-ot { background: #6d28d9; } .dot-ap { background: #0f172a; }
+.dot-v  { background: #0891b2; }
 
 .irr-green  { color: #059669; font-weight: 700; }
 .irr-yellow { color: #d97706; font-weight: 700; }
@@ -1048,20 +1050,32 @@ Proyek ke-3. Revenue Share return-capped 1.4x. Dana digunakan untuk full renovat
     <div class="card">
       <div class="card-section-title">Proposed Project&apos;s Payor / PO / Invoice Details <span style="font-size:10px;font-weight:400;color:#94a3b8">(B_MOD)</span></div>
       <div class="card-body" style="overflow-x:auto">
-        <table class="tbl" style="min-width:720px;font-size:10px">
+        <!-- For All Payers assessment block (B-PO) -->
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:10px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#94a3b8;margin-bottom:8px">For All Payers — Submission Assessment</div>
+          <div id="f-V1" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;margin-bottom:6px"><span style="background:#f1f5f9;color:#475569;border-radius:4px;padding:2px 7px;font-size:9px;font-weight:500;flex-shrink:0">Existence &amp; Authenticity of Supporting Docs <b class="b c-v" onclick="select('V1')">V1</b></span><span style="background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:2px 6px;font-size:9px;font-weight:500">5: Direct confirmation to payer by Karma on PO issued and Karmapreneur in good standing</span></div>
+          <div id="f-V2" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;margin-bottom:6px"><span style="background:#f1f5f9;color:#475569;border-radius:4px;padding:2px 7px;font-size:9px;font-weight:500;flex-shrink:0">Likelihood of Payer Changing Scope &amp; Timeline <b class="b c-v" onclick="select('V2')">V2</b></span><span style="background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:2px 6px;font-size:9px;font-weight:500">4: 1-3 projects for this user at the payer without any major scope changes</span></div>
+          <div id="f-V3" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;margin-bottom:6px"><span style="background:#f1f5f9;color:#475569;border-radius:4px;padding:2px 7px;font-size:9px;font-weight:500;flex-shrink:0">Competency &amp; History of Karmapreneur <b class="b c-v" onclick="select('V3')">V3</b></span><span style="background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:2px 6px;font-size:9px;font-weight:500">3: New to this line of business but founders have done this PO type in past 7 years</span></div>
+          <div id="f-V4" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start"><span style="background:#f1f5f9;color:#475569;border-radius:4px;padding:2px 7px;font-size:9px;font-weight:500;flex-shrink:0">Suggested Max PO Limit <b class="b c-v" onclick="select('V4')">V4</b></span><span style="font-weight:600;color:#1e293b">Rp 1.000.000.000</span></div>
+        </div>
+        <!-- Per-payer table -->
+        <table class="tbl" style="min-width:960px;font-size:10px">
           <thead><tr>
-            <th>#</th><th>Payor</th><th>PO / Invoice #</th><th>Due</th><th class="right">Amount</th><th>Type</th><th>Payee</th><th>Risk</th>
+            <th>#</th><th>Payor <b class="b c-v" onclick="select('V6')">V6</b></th><th>PO / Invoice # <b class="b c-v" onclick="select('V7')">V7</b></th><th>Due <b class="b c-v" onclick="select('V8')">V8</b></th><th class="right">Proportionalized PO / Invoice Amount <b class="b c-v" onclick="select('V9')">V9</b></th><th>Notes <b class="b c-v" onclick="select('V10')">V10</b></th><th>Strength of Payer <b class="b c-v" onclick="select('V11')">V11</b></th><th>History — Paying On Time <b class="b c-v" onclick="select('V12')">V12</b></th><th class="right">Suggested IDR Ceiling for This Payor <b class="b c-v" onclick="select('V13')">V13</b></th><th class="right">Outstanding Principal Owed for This Payor <b class="b c-v" onclick="select('V14')">V14</b></th><th>Limit Validation for This Payor <b class="b c-v" onclick="select('V15')">V15</b></th>
           </tr></thead>
           <tbody>
             <tr>
               <td>1</td>
               <td>Orang Tua Group</td>
               <td class="mono">PO-OT-2026-APR-0142</td>
-              <td>8 Jun 2026</td>
-              <td class="right" style="font-weight:600">Rp 249.000.000</td>
-              <td>Corporate PO</td>
-              <td>CUM (#26)</td>
-              <td><span class="tag tag-slate" style="font-size:8px">Low</span></td>
+              <td><div>8 Jun 2026</div><div style="font-size:9px;color:#94a3b8;margin-top:2px">0d from tenor end (disb + tenor)</div></td>
+              <td class="right"><div style="font-weight:600">Rp 249.000.000</div><div style="font-size:9px;color:#94a3b8;margin-top:2px">Actual: Rp 249.000.000</div></td>
+              <td>Underlying PO aligned to April 2026 production cycle.</td>
+              <td><span style="background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:2px 6px;font-size:9px;font-weight:500">4: Tier 2 Payer</span></td>
+              <td><span style="background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:2px 6px;font-size:9px;font-weight:500">3: No AR from payer aged &gt;90 days as at due diligence</span></td>
+              <td class="right" style="font-weight:600">Rp 3.999.999.999</td>
+              <td class="right" style="font-weight:600">Rp 0</td>
+              <td style="font-size:10px;color:#16a34a;font-weight:500">PO / Invoice Amount does not exceed Suggested Remaining Limit for This Payor</td>
             </tr>
           </tbody>
         </table>
@@ -1542,7 +1556,7 @@ Proyek kedua bersama Karma (setelah WC #1). Fixed return 12 bulan, satu tranche 
               <b class="b c-h" onclick="select('H1')">H1</b>
             </div>
             <div class="proj-name" id="f-H2">
-              Cahaya Energi Asia - Aztech #1
+              Cahaya Energi Asia - Aztech #2
               <b class="b c-h" onclick="select('H2')">H2</b>
             </div>
           </div>
@@ -1570,10 +1584,10 @@ Proyek kedua bersama Karma (setelah WC #1). Fixed return 12 bulan, satu tranche 
         <div class="card-body">
           <div id="f-D1" style="font-size:12px;line-height:1.5;color:#334155;margin-bottom:12px">
             <span style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px">Project # <b class="b c-d" onclick="select('D1')">D1</b></span>
-            <span class="bold">Project #1 for the KP</span>
+            <span class="bold">Project #2 for the KP</span>
             <div id="f-D2" style="font-size:11px;color:#64748b;margin-top:4px;line-height:1.55">
               1 active<br/>
-              0 completed<br/>
+              1 completed<br/>
               0 before IC <b class="b c-d" onclick="select('D2')">D2</b><br/>
               0 pending disbursement
             </div>
@@ -1605,11 +1619,11 @@ Proyek kedua bersama Karma (setelah WC #1). Fixed return 12 bulan, satu tranche 
         </div>
         <div class="field-row" id="f-D4">
           <span class="field-label">Asset Class <b class="b c-d" onclick="select('D4')">D4</b></span>
-          <span class="field-value"><span class="tag tag-slate">B - PO</span></span>
+          <span class="field-value"><span class="tag tag-slate">B - Invoice</span></span>
         </div>
         <div class="field-row" id="f-D7">
           <span class="field-label">Financing Use <b class="b c-d" onclick="select('D7')">D7</b></span>
-          <span class="field-value"><span class="tag tag-blue">Domestic PO Financing</span></span>
+          <span class="field-value"><span class="tag tag-blue">Domestic Invoice Financing</span></span>
         </div>
         <div class="field-row" id="f-D6">
           <span class="field-label">Requested Project Amount <b class="b c-d" onclick="select('D6')">D6</b></span>
@@ -1705,7 +1719,7 @@ Proyek kedua bersama Karma (setelah WC #1). Fixed return 12 bulan, satu tranche 
               <td id="f-F2">Management accounts + rekening koran Q3 2025</td>
               <td id="f-F3">30 Sep 2025</td>
               <td id="f-F4"><span style="font-size:11px;font-weight:500;color:#065f46">Increase Rp 12.000.000.000 to Rp 15.000.000.000</span></td>
-              <td id="f-F5" style="max-width:200px;font-size:10px;color:#64748b;line-height:1.45">Oil &amp; gas services vendor to Aztech. Volume PO naik — rekomendasi menyesuaikan plafond PO agar sesuai dengan pipeline kontrak 12 bulan ke depan. Tranche pertama Aztech #1 sebesar IDR 6B dengan tenor 90 hari.</td>
+              <td id="f-F5" style="max-width:200px;font-size:10px;color:#64748b;line-height:1.45">Oil &amp; gas services vendor to Aztech. Volume invoice naik — rekomendasi menyesuaikan plafond invoice agar sesai dengan pipeline kontrak 12 bulan ke depan. Tranche pertama Aztech #1 sebesar IDR 6B dengan tenor 90 hari.</td>
               <td><span class="tag tag-amber" style="font-size:9px">Warning: More than 6 months ago</span></td>
             </tr>
           </tbody>
@@ -1736,7 +1750,7 @@ Proyek kedua bersama Karma (setelah WC #1). Fixed return 12 bulan, satu tranche 
               <td>1</td>
               <td id="f-C1"><b>KP signatory (from diligence)</b></td>
               <td id="f-C2">Direktur Utama</td>
-              <td id="f-C3" style="max-width:160px">Oil &amp; gas services; primary relationship with Aztech Group POs.</td>
+              <td id="f-C3" style="max-width:160px">Oil &amp; gas services; primary relationship with Aztech Group invoices.</td>
               <td id="f-C5" style="color:#94a3b8">—</td>
               <td id="f-C4">Yes</td>
               <td id="f-C6"><span style="color:#dc2626;font-weight:600">Missing ⚠️</span></td>
@@ -1762,19 +1776,31 @@ Proyek kedua bersama Karma (setelah WC #1). Fixed return 12 bulan, satu tranche 
     <div class="card">
       <div class="card-section-title">Proposed Project&apos;s Payor / PO / Invoice Details <span style="font-size:10px;font-weight:400;color:#94a3b8">(B_MOD)</span></div>
       <div class="card-body" style="overflow-x:auto">
-        <table class="tbl" style="min-width:680px;font-size:10px">
+        <!-- For All Payers assessment block (B-Invoice) -->
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:10px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#94a3b8;margin-bottom:8px">For All Payers — Submission Assessment</div>
+          <div id="f-V1" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;margin-bottom:6px"><span style="background:#f1f5f9;color:#475569;border-radius:4px;padding:2px 7px;font-size:9px;font-weight:500;flex-shrink:0">Existence &amp; Authenticity of Supporting Docs <b class="b c-v" onclick="select('V1')">V1</b></span><span style="background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:2px 6px;font-size:9px;font-weight:500">5: Direct confirmation to payer by Karma on PO issued and Karmapreneur in good standing</span></div>
+          <div id="f-V5" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;margin-bottom:6px"><span style="background:#f1f5f9;color:#475569;border-radius:4px;padding:2px 7px;font-size:9px;font-weight:500;flex-shrink:0">Authenticity &amp; Veracity of Invoice and BAST <b class="b c-v" onclick="select('V5')">V5</b></span><span style="background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:2px 6px;font-size:9px;font-weight:500">4: Analyst gets in-person/virtual/recorded view of Karmapreneur showing confirmation on invoice received, processed, and BAST issued</span></div>
+          <div id="f-V4" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start"><span style="background:#f1f5f9;color:#475569;border-radius:4px;padding:2px 7px;font-size:9px;font-weight:500;flex-shrink:0">Suggested Max Invoice Limit <b class="b c-v" onclick="select('V4')">V4</b></span><span style="font-weight:600;color:#1e293b">Rp 5.000.000.000</span></div>
+        </div>
+        <!-- Per-payer table -->
+        <table class="tbl" style="min-width:960px;font-size:10px">
           <thead><tr>
-            <th>#</th><th>Payor</th><th>PO / Invoice #</th><th>Due</th><th class="right">Amount</th><th>Type</th><th>Risk</th>
+            <th>#</th><th>Payor <b class="b c-v" onclick="select('V6')">V6</b></th><th>PO / Invoice # <b class="b c-v" onclick="select('V7')">V7</b></th><th>Due <b class="b c-v" onclick="select('V8')">V8</b></th><th class="right">Proportionalized PO / Invoice Amount <b class="b c-v" onclick="select('V9')">V9</b></th><th>Notes <b class="b c-v" onclick="select('V10')">V10</b></th><th>Strength of Payer <b class="b c-v" onclick="select('V11')">V11</b></th><th>History — Paying On Time <b class="b c-v" onclick="select('V12')">V12</b></th><th class="right">Suggested IDR Ceiling for This Payor <b class="b c-v" onclick="select('V13')">V13</b></th><th class="right">Outstanding Principal Owed for This Payor <b class="b c-v" onclick="select('V14')">V14</b></th><th>Limit Validation for This Payor <b class="b c-v" onclick="select('V15')">V15</b></th>
           </tr></thead>
           <tbody>
             <tr>
               <td>1</td>
               <td>Aztech Industries Berhad</td>
-              <td class="mono">PO-AZTECH-DOM-2025-8841</td>
-              <td>12 Feb 2026</td>
-              <td class="right" style="font-weight:600">Rp 6.000.000.000</td>
-              <td>Corporate PO</td>
-              <td><span class="tag tag-slate" style="font-size:8px">Low</span></td>
+              <td class="mono">INV-AZTECH-DOM-2025-8841</td>
+              <td><div>12 Feb 2026</div><div style="font-size:9px;color:#94a3b8;margin-top:2px">-1d from tenor end (disb + tenor)</div></td>
+              <td class="right"><div style="font-weight:600">Rp 6.000.000.000</div><div style="font-size:9px;color:#94a3b8;margin-top:2px">Actual: Rp 6.000.000.000</div></td>
+              <td>Domestic invoice line; diligence pack in GDrive.</td>
+              <td><span style="background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:2px 6px;font-size:9px;font-weight:500">4: Tier 2 Payer</span></td>
+              <td><span style="background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:2px 6px;font-size:9px;font-weight:500">3: No AR from payer aged &gt;90 days as at due diligence</span></td>
+              <td class="right" style="font-weight:600">Rp 3.999.999.999</td>
+              <td class="right" style="font-weight:600">Rp 0</td>
+              <td style="font-size:10px;color:#dc2626;font-weight:500">PO / Invoice Amount exceeds Suggested Remaining Limit for This Payor</td>
             </tr>
           </tbody>
         </table>
@@ -1812,16 +1838,16 @@ Proyek kedua bersama Karma (setelah WC #1). Fixed return 12 bulan, satu tranche 
       <div class="card-section-title">Credit Memo &amp; Notes</div>
       <div class="card-body">
         <div class="sub-h">KP Credit Memo <b class="b c-m" onclick="select('K4')">K4</b></div>
-        <div id="f-K4" style="font-size:11px;color:#334155;line-height:1.5;background:#f9fafb;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;max-height:160px;overflow-y:auto;white-space:pre-wrap">KP Credit Memo — Cahaya Energi Asia: diversified oil &amp; gas services revenue, anchor PO dari Aztech Group. Plafond PO dinaikkan ke IDR 15B untuk menampung beberapa tranche serupa.</div>
+        <div id="f-K4" style="font-size:11px;color:#334155;line-height:1.5;background:#f9fafb;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;max-height:160px;overflow-y:auto;white-space:pre-wrap">KP Credit Memo — Cahaya Energi Asia: diversified oil &amp; gas services revenue, anchor invoice dari Aztech Group. Plafond invoice dinaikkan ke IDR 15B untuk menampung beberapa tranche serupa.</div>
         <div class="sub-h" style="margin-top:10px">Project Credit Memo <b class="b c-m" onclick="select('K5')">K5</b></div>
-        <div id="f-K5" style="font-size:11px;color:#334155;line-height:1.5;background:#f9fafb;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;max-height:160px;overflow-y:auto;white-space:pre-wrap">Project Credit Memo — Aztech #1: IDR 6B domestic PO financing, daily interest structure, 90-day tenor. Payor diligence completed; underlying PO documentation in GDrive.</div>
+        <div id="f-K5" style="font-size:11px;color:#334155;line-height:1.5;background:#f9fafb;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;max-height:160px;overflow-y:auto;white-space:pre-wrap">Project Credit Memo — Aztech #2: IDR 6B domestic invoice financing, daily interest structure, 90-day tenor. Payor diligence completed; underlying invoice documentation in GDrive.</div>
         <div class="sub-h" style="margin-top:10px">Financials <b class="b c-m" onclick="select('K6')">K6</b></div>
         <div id="f-K6"><a href="#" style="color:#2563eb;font-size:12px">Open financial documents ↗</a></div>
         <div class="sub-h" style="margin-top:10px">Notes Feed <b class="b c-m" onclick="select('K7')">K7</b></div>
         <div class="notes-feed" id="f-K7">
           <div class="note-card">
             <div class="note-meta">Junaidi · 22 Oct 2025</div>
-            Submission PO/Invoice + Plafond. Calculator extracted — rates match term sheet. Plafond headroom perlu IC tinjau bersamaan dengan tranche.
+            Submission Invoice + Plafond. Calculator extracted — rates match term sheet. Plafond headroom perlu IC tinjau bersamaan dengan tranche.
           </div>
         </div>
       </div>
@@ -3079,6 +3105,7 @@ const SECTIONS = {
   E:  { name: "PT Details",            color: "#ea580c", cls: "c-pt", dotCls: "dot-pt" },
   O:  { name: "Other",                 color: "#6d28d9", cls: "c-ot", dotCls: "dot-ot" },
   A:  { name: "Approval",              color: "#0f172a", cls: "c-ap", dotCls: "dot-ap" },
+  V:  { name: "Payor / Invoice Details", color: "#0891b2", cls: "c-v",  dotCls: "dot-v" },
 };
 
 function fieldSection(fid) {
@@ -3165,10 +3192,26 @@ const FIELDS = {
   A1: { label: "IC vote rows + rule banner", desc: "Voting rule from amount tiers; per-member vote badges; optional / required labels.", logic: [{type:"info", text:"Required vote count depends on financing amount tiers."}], skip: "Special notes for IC banner omitted when there are no special notes." },
   A2: { label: "Approval Notes",     desc: "Free text field for IC members to document their reasoning, concerns raised in discussion, or conditions they want noted alongside their vote.", logic: [] },
   A3: { label: "Conditions Subsequent", desc: "Specific items the KP must complete after IC approval but before disbursement (or before the next disbursement tranche). These become binding conditions in the contract.", logic: [], skip: "Block omitted when conditionsSubsequent is empty." },
+
+  V1:  { label: "Existence & Authenticity of Supporting Docs", desc: "Section-level dropdown assessment (1–5 scale). Shared by B-PO and B-Invoice: rates the quality of evidence that the underlying PO or invoice is real and confirmed.", logic: [] },
+  V2:  { label: "Likelihood of Payer Changing Scope & Timeline", desc: "B-PO only. Dropdown (1–5) rating how likely the payer is to rescope, delay, or cancel the PO before payment.", logic: [], skip: "Not shown for B-Invoice projects." },
+  V3:  { label: "Competency & History of Karmapreneur", desc: "B-PO only. Dropdown (1–5) assessing the KP's track record and capability in executing this type of PO.", logic: [], skip: "Not shown for B-Invoice projects." },
+  V4:  { label: "Suggested Max PO / Invoice Limit", desc: "Analyst's recommended ceiling for this KP's PO or invoice financing. Shown as formatted IDR. B-PO shows 'Suggested Max PO Limit'; B-Invoice shows 'Suggested Max Invoice Limit'.", logic: [] },
+  V5:  { label: "Authenticity & Veracity of Invoice and BAST", desc: "B-Invoice only. Dropdown (1–5) rating the quality of verification that the invoice and BAST (Berita Acara Serah Terima) are genuine and accepted by the payer.", logic: [], skip: "Not shown for B-PO projects." },
+  V6:  { label: "Payor", desc: "Name of the corporate payer for this PO or invoice line.", logic: [] },
+  V7:  { label: "PO / Invoice #", desc: "Document reference number for the underlying PO or invoice (monospaced).", logic: [] },
+  V8:  { label: "Due date", desc: "Expected payment date from the payer. Shows a subtext offset (± days) from the calculated tenor end (first disbursement date + tenor days).", logic: [] },
+  V9:  { label: "Proportionalized PO / Invoice Amount", desc: "The financing amount attributed to this payor line, after any proportionalization. Actual (full) amount shown as gray subtext.", logic: [] },
+  V10: { label: "Notes", desc: "Analyst notes on this specific payor line — context on the underlying document, relationship, or diligence observations.", logic: [] },
+  V11: { label: "Strength of Payer", desc: "Per-payer dropdown (1–5) rating the payer's creditworthiness and standing (e.g. Tier 1 vs Tier 2 corporate).", logic: [] },
+  V12: { label: "History — Paying On Time", desc: "Per-payer dropdown (1–5) based on AR aging evidence: whether this payer has a clean track record of paying on schedule.", logic: [] },
+  V13: { label: "Suggested IDR Ceiling for This Payor", desc: "Analyst's recommended maximum exposure to this single payer across all Karma projects for this KP.", logic: [] },
+  V14: { label: "Outstanding Principal Owed for This Payor", desc: "Current outstanding Karma financing already attributed to this payer for this KP.", logic: [] },
+  V15: { label: "Limit Validation for This Payor", desc: "Computed: Outstanding Principal + Proportionalized Amount vs Suggested IDR Ceiling. Green = within limit; Red = exceeds limit.", logic: [{type:"info", text:"Green when Outstanding + Proportionalized < Suggested Ceiling"},{type:"error", text:"Red when Outstanding + Proportionalized ≥ Suggested Ceiling"}] },
 };
 
 // ── Build left nav ─────────────────────────────────────────────────────────
-const sectionOrder = ["H","P","KD","D","L","F","C","R","T","M","E","O","A"];
+const sectionOrder = ["H","P","KD","D","L","F","C","R","V","T","M","E","O","A"];
 const sectionFieldMap = {
   H: ["H1","H2","H4"],
   P: ["P1","P2","P3"],
@@ -3178,6 +3221,7 @@ const sectionFieldMap = {
   F: ["F1","F2","F3","F4","F5"],
   C: ["C1","C2","C3","C4","C5","C6","C7","C8"],
   R: ["R1","R2"],
+  V: ["V1","V2","V3","V4","V5","V6","V7","V8","V9","V10","V11","V12","V13","V14","V15"],
   T: ["T1","T2","T3","T4","T5"],
   M: ["K4","K5","K6","K7"],
   E: ["E1","E2","E3","E4","E5","E6","E7"],
@@ -3213,7 +3257,7 @@ const TOPBAR_LINES = {
   holycow: "Steak Hotel by Holycow Medan · Pending IC Review",
   shushu: "Shushu (#2) — Branch Renovation",
   cum: "Cipta Usaha Media (#26) — PO Financing: Orang Tua",
-  cea: "Cahaya Energi Asia — Aztech #1 · PO/Invoice + Plafond",
+  cea: "Cahaya Energi Asia — Aztech #2 · Invoice + Plafond",
   assetd: "Maju #4 · Working Capital · Asset D · Project+Plafond",
   "mitra-agro": "Mitra Agro Nusantara (#5) — Recap reference (all return types)",
 };

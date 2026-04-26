@@ -29,3 +29,10 @@ export function isAssetBPO(assetClass: string): boolean {
   const c = norm(assetClass).toUpperCase();
   return c.includes("PO") || c.includes("INVOICE") || /B\s*-\s*PO/i.test(assetClass);
 }
+
+/** Returns true for B-Invoice assets (e.g. "B - Invoice"). Distinct from the "B-I" shorthand handled by isAssetBI. */
+export function isAssetBInvoice(assetClass: string): boolean {
+  if (!isAssetB(assetClass)) return false;
+  const c = norm(assetClass).toUpperCase();
+  return c.includes("INVOICE");
+}

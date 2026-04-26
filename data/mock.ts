@@ -1004,13 +1004,28 @@ const projectCUM: ICProject = {
       poOrInvoiceNumber: "PO-OT-2026-APR-0142",
       dueDate: "2026-06-08",
       amount: 249_000_000,
+      proportionalizedAmount: 249_000_000,
       currency: "IDR",
       payorType: "Corporate PO (whitelisted)",
       payeeProjects: "Cipta Usaha Media (#26)",
       notes: "Underlying PO aligned to April 2026 production cycle.",
       riskLevel: "Low",
+      strengthOfPayer: "4: Tier 2 Payer",
+      historyPayerPayingOnTime: "3: No AR from payer aged >90 days as at due diligence",
+      suggestedIDRCeilingForPayor: 3_999_999_999,
+      outstandingPrincipalForPayor: 0,
     },
   ],
+
+  payorSectionAssessment: {
+    existenceAuthenticityDocs:
+      "5: Direct confirmation to payer by Karma on PO issued and Karmapreneur in good standing",
+    likelihoodPayerChangingScope:
+      "4: 1-3 projects for this user at the payer without any major scope changes",
+    competencyHistoryKP:
+      "3: New to this line of business but founders have done this PO type in past 7 years",
+    suggestedMaxPOLimit: 1_000_000_000,
+  },
 
   fundingSource: "KF, KCF & Members",
   bankDetailsReviewed: false,
@@ -1059,25 +1074,25 @@ const projectCEA: ICProject = {
   mainSector: "Assorted B2B Services and Manufacturing",
   subSector: "Oil and Gas Services",
   syariah: false,
-  assetClass: "B - PO",
+  assetClass: "B - Invoice",
   requestedAmountCurrency: "IDR",
   requestedAmount: 6_000_000_000,
   trancheTargetAmount: 6_000_000_000,
   icVoteBasisAmount: 15_000_000_000,
   amountWarning: null,
-  financingUse: "Domestic PO Financing",
+  financingUse: "Domestic Invoice Financing",
   sectorWarning: null,
 
   plafond: {
     proposed: {
       totalLimit: 15_000_000_000,
-      poSubLimit: 15_000_000_000,
+      poSubLimit: 0,
       wcSubLimit: 0,
       maxReviewDate: "2026-09-30",
     },
     current: {
       totalLimit: 12_000_000_000,
-      poSubLimit: 12_000_000_000,
+      poSubLimit: 0,
       wcSubLimit: 0,
       effectiveDate: "2024-04-01",
       expiryDate: "2027-04-01",
@@ -1087,12 +1102,12 @@ const projectCEA: ICProject = {
     outstandingTotal: 6_000_000_000,
     outstandingWC: 0,
     remainingTotal: 9_000_000_000,
-    remainingPO: 9_000_000_000,
+    remainingPO: 0,
     remainingWC: 0,
     superseded: [
       {
         totalLimit: 10_000_000_000,
-        poSubLimit: 10_000_000_000,
+        poSubLimit: 0,
         wcSubLimit: 0,
         effectiveDate: "2022-01-01",
         expiryDate: "2024-03-31",
@@ -1109,7 +1124,7 @@ const projectCEA: ICProject = {
       limitCurrentIdr: 12_000_000_000,
       limitRecommendedIdr: 15_000_000_000,
       reviewNotes:
-        "Oil & gas services vendor to Aztech. Volume PO naik — rekomendasi menyesuaikan plafond PO agar sesai dengan pipeline kontrak 12 bulan ke depan. Tranche pertama Aztech #1 sebesar IDR 6B dengan tenor 90 hari.",
+        "Oil & gas services vendor to Aztech. Volume invoice naik — rekomendasi menyesuaikan plafond invoice agar sesai dengan pipeline kontrak 12 bulan ke depan. Tranche pertama Aztech #1 sebesar IDR 6B dengan tenor 90 hari.",
     },
   ],
 
@@ -1124,7 +1139,7 @@ const projectCEA: ICProject = {
       name: "KP signatory (from diligence)",
       role: "Direktur Utama",
       notesOnPerson:
-        "Prototype placeholder — sync full KP contact grid from Coda in production. Oil & gas services; primary relationship with Aztech Group POs.",
+        "Prototype placeholder — sync full KP contact grid from Coda in production. Oil & gas services; primary relationship with Aztech Group invoices.",
       referredProjects: [],
       associatedKPs: [],
       isKeyPerson: true,
@@ -1179,7 +1194,7 @@ const projectCEA: ICProject = {
       status: "Proposed",
       icApprovalDate: "2025-10-23",
       isCurrentSubmission: true,
-      bRecapKind: "B-PO",
+      bRecapKind: "B-I",
       payors: ["Aztech Group"],
       returnType: "Daily Interest",
       amount: 6_000_000_000,
@@ -1218,16 +1233,16 @@ const projectCEA: ICProject = {
   termSheetLink: null,
 
   kpCreditMemo:
-    "KP Credit Memo — Cahaya Energi Asia: diversified oil & gas services revenue, anchor PO dari Aztech Group. Plafond PO dinaikkan ke IDR 15B untuk menampung beberapa tranche serupa.",
+    "KP Credit Memo — Cahaya Energi Asia: diversified oil & gas services revenue, anchor invoice dari Aztech Group. Plafond invoice dinaikkan ke IDR 15B untuk menampung beberapa tranche serupa.",
   projectCreditMemo:
-    "Project Credit Memo — Aztech #1: IDR 6B domestic PO financing, daily interest structure, 90-day tenor. Payor diligence completed; underlying PO documentation in GDrive.",
+    "Project Credit Memo — Aztech #2: IDR 6B domestic invoice financing, daily interest structure, 90-day tenor. Payor diligence completed; underlying invoice documentation in GDrive.",
   financialsLink: "https://docs.google.com/spreadsheets/d/example-cea-aztech-calc",
   projectNotes: [
     {
       author: "Junaidi",
       date: "2025-10-22",
       content:
-        "Submission PO/Invoice + Plafond. Calculator extracted — rates match term sheet. Plafond headroom perlu IC tinjau bersamaan dengan tranche.",
+        "Submission Invoice + Plafond. Calculator extracted — rates match term sheet. Plafond headroom perlu IC tinjau bersamaan dengan tranche.",
     },
   ],
 
@@ -1250,16 +1265,29 @@ const projectCEA: ICProject = {
     {
       id: "pay-cea-1",
       payorLabel: "Aztech Industries Berhad",
-      poOrInvoiceNumber: "PO-AZTECH-DOM-2025-8841",
+      poOrInvoiceNumber: "INV-AZTECH-DOM-2025-8841",
       dueDate: "2026-02-12",
       amount: 6_000_000_000,
+      proportionalizedAmount: 6_000_000_000,
       currency: "IDR",
-      payorType: "Corporate PO (anchor)",
-      payeeProjects: "Cahaya Energi Asia — Aztech #1",
-      notes: "Domestic PO line; diligence pack in GDrive.",
+      payorType: "Corporate Invoice (anchor)",
+      payeeProjects: "Cahaya Energi Asia — Aztech #2",
+      notes: "Domestic invoice line; diligence pack in GDrive.",
       riskLevel: "Low",
+      strengthOfPayer: "4: Tier 2 Payer",
+      historyPayerPayingOnTime: "3: No AR from payer aged >90 days as at due diligence",
+      suggestedIDRCeilingForPayor: 3_999_999_999,
+      outstandingPrincipalForPayor: 0,
     },
   ],
+
+  payorSectionAssessment: {
+    existenceAuthenticityDocs:
+      "5: Direct confirmation to payer by Karma on PO issued and Karmapreneur in good standing",
+    authenticityVeracityInvoiceAndBAST:
+      "4: Analyst gets in-person/virtual/recorded view of Karmapreneur showing confirmation on invoice received, processed, and BAST issued",
+    suggestedMaxInvoiceLimit: 5_000_000_000,
+  },
 
   fundingSource: "KF & KCF",
   bankDetailsReviewed: true,
@@ -1272,9 +1300,9 @@ const projectCEA: ICProject = {
   ],
   approvalNotes: "",
   specialNotesForIC:
-    "⚠️ Combined IC: tranche IDR 6B (Daily Interest) + plafond line (naik ke IDR 15B PO sub-limit dari IDR 12B aktif). Outstanding KP IDR 6B — sisa headroom setelah approval tercermin di baris Proposed.",
+    "⚠️ Combined IC: tranche IDR 6B (Daily Interest) + plafond line (naik ke IDR 15B invoice sub-limit dari IDR 12B aktif). Outstanding KP IDR 6B — sisa headroom setelah approval tercermin di baris Proposed.",
   conditionsSubsequent: [
-    "Execute PO / underlying invoice documentation before first disbursement",
+    "Execute underlying invoice documentation before first disbursement",
     "Confirm plafond registry update in Coda after IC approval",
   ],
 };

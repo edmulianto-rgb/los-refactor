@@ -292,11 +292,30 @@ export interface PayorInvoiceRow {
   poOrInvoiceNumber: string;
   dueDate: string;
   amount: number;
+  proportionalizedAmount?: number;
   currency: "IDR" | "USD";
   payorType: string;
   payeeProjects: string;
   notes: string;
   riskLevel: string;
+  /** Per-payer diligence assessments (B_MOD). */
+  strengthOfPayer?: string;
+  historyPayerPayingOnTime?: string;
+  suggestedIDRCeilingForPayor?: number;
+  outstandingPrincipalForPayor?: number;
+}
+
+/** B_MOD: section-level diligence assessments applied across all payers for this submission. */
+export interface PayorSectionAssessment {
+  /** Shared: B-PO and B-Invoice. */
+  existenceAuthenticityDocs?: string;
+  /** B-PO only. */
+  likelihoodPayerChangingScope?: string;
+  competencyHistoryKP?: string;
+  suggestedMaxPOLimit?: number;
+  /** B-Invoice only. */
+  authenticityVeracityInvoiceAndBAST?: string;
+  suggestedMaxInvoiceLimit?: number;
 }
 
 export interface PTInfo {
@@ -412,6 +431,8 @@ export interface ICProject {
 
   /** B_MOD: Payor / PO / invoice lines for the proposed submission. */
   payorInvoices?: PayorInvoiceRow[];
+  /** B_MOD: Section-level diligence assessments across all payers for this submission. */
+  payorSectionAssessment?: PayorSectionAssessment;
 
   // Approval
   fundingSource: string;

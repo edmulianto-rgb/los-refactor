@@ -303,6 +303,42 @@ One row per PT linked to the project (via `Project.Select PT for this Project`).
 
 ---
 
+## 11b. Payor / PO / Invoice Details (Asset B only)
+
+Shown only when `assetClass` is `B - PO` or `B - Invoice`. Contains two sub-groups:
+
+### 11b-i. For All Payers — Submission Assessment (section-level, one set per submission)
+
+| Display Label | Asset type | Field (`payorSectionAssessment`) | Type | Notes |
+| --- | --- | --- | --- | --- |
+| Existence & Authenticity of Supporting Docs | B-PO + B-Invoice | `existenceAuthenticityDocs` | dropdown (1–5 scale) | Shown for both asset sub-types |
+| Likelihood of Payer Changing Scope & Timeline | B-PO only | `likelihoodPayerChangingScope` | dropdown (1–5 scale) | |
+| Competency & History of Karmapreneur | B-PO only | `competencyHistoryKP` | dropdown (1–5 scale) | |
+| Suggested Max PO Limit | B-PO only | `suggestedMaxPOLimit` | number (IDR) | Formatted as IDR currency |
+| Authenticity & Veracity of Invoice and BAST | B-Invoice only | `authenticityVeracityInvoiceAndBAST` | dropdown (1–5 scale) | |
+| Suggested Max Invoice Limit | B-Invoice only | `suggestedMaxInvoiceLimit` | number (IDR) | Formatted as IDR currency |
+
+### 11b-ii. Per Payer — Table Columns (added to `payorInvoices` rows)
+
+| Display Label | Field (`PayorInvoiceRow`) | Type | Notes |
+| --- | --- | --- | --- |
+| Payor (PO / Invoice) | `payorLabel` | text | |
+| PO / Invoice # | `poOrInvoiceNumber` | text (mono) | |
+| Due date | `dueDate` | ISO date | Shows ± days from tenor end when tenor available |
+| Proportionalized PO / Invoice Amount | `proportionalizedAmount` | number | Defaults to `amount` when not set; actual `amount` shown as gray subtext below |
+| Notes | `notes` | text | |
+| Strength of Payer | `strengthOfPayer` | dropdown (1–5 scale) | |
+| History — Paying On Time | `historyPayerPayingOnTime` | dropdown (1–5 scale) | |
+| Suggested IDR Ceiling for This Payor | `suggestedIDRCeilingForPayor` | number (IDR) | Formatted as IDR currency |
+| Outstanding Principal Owed for This Payor | `outstandingPrincipalForPayor` | number (IDR) | Formatted as IDR currency |
+| Limit Validation for This Payor | computed | — | Green if `outstandingPrincipalForPayor` + `proportionalizedAmount` < `suggestedIDRCeilingForPayor`; red if ≥ |
+| ~~Payor type~~ | `payorType` | text | Not displayed in table (retained in data) |
+| ~~Payee projects~~ | `payeeProjects` | text | Not displayed in table (retained in data) |
+| ~~Risk~~ | `riskLevel` | text | Not displayed in table (retained in data) |
+
+
+---
+
 ## 12. Other
 
 
